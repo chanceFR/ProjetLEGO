@@ -15,7 +15,7 @@ public class HelloApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-        caca=1;
+        romeoEstPassé=1;
         antoEstpassé=2;
         christianEstpassé=3;
     }
