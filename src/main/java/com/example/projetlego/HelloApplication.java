@@ -17,6 +17,7 @@ public class HelloApplication extends Application {
         stage.show();
         caca=1;
         antoEstpassé=2;
+        christianEstpassé=3;
     }
 
     public static void main(String[] args) {
