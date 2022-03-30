@@ -1,6 +1,8 @@
 <component name="libraryTable">
   <library name="javafx-sdk-18">
-    <CLASSES />
+    <CLASSES>
+      <root url="file://$USER_HOME$/Application Data" />
+    </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file://$USER_HOME$/Downloads/javafx-sdk-18" />
