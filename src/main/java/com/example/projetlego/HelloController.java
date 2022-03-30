@@ -1,10 +1,15 @@
 package com.example.projetlego;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,13 +19,21 @@ import java.util.stream.Collectors;
 
 public class HelloController implements Initializable {
 
-    ArrayList<String> words = new ArrayList<>(
-            Arrays.asList("test", "dog","Human", "Days of our life", "The best day",
-                    "Friends", "Animal", "Human", "Humans", "Bear", "Life",
-                    "This is some text", "Words", "222", "Bird", "Dog", "A few words",
-                    "Subscribe!", "SoftwareEngineeringStudent", "You got this!!",
-                    "Super Human", "Super", "Like")
-    );
+    ArrayList<ImageLinked> imagesLinked;
+
+    {
+        try {
+            imagesLinked = new ArrayList<>(
+                    Arrays.asList( new ImageLinked("p1",
+                                   new ImageViewer("pomme.jpg")),
+                                    new ImageLinked("p2",
+                                    new ImageViewer("pomme2.jpg"))
+                    )
+            );
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private TextField searchBar;
@@ -29,15 +42,33 @@ public class HelloController implements Initializable {
     private ListView<String> listView;
 
     @FXML
+    private ImageView imageView;
+
+    @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
-        listView.getItems().addAll(searchList(searchBar.getText(),words));
+        listView.getItems().addAll(searchList(searchBar.getText(),ImageLinked.getTexts(imagesLinked)));
     }
+
+
+
+    String currentText;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        listView.getItems().addAll(words);
+        listView.getItems().addAll(ImageLinked.getTexts(imagesLinked));
+
+        listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                currentText = listView.getSelectionModel().getSelectedItem();
+                imageView.setImage(ImageLinked.getImage(imagesLinked,currentText));
+            }
+        });
+
+
     }
+
 
     private List<String> searchList(String searchWords, List<String> listOfStrings) {
 

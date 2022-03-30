@@ -11,6 +11,6 @@
         <TextField fx:id="searchBar" layoutX="24.0" layoutY="24.0" prefHeight="35.0" prefWidth="475.0" />
         <ListView fx:id="listView" layoutX="24.0" layoutY="69.0" prefHeight="309.0" prefWidth="553.0" />
         <Button layoutX="509.0" layoutY="24.0" mnemonicParsing="false" onAction="#search" prefHeight="35.0" prefWidth="68.0" text="Search" />
-      <ImageView fitHeight="127.0" fitWidth="130.0" layoutX="590.0" layoutY="73.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imageView" fitHeight="127.0" fitWidth="130.0" layoutX="590.0" layoutY="73.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>
