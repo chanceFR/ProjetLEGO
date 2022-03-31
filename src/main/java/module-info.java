@@ -10,6 +10,8 @@ module com.example.projetlego {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
 
-    opens com.example.projetlego to javafx.fxml;
-    exports com.example.projetlego;
+    opens fr.antoromeochrist.projetlego to javafx.fxml;
+    exports fr.antoromeochrist.projetlego;
+    exports fr.antoromeochrist.projetlego.utils;
+    opens fr.antoromeochrist.projetlego.utils to javafx.fxml;
 }

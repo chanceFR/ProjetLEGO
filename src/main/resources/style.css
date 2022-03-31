@@ -1,0 +1,40 @@
+#anchorPane {
+-fx-background-color: #17191c;
+}
+
+
+.button
+{
+-fx-background-color : #121418;
+-fx-graphic: url(loupe.png);
+-fx-font-size: 12px;
+}
+
+.text-field {
+    -fx-background-color: #121418;
+    -fx-text-inner-color: #808080;
+    -fx-font-size: 12px;
+}
+
+list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+.list-cell:odd {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:even {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #212121;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
