@@ -1,17 +1,15 @@
 package com.example.projetlego;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class ImageLinked {
+public class ImageStorage {
 
     private String text;
-    private ImageViewer image;
+    private ImageURL image;
 
-    public ImageLinked(String text,ImageViewer image){
+    public ImageStorage(String text, ImageURL image){
         this.text = text;
         this.image = image;
     }
@@ -20,11 +18,11 @@ public class ImageLinked {
         return text;
     }
 
-    public ImageViewer getImage() {
+    public ImageURL getImage() {
         return image;
     }
 
-    public void setImage(ImageViewer image) {
+    public void setImage(ImageURL image) {
         this.image = image;
     }
 
@@ -32,18 +30,18 @@ public class ImageLinked {
         this.text = text;
     }
 
-    public static ArrayList<String> getTexts(ArrayList<ImageLinked> ars){
+    public static ArrayList<String> getTexts(ArrayList<ImageStorage> ars){
         ArrayList<String> ar = new ArrayList<>();
-        for(ImageLinked iv : ars){
+        for(ImageStorage iv : ars){
             ar.add(iv.getText());
         }
         return ar;
     }
 
-    public static Image getImage(ArrayList<ImageLinked> list,String text){
-        for(ImageLinked il : list){
+    public static Image getImage(ArrayList<ImageStorage> list, String text){
+        for(ImageStorage il : list){
             if(il.getText().equals(text)){
-                return il.getImage().getImage();
+                return il.getImage();
             }
         }
         return null;

@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.FileNotFoundException;
@@ -19,15 +18,15 @@ import java.util.stream.Collectors;
 
 public class HelloController implements Initializable {
 
-    ArrayList<ImageLinked> imagesLinked;
+    ArrayList<ImageStorage> imagesLinked;
 
     {
         try {
             imagesLinked = new ArrayList<>(
-                    Arrays.asList( new ImageLinked("p1",
-                                   new ImageViewer("pomme.jpg")),
-                                    new ImageLinked("p2",
-                                    new ImageViewer("pomme2.jpg"))
+                    Arrays.asList( new ImageStorage("p1",
+                                   new ImageURL("pomme.jpg")),
+                                    new ImageStorage("p2",
+                                    new ImageURL("pomme2.jpg"))
                     )
             );
         } catch (FileNotFoundException e) {
@@ -47,7 +46,7 @@ public class HelloController implements Initializable {
     @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
-        listView.getItems().addAll(searchList(searchBar.getText(),ImageLinked.getTexts(imagesLinked)));
+        listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
     }
 
 
@@ -56,13 +55,13 @@ public class HelloController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        listView.getItems().addAll(ImageLinked.getTexts(imagesLinked));
+        listView.getItems().addAll(ImageStorage.getTexts(imagesLinked));
 
         listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                 currentText = listView.getSelectionModel().getSelectedItem();
-                imageView.setImage(ImageLinked.getImage(imagesLinked,currentText));
+                imageView.setImage(ImageStorage.getImage(imagesLinked,currentText));
             }
         });
 
