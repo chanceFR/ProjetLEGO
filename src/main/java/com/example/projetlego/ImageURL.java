@@ -11,6 +11,6 @@ public class ImageURL extends Image{
 
     public String url;
     public ImageURL(String url) throws FileNotFoundException {
-        super(new BufferedInputStream(new FileInputStream("\"src/main/resources/\"+url")));
+        super(new BufferedInputStream(new FileInputStream("src/main/resources/"+url)));
     }
 }
