@@ -1,4 +1,4 @@
-package com.example.projetlego;
+package fr.antoromeochrist.projetlego.utils.images;
 
 import javafx.scene.image.Image;
 
@@ -7,9 +7,9 @@ import java.util.ArrayList;
 public class ImageStorage {
 
     private String text;
-    private ImageURL image;
+    private ImagePath image;
 
-    public ImageStorage(String text, ImageURL image){
+    public ImageStorage(String text, ImagePath image){
         this.text = text;
         this.image = image;
     }
@@ -18,11 +18,11 @@ public class ImageStorage {
         return text;
     }
 
-    public ImageURL getImage() {
+    public ImagePath getImage() {
         return image;
     }
 
-    public void setImage(ImageURL image) {
+    public void setImage(ImagePath image) {
         this.image = image;
     }
 

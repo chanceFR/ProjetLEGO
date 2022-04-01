@@ -1,0 +1,79 @@
+#anchorPane {
+    -fx-background-color: #212328;
+}
+
+#vbox {
+    -fx-border-color: black;
+}
+
+#hbox {
+    -fx-border-color: black;
+}
+
+#searchButton
+{
+-fx-background-color : #121418;
+-fx-graphic: url(loupe.png);
+-fx-font-size: 12px;
+}
+
+#cloneetext
+{
+-fx-background-color : #17191c;
+-fx-font-size: 12px;
+-fx-text-fill: #edeeef;
+
+}
+#hidetext
+{
+-fx-background-color : #17191c;;
+-fx-font-size: 12px;
+-fx-text-fill: #edeeef;
+}
+
+
+#searchBar {
+    -fx-background-color: #121418;
+    -fx-text-inner-color: #808080;
+    -fx-font-size: 12px;
+    -fx-border-radius: 1px;
+}
+
+list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+.list-cell:odd {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:even {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #212121;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+#listView{
+-fx-background-color: #121418;
+-fx-border-color: black;
+}
+
+.menu-bar, .menu-item, .context-menu{
+    -fx-background-color: #212328;
+}
+
+.label{
+    -fx-text-fill: #edeeef;
+}
+.menu-item:hover {
+    -fx-background-color: #121418;
+}
