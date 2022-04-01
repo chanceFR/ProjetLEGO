@@ -1,22 +1,29 @@
 package fr.antoromeochrist.projetlego;
-import fr.antoromeochrist.projetlego.utils.ImageStorage;
-import fr.antoromeochrist.projetlego.utils.ImagePath;
+import fr.antoromeochrist.projetlego.utils.bricks.Bricks;
+import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
+import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.*;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
@@ -62,6 +69,24 @@ public class Controller implements Initializable {
     private SubScene subScene;
 
     @FXML
+    private Group clonee;
+
+    @FXML
+    private Group hide;
+
+    @FXML
+    private ImageView cloneeicon;
+
+    @FXML
+    private ImageView hideicon;
+
+    @FXML
+    private Text cloneetext;
+
+    @FXML
+    private Text hidetext;
+
+    @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
         listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
@@ -70,9 +95,125 @@ public class Controller implements Initializable {
 
 
     String currentText;
+    boolean isClickedClone=false;
+    boolean isClickedHide=false;
+
+    EventHandler<MouseEvent> mouseClickHide = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(isClickedHide){
+                isClickedHide=false;
+                try {
+                    hideicon.setImage(new ImagePath("hide.jpg"));
+                    hidetext.setFill(Color.web("#edeeef"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }else{
+                isClickedHide=true;
+                try {
+                    hideicon.setImage(new ImagePath("hidehover.jpg"));
+                    hidetext.setFill(Color.web("#42C0FB"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseEnterHide = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(!isClickedHide){
+                try {
+                    hideicon.setImage(new ImagePath("hidehover.jpg"));
+                    hidetext.setFill(Color.web("#42C0FB"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseExitHide = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(!isClickedHide) {
+                try {
+                    hideicon.setImage(new ImagePath("hide.jpg"));
+                    hidetext.setFill(Color.web("#edeeef"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseClickClone = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(isClickedClone){
+                isClickedClone=false;
+                try {
+                    cloneeicon.setImage(new ImagePath("clone.jpg"));
+                    cloneetext.setFill(Color.web("#edeeef"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }else{
+                isClickedClone=true;
+                try {
+                    cloneeicon.setImage(new ImagePath("clonehover.jpg"));
+                    cloneetext.setFill(Color.web("#42C0FB"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseEnterClone = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(!isClickedClone){
+                try {
+                    cloneeicon.setImage(new ImagePath("clonehover.jpg"));
+                    cloneetext.setFill(Color.web("#42C0FB"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseExitClone = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if(!isClickedClone) {
+                try {
+                    cloneeicon.setImage(new ImagePath("clone.jpg"));
+                    cloneetext.setFill(Color.web("#edeeef"));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    };
+    EventHandler<KeyEvent> keyPressedSearchBar = new EventHandler<KeyEvent>() {
+        @Override
+        public void handle(KeyEvent e) {
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                listView.getItems().clear();
+                listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
+            }
+        }
+    };
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+
         listView.getItems().addAll(ImageStorage.getTexts(imagesLinked));
 
         listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -82,6 +223,16 @@ public class Controller implements Initializable {
                 imageView.setImage(ImageStorage.getImage(imagesLinked,currentText));
             }
         });
+
+        clonee.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitClone);
+
+        hide.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickHide);
+        hide.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterHide);
+        hide.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitHide);
+
+        searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
         createContent();
     }
 
@@ -97,24 +248,9 @@ public class Controller implements Initializable {
     }
 
     private void createContent(){
-        Sphere sphere = new Sphere(2.5);
-        sphere.setMaterial(new PhongMaterial(Color.ANTIQUEWHITE));
-        sphere.setTranslateZ(7);
-        sphere.setTranslateX(4);
-
-        Sphere sphere2 = new Sphere(3.5);
-        sphere2.setMaterial(new PhongMaterial(Color.RED));
-        sphere2.setTranslateZ(16);
-        sphere2.setTranslateX(-8);
-
-
-        Sphere sphere3 = new Sphere(3);
-        sphere3.setMaterial(new PhongMaterial(Color.BLUE));
-        sphere3.setTranslateZ(8);
-        sphere3.setTranslateX(-8);
-
-        Box box = new Box(5, 5, 5);
-        box.setMaterial(new PhongMaterial(Color.BROWN));
+        Bricks.groupBricks=group;
+        new Bricks(new Dim(1,1),0,0,0);
+        new Bricks(new Dim(1,1),1,0,1);
 
         Translate pivot = new Translate();
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
@@ -128,6 +264,7 @@ public class Controller implements Initializable {
                 new Translate(0, 0, -50)
         );
 
+        /*
         // animate the camera position.
         Timeline timeline = new Timeline(
                 new KeyFrame(
@@ -141,11 +278,23 @@ public class Controller implements Initializable {
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+        */
+        Timeline timeline = new Timeline(
+                new KeyFrame(
+                        Duration.seconds(0),
+                        new KeyValue(yRotate.angleProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.seconds(15),
+                        new KeyValue(yRotate.angleProperty(), 60)
+                )
+        );
+        timeline.setCycleCount(1);
+        timeline.play();
+        timeline.stop();
+
         group.getChildren().add(camera);
-        group.getChildren().add(box);
-        group.getChildren().add(sphere);
-        group.getChildren().add(sphere2);
-        group.getChildren().add(sphere3);
+
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()
                 .filter(node -> !(node instanceof Camera))

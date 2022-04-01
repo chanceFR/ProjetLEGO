@@ -14,4 +14,6 @@ module com.example.projetlego {
     exports fr.antoromeochrist.projetlego;
     exports fr.antoromeochrist.projetlego.utils;
     opens fr.antoromeochrist.projetlego.utils to javafx.fxml;
+    exports fr.antoromeochrist.projetlego.utils.images;
+    opens fr.antoromeochrist.projetlego.utils.images to javafx.fxml;
 }

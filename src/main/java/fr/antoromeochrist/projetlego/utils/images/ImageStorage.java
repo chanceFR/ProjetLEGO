@@ -1,4 +1,4 @@
-package fr.antoromeochrist.projetlego.utils;
+package fr.antoromeochrist.projetlego.utils.images;
 
 import javafx.scene.image.Image;
 
