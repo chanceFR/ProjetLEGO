@@ -5,17 +5,17 @@ public class Dim {
     private int a; //x axis
     private int b; //y axix
     private int c; //z axis
-
+    //              x         z
     public Dim(int width,int depth){
-        this.a = width*10;
-        this.b = 10;
-        this.c = depth*10;
+        this.a = width;
+        this.b = 1;
+        this.c = depth;
     }
-
+    //              x         z           y
     public Dim(int width,int depth,int height){
-        this.a = width*10;
-        this.c = depth*10;
-        this.b = height*10;
+        this.a = width;
+        this.c = depth;
+        this.b = height;
     }
 
     public int getW() {
