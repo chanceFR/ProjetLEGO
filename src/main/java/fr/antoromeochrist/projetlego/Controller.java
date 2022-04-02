@@ -1,6 +1,7 @@
 package fr.antoromeochrist.projetlego;
-import fr.antoromeochrist.projetlego.utils.bricks.Bricks;
+import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.bricks.GridUtils;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.animation.KeyFrame;
@@ -20,9 +21,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Sphere;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -248,9 +246,14 @@ public class Controller implements Initializable {
     }
 
     private void createContent(){
-        Bricks.groupBricks=group;
-        new Bricks(new Dim(1,1),0,0,0);
-        new Bricks(new Dim(1,1),1,0,1);
+        Brick.groupBricks=group;
+        new Brick(new Dim(1,1),0,0,Color.RED);
+        new Brick(new Dim(1,1),0,1,Color.ORANGE);
+        new Brick(new Dim(1,1),0,2,Color.GREEN);
+        new Brick(new Dim(1,1),1,0,Color.BLUE);
+        new Brick(new Dim(1,1),1,1,Color.BLUEVIOLET);
+        new Brick(new Dim(1,1),1,2,Color.WHITE);
+        new Brick(new Dim(1,1),0,0,Color.RED);
 
         Translate pivot = new Translate();
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
@@ -261,7 +264,7 @@ public class Controller implements Initializable {
                 pivot,
                 yRotate,
                 new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -50)
+                new Translate(0, 0, -70)
         );
 
         /*
@@ -307,6 +310,10 @@ public class Controller implements Initializable {
                 );
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
+
+        for(Brick b:Brick.bricks){
+            b.print();
+        }
     }
 
 }
