@@ -1,4 +1,5 @@
 package fr.antoromeochrist.projetlego;
+import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.bricks.GridUtils;
@@ -259,13 +260,22 @@ public class Controller implements Initializable {
         Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
 
         // Create and position camera
-        PerspectiveCamera camera = new PerspectiveCamera(true);
+        CameraUtils camera = new CameraUtils(true);
         camera.getTransforms().addAll (
                 pivot,
                 yRotate,
                 new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -70)
-        );
+                new Translate(0, 0, -20));
+        camera.delay(3);
+        camera.zoom();
+        camera.delay(3);
+        camera.dezoom();
+        camera.play();
+
+
+
+
+
 
         /*
         // animate the camera position.
@@ -283,20 +293,15 @@ public class Controller implements Initializable {
         timeline.play();
         */
         Timeline timeline = new Timeline(
+
                 new KeyFrame(
-                        Duration.seconds(0),
-                        new KeyValue(yRotate.angleProperty(), 0)
-                ),
-                new KeyFrame(
-                        Duration.seconds(15),
-                        new KeyValue(yRotate.angleProperty(), 60)
+                        Duration.seconds(3),
+                        new KeyValue(yRotate.angleProperty(), 360)
                 )
         );
-        timeline.setCycleCount(1);
+        timeline.setCycleCount(10);
         timeline.play();
-        timeline.stop();
 
-        group.getChildren().add(camera);
 
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()
