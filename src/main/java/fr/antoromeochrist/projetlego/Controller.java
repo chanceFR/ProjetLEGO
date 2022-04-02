@@ -292,9 +292,8 @@ public class Controller implements Initializable {
                         new KeyValue(yRotate.angleProperty(), 60)
                 )
         );
-        timeline.setCycleCount(1);
+        timeline.setCycleCount(12);
         timeline.play();
-        timeline.stop();
 
         group.getChildren().add(camera);
 
