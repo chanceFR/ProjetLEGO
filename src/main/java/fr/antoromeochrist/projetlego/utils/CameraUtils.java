@@ -13,30 +13,64 @@ import javafx.util.Duration;
 import java.util.Arrays;
 
 public class CameraUtils extends PerspectiveCamera {
-    private Rotate rotate;
+
+
+    public static Rotate x_axis = new Rotate(0,Rotate.X_AXIS);
+    public static Rotate y_axis = new Rotate(0,Rotate.Y_AXIS);
+    public static Rotate z_axis = new Rotate(0,Rotate.Z_AXIS);
+
     private Timeline timeline;
+    private Translate pivot;
     private int valZoom;
+
     public CameraUtils (boolean b){
         super (b);
-        rotate = new Rotate();
+        pivot = new Translate();
         timeline = new Timeline();
         Brick.groupBricks.getChildren().add(this);
+        getTransforms().addAll(pivot,x_axis,y_axis,z_axis);
     }
 
-    public void rotateFor (Point3D axe,DurationAngle... durationAngles){
-        rotate.setAxis(axe);
+    public void addRotationsX( DurationAngle... durationAngles){
        for (DurationAngle d: Arrays.asList(durationAngles)){
-           timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()),new KeyValue(rotate.angleProperty(), d.getAngle())));
+           timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()),new KeyValue(x_axis.angleProperty(), d.getAngle())));
        }
-
-
     }
+    public void addRotationsY( DurationAngle... durationAngles){
+        for (DurationAngle d: Arrays.asList(durationAngles)){
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()),new KeyValue(y_axis.angleProperty(), d.getAngle())));
+        }
+    }
+    public void addRotationsZ( DurationAngle... durationAngles){
+        for (DurationAngle d: Arrays.asList(durationAngles)){
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()),new KeyValue(z_axis.angleProperty(), d.getAngle())));
+        }
+    }
+
+
     public void stop (){
         timeline.stop();
     }
     public void play (){
+        timeline.setCycleCount(1);
         timeline.play();
     }
+    public void play (int cycles){
+        timeline.setCycleCount(cycles);
+        timeline.play();
+    }
+
+    public void zoom(int count){
+        for(int i =0;i<count;i++){
+            zoom();
+        }
+    }
+    public void dezoom(int count){
+        for(int i =0;i<count;i++){
+            dezoom();
+        }
+    }
+
     public void zoom (){
         if (valZoom>=(-20)) {
             valZoom+=10;
@@ -49,9 +83,7 @@ public class CameraUtils extends PerspectiveCamera {
         this.getTransforms().addAll (
                 new Translate(0, 0, valZoom));
     }
-    public void delay(float duration){
-        rotateFor(Rotate.X_AXIS,new DurationAngle(0,duration));
-    }
+
 
 
 }

@@ -1,13 +1,10 @@
 package fr.antoromeochrist.projetlego;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
+import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
-import fr.antoromeochrist.projetlego.utils.bricks.GridUtils;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -25,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -255,54 +251,12 @@ public class Controller implements Initializable {
         new Brick(new Dim(1,1),1,1,Color.BLUEVIOLET);
         new Brick(new Dim(1,1),1,2,Color.WHITE);
         new Brick(new Dim(1,1),0,0,Color.RED);
-
         Translate pivot = new Translate();
-        Rotate yRotate = new Rotate(0, Rotate.Y_AXIS);
-
         // Create and position camera
         CameraUtils camera = new CameraUtils(true);
-        camera.getTransforms().addAll (
-                pivot,
-                yRotate,
-                new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -20));
-        camera.delay(3);
-        camera.zoom();
-        camera.delay(3);
-        camera.dezoom();
+        camera.dezoom(2);
+        camera.addRotationsX(new DurationAngle(30,5));
         camera.play();
-
-
-
-
-
-
-        /*
-        // animate the camera position.
-        Timeline timeline = new Timeline(
-                new KeyFrame(
-                        Duration.seconds(0),
-                        new KeyValue(yRotate.angleProperty(), 0)
-                ),
-                new KeyFrame(
-                        Duration.seconds(15),
-                        new KeyValue(yRotate.angleProperty(), 360)
-                )
-        );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-        */
-        Timeline timeline = new Timeline(
-
-                new KeyFrame(
-                        Duration.seconds(3),
-                        new KeyValue(yRotate.angleProperty(), 360)
-                )
-        );
-        timeline.setCycleCount(10);
-        timeline.play();
-
-
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()
                 .filter(node -> !(node instanceof Camera))
