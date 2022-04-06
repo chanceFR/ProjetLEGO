@@ -81,6 +81,24 @@ public class Controller implements Initializable {
     @FXML
     private Text hidetext;
 
+
+    @FXML
+    private ImageView plus;
+
+    @FXML
+    private ImageView minus;
+
+
+    @FXML
+    private ImageView top;
+
+    @FXML
+    private ImageView left;
+    @FXML
+    private ImageView right;
+    @FXML
+    private ImageView bottom;
+
     @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
@@ -205,6 +223,155 @@ public class Controller implements Initializable {
     };
 
 
+    EventHandler<MouseEvent> mouseClickPlus = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.zoom(2.5);
+            try {
+                plus.setImage(new ImagePath("plusHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> mouseClickMinus = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.dezoom(2.5);
+            try {
+                minus.setImage(new ImagePath("minusHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.addRotationsY(new DurationAngle(-45,2));
+            camera.play();
+            try {
+                left.setImage(new ImagePath("leftHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.addRotationsY(new DurationAngle(45,2));
+            camera.play();
+            try {
+                right.setImage(new ImagePath("rightHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.addRotationsX(new DurationAngle(45,2));
+            camera.play();
+            try {
+                top.setImage(new ImagePath("topHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.addRotationsX(new DurationAngle(-45,2));
+            camera.play();
+            try {
+                bottom.setImage(new ImagePath("bottomHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+    EventHandler<MouseEvent> mousePlusReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                plus.setImage(new ImagePath("plus.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> mouseMinusReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                minus.setImage(new ImagePath("minus.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+    EventHandler<MouseEvent> mouseLeftReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                left.setImage(new ImagePath("left.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+    EventHandler<MouseEvent> mouseRightReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                right.setImage(new ImagePath("right.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+
+    EventHandler<MouseEvent> mouseTopReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                top.setImage(new ImagePath("top.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+
+    EventHandler<MouseEvent> mouseBottomReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                bottom.setImage(new ImagePath("bottom.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -228,6 +395,27 @@ public class Controller implements Initializable {
         hide.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitHide);
 
         searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
+
+        left.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
+        left.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseLeftReleased);
+
+        right.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
+        right.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseRightReleased);
+
+        top.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
+        top.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseTopReleased);
+
+        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
+        bottom.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseBottomReleased);
+
+        plus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickPlus);
+        plus.addEventFilter(MouseEvent.MOUSE_RELEASED,mousePlusReleased);
+
+        minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
+        minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
+
+
+
         createContent();
     }
 
@@ -242,9 +430,11 @@ public class Controller implements Initializable {
         }).collect(Collectors.toList());
     }
 
+
+    public CameraUtils camera;
     private void createContent(){
         Brick.groupBricks=group;
-        new Brick(new Dim(1,1),0,0,Color.RED);
+        new Brick(new Dim(1,1,3),0,0,Color.RED);
         new Brick(new Dim(1,1),0,1,Color.ORANGE);
         new Brick(new Dim(1,1),0,2,Color.GREEN);
         new Brick(new Dim(1,1),1,0,Color.BLUE);
@@ -253,9 +443,7 @@ public class Controller implements Initializable {
         new Brick(new Dim(1,1),0,0,Color.RED);
         Translate pivot = new Translate();
         // Create and position camera
-        CameraUtils camera = new CameraUtils(true);
-        camera.dezoom(2);
-        camera.addRotationsX(new DurationAngle(30,5));
+        camera = new CameraUtils(true);
         camera.play();
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()

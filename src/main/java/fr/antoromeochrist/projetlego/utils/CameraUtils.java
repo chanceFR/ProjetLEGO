@@ -29,6 +29,9 @@ public class CameraUtils extends PerspectiveCamera {
         timeline = new Timeline();
         Brick.groupBricks.getChildren().add(this);
         getTransforms().addAll(pivot,x_axis,y_axis,z_axis);
+        dezoom(20);
+        addRotationsX(new DurationAngle(-10,1));
+        addRotationsY(new DurationAngle(-10,1));
     }
 
     public void addRotationsX( DurationAngle... durationAngles){
@@ -60,28 +63,11 @@ public class CameraUtils extends PerspectiveCamera {
         timeline.play();
     }
 
-    public void zoom(int count){
-        for(int i =0;i<count;i++){
-            zoom();
-        }
+    public void zoom (double z){
+        this.getTransforms().addAll (new Translate(0, 0, z));
     }
-    public void dezoom(int count){
-        for(int i =0;i<count;i++){
-            dezoom();
-        }
-    }
-
-    public void zoom (){
-        if (valZoom>=(-20)) {
-            valZoom+=10;
-        }
-        this.getTransforms().addAll (
-                new Translate(0, 0, valZoom));
-    }
-    public void dezoom (){
-        valZoom-=10;
-        this.getTransforms().addAll (
-                new Translate(0, 0, valZoom));
+    public void dezoom (double z){;
+        zoom(-z);
     }
 
 

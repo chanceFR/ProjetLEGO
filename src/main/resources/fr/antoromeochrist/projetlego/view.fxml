@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
@@ -23,7 +24,7 @@
         <ImageView fx:id="imageView" fitHeight="57.0" fitWidth="57.0" layoutX="257.0" layoutY="127.0" pickOnBounds="true" preserveRatio="true" />
 
         <!-- Environnement 3D-->
-        <SubScene fx:id="subScene" depthBuffer="true" fill="#2a2d34" height="372.0" layoutX="361.0" layoutY="208.0" width="383.0">
+        <SubScene fx:id="subScene" depthBuffer="true" fill="#2a2d34" height="515.0" layoutX="273.0" layoutY="140.0" width="563.0">
             <antiAliasing>
                 <SceneAntialiasing fx:constant="BALANCED" />
             </antiAliasing>
@@ -119,6 +120,37 @@
 
         </menus>
       </MenuBar>
+      <Circle fill="#121418" layoutX="782.0" layoutY="210.0" radius="44.0" stroke="#121418" strokeType="INSIDE" strokeWidth="0.0" />
+      <ImageView fx:id="top" fitHeight="32.0" fitWidth="30.0" layoutX="767.0" layoutY="169.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../top.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="left" fitHeight="32.0" fitWidth="30.0" layoutX="741.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../left.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="bottom" fitHeight="32.0" fitWidth="30.0" layoutX="767.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../bottom.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="right" fitHeight="32.0" fitWidth="30.0" layoutX="793.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../right.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="plus" fitHeight="32.0" fitWidth="30.0" layoutX="514.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../plus.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="minus" fitHeight="32.0" fitWidth="30.0" layoutX="546.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../minus.png" />
+         </image>
+      </ImageView>
 
 
 

@@ -12,6 +12,10 @@ public class Model extends javafx.application.Application {
         primaryStage.setTitle("Brick Designer");
         primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("view.fxml"))));
         primaryStage.show();
+        primaryStage.setMinWidth(955);
+        primaryStage.setMinHeight(660);
+        primaryStage.setMaxWidth(955);
+        primaryStage.setMaxHeight(660);
     }
 
     public static void main(String[] args) {
