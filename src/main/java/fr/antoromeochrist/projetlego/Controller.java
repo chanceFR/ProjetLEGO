@@ -15,12 +15,9 @@ import javafx.scene.*;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 
 import java.io.FileNotFoundException;
@@ -369,7 +366,26 @@ public class Controller implements Initializable {
         }
     };
 
+    EventHandler<DragEvent> subSceneDragOver = new EventHandler<DragEvent>() {
+        @Override
+        public void handle(DragEvent e) {
+            System.out.println("SUBSCENE DRAG OVER");
+            /*if(e.getDragboard().hasImage()){
+                e.acceptTransferModes(TransferMode.ANY);
+            }*/
+        }
+    };
 
+    EventHandler<DragEvent> subSceneDragDropped = new EventHandler<DragEvent>() {
+        @Override
+        public void handle(DragEvent e) {
+            System.out.println("SUBSCENE DRAG DROPPED");
+            /*if(e.getDragboard().hasImage()){
+                new Brick();
+            }*/
+
+        }
+    };
 
 
     @Override
@@ -414,8 +430,8 @@ public class Controller implements Initializable {
         minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
         minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
 
-
-
+        subScene.addEventFilter(DragEvent.DRAG_OVER,subSceneDragOver);
+        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDragDropped);
         createContent();
     }
 
@@ -433,14 +449,11 @@ public class Controller implements Initializable {
 
     public CameraUtils camera;
     private void createContent(){
-        Brick.groupBricks=group;
-        new Brick(new Dim(1,1,3),0,0,Color.RED);
-        new Brick(new Dim(1,1),0,1,Color.ORANGE);
-        new Brick(new Dim(1,1),0,2,Color.GREEN);
-        new Brick(new Dim(1,1),1,0,Color.BLUE);
-        new Brick(new Dim(1,1),1,1,Color.BLUEVIOLET);
-        new Brick(new Dim(1,1),1,2,Color.WHITE);
-        new Brick(new Dim(1,1),0,0,Color.RED);
+        Brick.group =group;
+        Brick redd = new Brick(new Dim(1,1,3),0,0,0);
+        redd.setColor(Color.RED);
+        new Brick(new Dim(1,1),0,0);
+
         Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
@@ -457,10 +470,7 @@ public class Controller implements Initializable {
                 );
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
-
-        for(Brick b:Brick.bricks){
-            b.print();
-        }
+        System.out.println("--> "+Brick.environnement);
     }
 
 }

@@ -16,7 +16,7 @@ import javafx.scene.transform.Translate;
 public class GridUtils {
 
     public GridUtils(int size){
-            Brick.groupBricks.getChildren().add(createGrid(size,-10));
+            Brick.group.getChildren().add(createGrid(size,-10));
     }
 
     private PolygonMesh createQuadrilateralMesh(float width, float height, int subDivX, int subDivY) {

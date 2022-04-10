@@ -4,7 +4,6 @@ import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.geometry.Point3D;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -27,7 +26,7 @@ public class CameraUtils extends PerspectiveCamera {
         super (b);
         pivot = new Translate();
         timeline = new Timeline();
-        Brick.groupBricks.getChildren().add(this);
+        Brick.group.getChildren().add(this);
         getTransforms().addAll(pivot,x_axis,y_axis,z_axis);
         dezoom(20);
         addRotationsX(new DurationAngle(-10,1));

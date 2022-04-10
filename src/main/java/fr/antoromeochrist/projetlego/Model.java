@@ -6,7 +6,7 @@ import javafx.scene.*;
 import javafx.stage.Stage;
 
 
-public class Model extends javafx.application.Application {
+public class Model extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Brick Designer");

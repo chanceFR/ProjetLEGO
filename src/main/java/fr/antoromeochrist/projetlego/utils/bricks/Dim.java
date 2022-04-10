@@ -18,15 +18,36 @@ public class Dim {
         this.b = height;
     }
 
-    public int getW() {
+    public int getSizeOfPointToNeed(){
+        int sum=0;
+        for(int i =0;i<a;i++){
+            for(int j =0;j<b;j++){
+                for(int k =0;k<c;k++){
+                    sum++;
+                }
+            }
+        }
+        return sum;
+    }
+    public int getWeight() {
         return a;
     }
 
-    public int getH() {
+    public int getHeight() {
         return b;
     }
 
-    public int getD() {
+    public int getDepth() {
         return c;
     }
+
+    public String toString(){
+        String s =""+a;
+        s+=" X "+c;
+        if(b != 1){
+            s+=" X "+b;
+        }
+        return s;
+    }
 }
+
