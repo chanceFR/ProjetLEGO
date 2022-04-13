@@ -1,5 +1,6 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
+import fr.antoromeochrist.projetlego.Controller;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -16,7 +17,8 @@ public class Brick extends Box {
     public static HashMap<Brick,String> bricksSortByColors = new HashMap<>();
     public static ArrayList<Brick> environnement = new ArrayList<>();
     public static Brick lastBrick;
-
+    private static double mouseAnchorX;
+    private static double mouseAnchorY;
 
     private Dim dim;
     private int x;
@@ -45,6 +47,15 @@ public class Brick extends Box {
         this.dim = dim;
         this.move(getAvailablePlace(this.dim,new PointInt(x,y,z)));
         this.setColor(hex);
+
+        this.setOnMouseDragged(e ->{
+
+        });
+        this.setOnMousePressed(mouseEvent -> {
+            Controller.brickClicked=this;
+            System.out.println("--> "+Controller.brickClicked);
+        });
+
     }
 
     public static ArrayList<Brick> getBrickWithColor(String hex){
@@ -176,4 +187,19 @@ public class Brick extends Box {
     public int getZ() {
         return z;
     }
+
+    public void up(){
+        this.move(this.x,this.y+1,this.z);
+    }
+    public void down(){
+        this.move(this.x,this.y-1,this.z);
+    }
+
+    public void left(){
+        this.move(this.x+1,this.y,this.z);
+    }
+    public void right(){
+        this.move(this.x-1,this.y,this.z);
+    }
+
 }
