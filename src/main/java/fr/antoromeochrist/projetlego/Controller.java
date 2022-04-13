@@ -30,8 +30,10 @@ import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
 
-    ArrayList<ImageStorage> imagesLinked;
+    public static Brick brickClicked;
+    public static  int axisLeftRight = 0;
 
+    private ArrayList<ImageStorage> imagesLinked;
     {
         try {
             imagesLinked = new ArrayList<>(
@@ -46,6 +48,9 @@ public class Controller implements Initializable {
         }
     }
 
+    private String currentText;
+    private boolean isClickedClone=false;
+    private boolean isClickedHide=false;
     @FXML
     private TextField searchBar;
 
@@ -101,12 +106,6 @@ public class Controller implements Initializable {
         listView.getItems().clear();
         listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
     }
-
-
-
-    String currentText;
-    boolean isClickedClone=false;
-    boolean isClickedHide=false;
 
     EventHandler<MouseEvent> mouseClickHide = new EventHandler<MouseEvent>() {
         @Override
@@ -246,8 +245,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsY(new DurationAngle(-45,2));
-            camera.play();
+            camera.addRotationsY(new DurationAngle(-45,0.01f));
             try {
                 left.setImage(new ImagePath("leftHover.png"));
             } catch (FileNotFoundException ex) {
@@ -258,8 +256,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsY(new DurationAngle(45,2));
-            camera.play();
+            camera.addRotationsY(new DurationAngle(45,0.01f));
             try {
                 right.setImage(new ImagePath("rightHover.png"));
             } catch (FileNotFoundException ex) {
@@ -271,8 +268,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsX(new DurationAngle(45,2));
-            camera.play();
+            camera.addRotationsX(new DurationAngle(45,0.01f));
             try {
                 top.setImage(new ImagePath("topHover.png"));
             } catch (FileNotFoundException ex) {
@@ -283,8 +279,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsX(new DurationAngle(-45,2));
-            camera.play();
+            camera.addRotationsX(new DurationAngle(-45,0.01f));
             try {
                 bottom.setImage(new ImagePath("bottomHover.png"));
             } catch (FileNotFoundException ex) {
@@ -366,24 +361,11 @@ public class Controller implements Initializable {
         }
     };
 
-    EventHandler<DragEvent> subSceneDragOver = new EventHandler<DragEvent>() {
+    EventHandler<DragEvent> subSceneDrag = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent e) {
-            System.out.println("SUBSCENE DRAG OVER");
-            /*if(e.getDragboard().hasImage()){
                 e.acceptTransferModes(TransferMode.ANY);
-            }*/
-        }
-    };
-
-    EventHandler<DragEvent> subSceneDragDropped = new EventHandler<DragEvent>() {
-        @Override
-        public void handle(DragEvent e) {
-            System.out.println("SUBSCENE DRAG DROPPED");
-            /*if(e.getDragboard().hasImage()){
                 new Brick();
-            }*/
-
         }
     };
 
@@ -429,9 +411,27 @@ public class Controller implements Initializable {
 
         minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
         minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
-
-        subScene.addEventFilter(DragEvent.DRAG_OVER,subSceneDragOver);
-        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDragDropped);
+        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDrag);
+        subScene.setOnKeyPressed(e -> {
+            System.out.println("key");
+            if(brickClicked != null){
+                switch(e.getCode()){
+                    case SPACE:
+                        axisLeftRight=1-axisLeftRight;
+                    case LEFT:
+                        brickClicked.left();
+                    case RIGHT:
+                        brickClicked.right();
+                        break;
+                    case UP:
+                        brickClicked.up();
+                        break;
+                    case DOWN:
+                        brickClicked.down();
+                        break;
+                }
+            }
+        });
         createContent();
     }
 
@@ -457,7 +457,6 @@ public class Controller implements Initializable {
         Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
-        camera.play();
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()
                 .filter(node -> !(node instanceof Camera))
