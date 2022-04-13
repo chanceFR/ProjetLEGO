@@ -58,6 +58,8 @@ public class Controller implements Initializable {
     @FXML
     private Group group;
     @FXML
+    private Group group2;
+    @FXML
     private SubScene subScene;
 
     @FXML
@@ -95,6 +97,9 @@ public class Controller implements Initializable {
     private ImageView right;
     @FXML
     private ImageView bottom;
+
+    @FXML
+    private SubScene visualisation;
 
     @FXML
     void search(ActionEvent event) {
@@ -283,7 +288,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsX(new DurationAngle(-45,2));
+            camera.addRotationsX(new DurationAngle(-45, 2));
+            System.out.println(camera.getTranslateY());
             camera.play();
             try {
                 bottom.setImage(new ImagePath("bottomHover.png"));
@@ -433,6 +439,7 @@ public class Controller implements Initializable {
         subScene.addEventFilter(DragEvent.DRAG_OVER,subSceneDragOver);
         subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDragDropped);
         createContent();
+        createContent2();
     }
 
 
@@ -458,6 +465,7 @@ public class Controller implements Initializable {
         // Create and position camera
         camera = new CameraUtils(true);
         camera.play();
+
         // set the pivot for the camera position animation base upon mouse clicks on objects
         group.getChildren().stream()
                 .filter(node -> !(node instanceof Camera))
@@ -472,5 +480,32 @@ public class Controller implements Initializable {
         subScene.setCamera(camera);
         System.out.println("--> "+Brick.environnement);
     }
+    public CameraUtils camera2;
+    private void createContent2(){
+        Brick.group =group2;
+        Brick redd = new Brick(new Dim(1,1,3),0,0,0);
+        redd.setColor(Color.RED);
+
+        Translate pivot = new Translate();
+        // Create and position camera
+        camera2 = new CameraUtils(true);
+        camera2.play();
+
+        // set the pivot for the camera position animation base upon mouse clicks on objects
+        group2.getChildren().stream()
+                .filter(node -> !(node instanceof Camera))
+                .forEach(node ->
+                        node.setOnMouseClicked(event -> {
+                            pivot.setX(node.getTranslateX());
+                            pivot.setY(node.getTranslateY());
+                            pivot.setZ(node.getTranslateZ());
+                        })
+                );
+        visualisation.setFill(Color.web("#181a1e"));
+        visualisation.setCamera(camera2);
+        System.out.println("--> "+Brick.environnement);
+    }
+
+
 
 }
