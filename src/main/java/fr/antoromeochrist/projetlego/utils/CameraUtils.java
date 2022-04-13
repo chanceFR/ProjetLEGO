@@ -34,13 +34,6 @@ public class CameraUtils extends PerspectiveCamera {
         addRotationsX(new DurationAngle(-10,0.001f));
         addRotationsY(new DurationAngle(-10,0.001f));
         timeline.setCycleCount(1);
-        timeline.setCycleCount(1);
-        timeline.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                timeline.getKeyFrames().clear();
-            }
-        });
         timeline.setOnFinished(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
