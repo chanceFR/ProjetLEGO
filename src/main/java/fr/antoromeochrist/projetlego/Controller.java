@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import static fr.antoromeochrist.projetlego.utils.CameraUtils.angleX;
+import static fr.antoromeochrist.projetlego.utils.CameraUtils.angleY;
+
 public class Controller implements Initializable {
 
     public static Brick brickClicked;
@@ -245,7 +248,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsY(new DurationAngle(-45,0.01f));
+            angleX-=45;
+            camera.addRotationsY(new DurationAngle(angleX,0.3f));
             try {
                 left.setImage(new ImagePath("leftHover.png"));
             } catch (FileNotFoundException ex) {
@@ -256,7 +260,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsY(new DurationAngle(45,0.01f));
+            angleX+=45;
+            camera.addRotationsY(new DurationAngle(angleX,0.3f));
             try {
                 right.setImage(new ImagePath("rightHover.png"));
             } catch (FileNotFoundException ex) {
@@ -268,7 +273,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsX(new DurationAngle(45,0.01f));
+            angleY+=45;
+            camera.addRotationsX(new DurationAngle(angleY,0.3f));
             try {
                 top.setImage(new ImagePath("topHover.png"));
             } catch (FileNotFoundException ex) {
@@ -279,7 +285,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            camera.addRotationsX(new DurationAngle(-45,0.01f));
+            angleY-=45;
+            camera.addRotationsX(new DurationAngle(angleY,0.3f));
             try {
                 bottom.setImage(new ImagePath("bottomHover.png"));
             } catch (FileNotFoundException ex) {
