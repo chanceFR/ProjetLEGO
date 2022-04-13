@@ -15,7 +15,8 @@ import javafx.util.Duration;
 import java.util.Arrays;
 
 public class CameraUtils extends PerspectiveCamera {
-
+    public static float angleX = 0;
+    public static float angleY = 0;
 
     public static Rotate x_axis = new Rotate(0,Rotate.X_AXIS);
     public static Rotate y_axis = new Rotate(0,Rotate.Y_AXIS);
