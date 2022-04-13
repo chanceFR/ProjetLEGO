@@ -5,27 +5,26 @@ import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Translate;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static fr.antoromeochrist.projetlego.utils.CameraUtils.angleX;
@@ -36,21 +35,6 @@ public class Controller implements Initializable {
     public static Brick brickClicked;
     public static  int axisLeftRight = 0;
 
-    private ArrayList<ImageStorage> imagesLinked;
-    {
-        try {
-            imagesLinked = new ArrayList<>(
-                    Arrays.asList( new ImageStorage("p1",
-                                   new ImagePath("pomme.jpg")),
-                                    new ImageStorage("p2",
-                                    new ImagePath("pomme2.jpg"))
-                    )
-            );
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     private String currentText;
     private boolean isClickedClone=false;
     private boolean isClickedHide=false;
@@ -58,10 +42,7 @@ public class Controller implements Initializable {
     private TextField searchBar;
 
     @FXML
-    private ListView<String> listView;
-
-    @FXML
-    private ImageView imageView;
+    private ListView<ImageStorage> listView;
 
     @FXML
     private Group group;
@@ -104,10 +85,106 @@ public class Controller implements Initializable {
     @FXML
     private ImageView bottom;
 
+    private ArrayList<ImageStorage> imageStorages = new ArrayList<>();
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            imageStorages.add(new ImageStorage("1x1",new ImagePath("pomme.jpg")));
+            imageStorages.add(new ImageStorage("1x2",new ImagePath("pomme2.jpg")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        listView.getItems().addAll(imageStorages);
+        ArrayList<String> texts = ImageStorage.getTexts(imageStorages);
+        listView.setCellFactory(listView -> new ListCell<ImageStorage>() {
+            @Override
+            protected void updateItem(ImageStorage piece, boolean empty) {
+                super.updateItem(piece, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    // Create a HBox to hold our displayed value
+                    HBox hbx = new  HBox();
+                    hbx.setAlignment(Pos.CENTER);
+                    ImageView iv = new ImageView();
+                    iv.setImage(piece.getImage());
+                    iv.setFitHeight(100);
+                    iv.setFitWidth(100);
+                    Label lb = new Label("      "+piece.getText());
+                    lb.setStyle("-fx-text-fill: #c25b11;");
+                    hbx.setStyle("-fx-font-size: 10px;");
+                    hbx.getChildren().addAll(
+                            iv,
+                            lb
+                    );
+                    setGraphic(hbx);
+                }
+            }
+        });
+        clonee.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitClone);
+
+        hide.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickHide);
+        hide.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterHide);
+        hide.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitHide);
+
+        searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
+
+        left.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
+        left.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseLeftReleased);
+
+        right.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
+        right.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseRightReleased);
+
+        top.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
+        top.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseTopReleased);
+
+        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
+        bottom.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseBottomReleased);
+
+        plus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickPlus);
+        plus.addEventFilter(MouseEvent.MOUSE_RELEASED,mousePlusReleased);
+
+        minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
+        minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
+        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDrag);
+        subScene.setOnKeyPressed(e -> {
+            System.out.println("key");
+            if(brickClicked != null){
+                switch(e.getCode()){
+                    case SPACE:
+                        axisLeftRight=1-axisLeftRight;
+                    case LEFT:
+                        brickClicked.left();
+                    case RIGHT:
+                        brickClicked.right();
+                        break;
+                    case UP:
+                        brickClicked.up();
+                        break;
+                    case DOWN:
+                        brickClicked.down();
+                        break;
+                }
+            }
+        });
+        /*subScene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                System.out.println("Subscene "+e.getX()+" "+e.getY()+" "+e.getZ());
+            }
+        });*/
+
+        createContent();
+    }
+
+
     @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
-        listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
+        listView.getItems().addAll(searchList(searchBar.getText(),imageStorages));
     }
 
     EventHandler<MouseEvent> mouseClickHide = new EventHandler<MouseEvent>() {
@@ -216,7 +293,7 @@ public class Controller implements Initializable {
         public void handle(KeyEvent e) {
             if (e.getCode().equals(KeyCode.ENTER)) {
                 listView.getItems().clear();
-                listView.getItems().addAll(searchList(searchBar.getText(), ImageStorage.getTexts(imagesLinked)));
+                listView.getItems().addAll(searchList(searchBar.getText(), imageStorages));
             }
         }
     };
@@ -377,79 +454,14 @@ public class Controller implements Initializable {
     };
 
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
 
 
-        listView.getItems().addAll(ImageStorage.getTexts(imagesLinked));
 
-        listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                currentText = listView.getSelectionModel().getSelectedItem();
-                imageView.setImage(ImageStorage.getImage(imagesLinked,currentText));
-            }
-        });
-
-        clonee.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickClone);
-        clonee.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterClone);
-        clonee.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitClone);
-
-        hide.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickHide);
-        hide.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterHide);
-        hide.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitHide);
-
-        searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
-
-        left.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
-        left.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseLeftReleased);
-
-        right.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
-        right.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseRightReleased);
-
-        top.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
-        top.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseTopReleased);
-
-        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
-        bottom.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseBottomReleased);
-
-        plus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickPlus);
-        plus.addEventFilter(MouseEvent.MOUSE_RELEASED,mousePlusReleased);
-
-        minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
-        minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
-        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDrag);
-        subScene.setOnKeyPressed(e -> {
-            System.out.println("key");
-            if(brickClicked != null){
-                switch(e.getCode()){
-                    case SPACE:
-                        axisLeftRight=1-axisLeftRight;
-                    case LEFT:
-                        brickClicked.left();
-                    case RIGHT:
-                        brickClicked.right();
-                        break;
-                    case UP:
-                        brickClicked.up();
-                        break;
-                    case DOWN:
-                        brickClicked.down();
-                        break;
-                }
-            }
-        });
-        createContent();
-    }
-
-
-    private List<String> searchList(String searchWords, List<String> listOfStrings) {
-
+    private List<ImageStorage> searchList(String searchWords, List<ImageStorage> listOfStrings) {
         List<String> searchWordsArray = Arrays.asList(searchWords.trim().split(" "));
-
         return listOfStrings.stream().filter(input -> {
             return searchWordsArray.stream().allMatch(word ->
-                    input.toLowerCase().contains(word.toLowerCase()));
+                    input.getText().toLowerCase().contains(word.toLowerCase()));
         }).collect(Collectors.toList());
     }
 
@@ -457,15 +469,28 @@ public class Controller implements Initializable {
     public CameraUtils camera;
     private void createContent(){
         Brick.group =group;
-        Brick redd = new Brick(new Dim(1,1,3),0,0,0);
-        redd.setColor(Color.RED);
-        new Brick(new Dim(1,1),0,0);
 
-        Translate pivot = new Translate();
+        ArrayList<String> colors = new ArrayList<>();
+        colors.add("#dd61ec");
+        colors.add("#b4490c");
+        colors.add("#5ac2d3");
+        ArrayList<Dim> dims = new ArrayList<>();
+        dims.add(new Dim(1,1));
+        dims.add(new Dim(1,1,2));
+        Random rd = new Random();
+        for(int i =0; i < 40;i++) {
+            String c = colors.get(rd.nextInt(colors.size()));
+            Dim d = dims.get(rd.nextInt(dims.size()));
+            int x = rd.nextInt(10)-5;
+            int y = rd.nextInt(10)-5;
+            int z = rd.nextInt(10)-5;
+            new Brick(d,x,z,y,c);
+        }
+        //Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
         // set the pivot for the camera position animation base upon mouse clicks on objects
-        group.getChildren().stream()
+        /*group.getChildren().stream()
                 .filter(node -> !(node instanceof Camera))
                 .forEach(node ->
                         node.setOnMouseClicked(event -> {
@@ -473,7 +498,7 @@ public class Controller implements Initializable {
                             pivot.setY(node.getTranslateY());
                             pivot.setZ(node.getTranslateZ());
                         })
-                );
+                );*/
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
         System.out.println("--> "+Brick.environnement);

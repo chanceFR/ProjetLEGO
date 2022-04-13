@@ -1,6 +1,7 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
 import fr.antoromeochrist.projetlego.Controller;
+import fr.antoromeochrist.projetlego.utils.P3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -21,41 +22,36 @@ public class Brick extends Box {
     private static double mouseAnchorY;
 
     private Dim dim;
-    private int x;
-    private int y;
-    private int z;
+    private double x;
+    private double y;
+    private double z;
     private String hex;
     private Volume volume;
-
     public Brick(){
         this(new Dim(1,1), lastBrick.getX(), lastBrick.getY(), lastBrick.getY(),"#808080");
     }
     public Brick(Dim dim) {
         this(dim, lastBrick.getX(), lastBrick.getY(), lastBrick.getY(),"#808080");
     }
-    public Brick(Dim dim, int x, int z) {
+    public Brick(Dim dim, double x, double z) {
         this(dim,x,z,1,"#808080");
     }
-    public Brick(Dim dim, int x, int z, int y) {
-        this(dim,x,z,y,"#808080");
+    public Brick(Dim dim, double x, double z, String hex) {
+        this(dim,x,z,1,hex);
     }
-
-    public Brick(Dim dim, int x, int z, int y, String hex) {
+    public Brick(Dim dim, double x, double z, double y, String hex) {
         super(dim.getWeight(), dim.getHeight(), dim.getDepth());
         lastBrick= this;
         group.getChildren().add(this);
         this.dim = dim;
-        this.move(getAvailablePlace(this.dim,new PointInt(x,y,z)));
+        this.y+=y;
+        this.y+=this.y*0.5;
+        this.move(getAvailablePlace(this.dim,new P3D(x,y,z)));
         this.setColor(hex);
-
-        this.setOnMouseDragged(e ->{
-
-        });
         this.setOnMousePressed(mouseEvent -> {
             Controller.brickClicked=this;
             System.out.println("--> "+Controller.brickClicked);
         });
-
     }
 
     public static ArrayList<Brick> getBrickWithColor(String hex){
@@ -67,12 +63,10 @@ public class Brick extends Box {
         }
         return bricks;
     }
-    public static boolean isTaken(PointInt point){
+    public static boolean isTaken(P3D point){
         for (Brick b: environnement) { //toutes les briques avec leur volume
-            for(PointInt pi : b.getVolume()){
-                if(!point.same(pi)) {
-                    System.out.println(point+" est différent de "+pi);
-                }else{
+            for(P3D pi : b.getVolume()){
+                if(point.getX() == pi.getX() && point.getY() == pi.getY() && point.getZ() == pi.getZ() ) {
                     return true;
                 }
             }
@@ -80,16 +74,13 @@ public class Brick extends Box {
         return false;
     }
 
-    public static PointInt getAvailablePlace(Dim dim,PointInt start) {
-
-        int oldSx = start.getX();
-        int oldSy = start.getY();
-        int oldSz = start.getZ();
-
-        int sx = start.getX();
-        int sy = start.getY();
-        int sz = start.getZ();
-
+    public static P3D getAvailablePlace(Dim dim, P3D start) {
+        double oldSx = start.getX();
+        double oldSy = start.getY();
+        double oldSz = start.getZ();
+        double sx=oldSx;
+        double sy=oldSy;
+        double sz=oldSz;
         Volume currentV = new Volume();
         boolean volumePasLibre = true;
         while (volumePasLibre) {
@@ -97,16 +88,14 @@ public class Brick extends Box {
             for (int i = 0; i < dim.getWeight(); i++) {
                 for (int j = 0; j < dim.getHeight(); j++) {
                     for (int k = 0; k < dim.getDepth(); k++) {
-                        PointInt np = new PointInt(sx + i, sy + j, sz + k);
+                        P3D np = new P3D(sx + i, sy + j, sz + k);
                         if (!isTaken(np)) {
                             currentV.addPoint(np);
-                            System.out.println(currentV);
                             if(currentV.size() == dim.getSizeOfPointToNeed()){
                                 volumePasLibre=false;
                             }
                         } else {
-                            sx++;
-                            System.out.println("Le volume de la futur brique est rentré en colision");
+                            sy+=1;
                         }
                     }
                 }
@@ -114,7 +103,7 @@ public class Brick extends Box {
         }
         if(sx != oldSx || sy != oldSy || sz!=oldSz){
             System.out.println("Nouvelle coordonné : "+sx+" "+sy+" "+sz+".");
-            return start.set(sx,sy,sz);
+            return new P3D(sx,sy,sz);
         }
         return start;
     }
@@ -134,12 +123,12 @@ public class Brick extends Box {
         }
     }
 
-    public void move(PointInt pointInt){
-        move(pointInt.getX(),pointInt.getY(),pointInt.getZ());
+    public void move(P3D point){
+        move(point.getX(),point.getY(),point.getZ());
     }
 
 
-    public void move(int x, int y, int z) {
+    public void move(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -150,9 +139,9 @@ public class Brick extends Box {
         if (this.volume == null) {
             this.volume = new Volume();
         }
-        for (int i = 0; i < this.dim.getWeight(); i++) {
-            for (int j = 0; j < this.dim.getHeight(); j++) {
-                for (int k = 0; k < this.dim.getDepth(); k++) {
+        for (double i = 0; i < this.dim.getWeight(); i++) {
+            for (double j = 0; j < this.dim.getHeight(); j++) {
+                for (double k = 0; k < this.dim.getDepth(); k++) {
                     this.volume.addPoint(this.x + i, this.y + j, this.z + k);
                 }
             }
@@ -176,15 +165,15 @@ public class Brick extends Box {
         return "["+hex+"|"+dim+"|"+volume+"]";
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public int getZ() {
+    public double getZ() {
         return z;
     }
 

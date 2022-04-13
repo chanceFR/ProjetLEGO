@@ -1,34 +1,33 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
-import eu.hansolo.tilesfx.tools.Point;
+import fr.antoromeochrist.projetlego.utils.P3D;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Volume extends ArrayList<PointInt> {
+public class Volume extends ArrayList<P3D> {
 
-    public void addPoint(int x,int y,int z){
-        this.add(new PointInt(x,y,z));
+    public void addPoint(double x,double y,double z){
+        this.add(new P3D(x,y,z));
     }
-    public void addPoint(PointInt... points){
-        System.out.println(this);
-        for(PointInt point: Arrays.asList(points)){
-            this.add(point);
+    public void addPoint(P3D... Points){
+        for(P3D Point: Arrays.asList(Points)){
+            this.add(Point);
         }
     }
 
-    public void removePoint(int x,int y,int z){
-        this.remove(new PointInt(x,y,z));
+    public void removePoint(double x,double y,double z){
+        this.remove(new P3D(x,y,z));
     }
-    public void removePoint(PointInt... points){
-        for(PointInt point: Arrays.asList(points)){
-            this.remove(point);
+    public void removePoint(P3D... Points){
+        for(P3D Point: Arrays.asList(Points)){
+            this.remove(Point);
         }
     }
 
     public String toString(){
         String s = "<";
-        for(PointInt p: this){
+        for(P3D p: this){
             s+=p+" ";
         }
         s+=">";
