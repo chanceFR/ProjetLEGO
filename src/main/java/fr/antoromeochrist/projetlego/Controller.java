@@ -15,8 +15,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -38,6 +40,10 @@ public class Controller implements Initializable {
     private String currentText;
     private boolean isClickedClone=false;
     private boolean isClickedHide=false;
+
+    @FXML
+    private AnchorPane anchorPane;
+
     @FXML
     private TextField searchBar;
 
@@ -87,6 +93,11 @@ public class Controller implements Initializable {
 
     private ArrayList<ImageStorage> imageStorages = new ArrayList<>();
 
+    private boolean actionWithBrickDone = true;
+    @FXML
+    public ImageView brickSelection;
+
+    public ImageStorage brickSelectionData;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -119,9 +130,60 @@ public class Controller implements Initializable {
                             lb
                     );
                     setGraphic(hbx);
+                    hbx.setOnMousePressed(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                            actionWithBrickDone =false;
+                            System.out.println("Création de la brique-view:");
+                            brickSelectionData=piece;
+                            brickSelection.setFitHeight(100);
+                            brickSelection.setFitWidth(100);
+                            brickSelection.setImage(iv.getImage());
+                            brickSelection.setOpacity(100);
+                            brickSelection.setX(iv.getX());
+                            brickSelection.setY(iv.getY());
+                            brickSelection.setLayoutX(iv.getLayoutX());
+                            brickSelection.setLayoutY(iv.getLayoutY());
+                        }
+                    });
                 }
             }
         });
+        anchorPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(!actionWithBrickDone){
+                    brickSelection.setX(mouseEvent.getX());
+                    brickSelection.setY(mouseEvent.getY());
+                }
+            }
+        });
+
+        subScene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(!actionWithBrickDone){
+                    actionWithBrickDone=true;
+                    clearBreakSelection();
+                    new Brick(brickSelectionData.getDimWithText());
+                }
+            }
+        });
+
+        anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                System.out.println(keyEvent.getCode());
+                if(keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)){
+                    System.out.println("echap");
+                    if(actionWithBrickDone == false) {
+                        actionWithBrickDone = true;
+                        clearBreakSelection();
+                    }
+                }
+            }
+        });
+
         clonee.addEventFilter(MouseEvent.MOUSE_CLICKED,mouseClickClone);
         clonee.addEventFilter(MouseEvent.MOUSE_ENTERED,mouseEnterClone);
         clonee.addEventFilter(MouseEvent.MOUSE_EXITED,mouseExitClone);
@@ -149,6 +211,7 @@ public class Controller implements Initializable {
 
         minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
         minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
+        subScene.addEventFilter(DragEvent.DRAG_OVER,subSceneDragOver);
         subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDrag);
         subScene.setOnKeyPressed(e -> {
             System.out.println("key");
@@ -178,6 +241,14 @@ public class Controller implements Initializable {
         });*/
 
         createContent();
+    }
+
+    private void clearBreakSelection() {
+        brickSelection.setFitHeight(1);
+        brickSelection.setFitWidth(1);
+        brickSelection.setLayoutX(1046);
+        brickSelection.setLayoutY(648);
+        brickSelection.setOpacity(0);
     }
 
 
@@ -445,11 +516,22 @@ public class Controller implements Initializable {
         }
     };
 
+    EventHandler<DragEvent> subSceneDragOver = new EventHandler<DragEvent>() {
+        @Override
+        public void handle(DragEvent e) {
+            if(e.getDragboard().hasFiles()){
+                e.acceptTransferModes(TransferMode.ANY);
+            }
+        }
+    };
+
     EventHandler<DragEvent> subSceneDrag = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent e) {
-                e.acceptTransferModes(TransferMode.ANY);
+            Image img = e.getDragboard().getImage();
+            if(img.getUrl().contains("pomme")){
                 new Brick();
+            }
         }
     };
 
@@ -469,8 +551,7 @@ public class Controller implements Initializable {
     public CameraUtils camera;
     private void createContent(){
         Brick.group =group;
-
-        ArrayList<String> colors = new ArrayList<>();
+        /*ArrayList<String> colors = new ArrayList<>();
         colors.add("#dd61ec");
         colors.add("#b4490c");
         colors.add("#5ac2d3");
@@ -485,7 +566,7 @@ public class Controller implements Initializable {
             int y = rd.nextInt(10)-5;
             int z = rd.nextInt(10)-5;
             new Brick(d,x,z,y,c);
-        }
+        }*/
         //Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
