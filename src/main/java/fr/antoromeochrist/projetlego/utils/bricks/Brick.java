@@ -17,7 +17,6 @@ public class Brick extends Box {
     public static Group group;
     public static HashMap<Brick,String> bricksSortByColors = new HashMap<>();
     public static ArrayList<Brick> environnement = new ArrayList<>();
-    public static Brick lastBrick;
     private static double mouseAnchorX;
     private static double mouseAnchorY;
 
@@ -28,10 +27,10 @@ public class Brick extends Box {
     private String hex;
     private Volume volume;
     public Brick(){
-        this(new Dim(1,1), lastBrick.getX(), lastBrick.getY(), lastBrick.getY(),"#808080");
+        this(new Dim(1,1), 0, 0, 0,"#808080");
     }
     public Brick(Dim dim) {
-        this(dim, lastBrick.getX(), lastBrick.getY(), lastBrick.getY(),"#808080");
+        this(dim, 0, 0, 0,"#808080");
     }
     public Brick(Dim dim, double x, double z) {
         this(dim,x,z,1,"#808080");
@@ -41,7 +40,6 @@ public class Brick extends Box {
     }
     public Brick(Dim dim, double x, double z, double y, String hex) {
         super(dim.getWeight(), dim.getHeight(), dim.getDepth());
-        lastBrick= this;
         group.getChildren().add(this);
         this.dim = dim;
         this.y+=y;
@@ -95,7 +93,7 @@ public class Brick extends Box {
                                 volumePasLibre=false;
                             }
                         } else {
-                            sy+=1;
+                            sy-=1;
                         }
                     }
                 }

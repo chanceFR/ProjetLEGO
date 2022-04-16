@@ -1,8 +1,7 @@
 package fr.antoromeochrist.projetlego.utils.images;
 
-import javafx.scene.control.ListView;
+import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import javafx.scene.image.Image;
-
 import java.util.ArrayList;
 
 public class ImageStorage {
@@ -14,6 +13,17 @@ public class ImageStorage {
         this.text = text;
         this.image = image;
     }
+
+    public Dim getDimWithText() {
+        String[] s = this.text.replace(" ","").split("x");
+        if (s.length == 3) {
+            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        } else {
+            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+        }
+    }
+
+
 
     public String getText() {
         return text;
