@@ -482,9 +482,8 @@ public class Controller implements Initializable {
             String c = colors.get(rd.nextInt(colors.size()));
             Dim d = dims.get(rd.nextInt(dims.size()));
             int x = rd.nextInt(10)-5;
-            int y = rd.nextInt(10)-5;
             int z = rd.nextInt(10)-5;
-            new Brick(d,x,z,y,c);
+            new Brick(d,x,z,c);
         }
         //Translate pivot = new Translate();
         // Create and position camera
