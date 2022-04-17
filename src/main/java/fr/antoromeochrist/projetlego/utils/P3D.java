@@ -6,6 +6,11 @@ public class P3D extends Point3D {
     public P3D(double v, double v1, double v2) {
         super(v, v1, v2);
     }
+
+    public P3D(P3D P3D) {
+        super(P3D.getX(),P3D.getY(),P3D.getZ());
+    }
+
     public String toString(){
         String s = "";
         if(this.getX() % 1 == 0){
@@ -24,5 +29,8 @@ public class P3D extends Point3D {
             s+=this.getZ()+")";
         }
         return s;
+    }
+    public P3D add(double a, double b,double c){
+        return new P3D(this.getX()+a,this.getY()+b,this.getZ()+c);
     }
 }

@@ -26,6 +26,10 @@ public class CameraUtils extends PerspectiveCamera {
     private int valZoom;
     private Transform t;
 
+    public double x;
+    public double y;
+    public double z;
+
     public CameraUtils (boolean b){
         super (b);
         timeline = new Timeline();
@@ -41,10 +45,24 @@ public class CameraUtils extends PerspectiveCamera {
                 timeline.getKeyFrames().clear();
             }
         });
+        this.x=0;
+        this.y=0;
+        this.z=0;
     }
 
+    public double getX() {
+        return x;
+    }
 
-    public void addRotationsX( DurationAngle... durationAngles){
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void addRotationsX(DurationAngle... durationAngles){
        for (DurationAngle d: Arrays.asList(durationAngles)){
            lastKF=new KeyFrame(Duration.seconds(d.getDuration()),new KeyValue(x_axis.angleProperty(), d.getAngle()));
            timeline.getKeyFrames().add(lastKF);
@@ -59,12 +77,30 @@ public class CameraUtils extends PerspectiveCamera {
         timeline.play();
     }
 
-    public void zoom (double z){
-        this.getTransforms().addAll (new Translate(0, 0, z));
+    public void translate(double x, double y, double z){
+        this.x+=x;
+        this.y+=y;
+        this.z+=z;
+        this.getTransforms().add(new Translate(x,y,z));
+        System.out.println("Tr: "+this.x+" "+this.y+" "+this.z);
     }
-    public void dezoom (double z){;
-        zoom(-z);
+    public void up() {
+        this.translate(0,-1,0);
     }
-
+    public void down() {
+        this.translate(0,1,0);
+    }
+    public void left() {
+        this.translate(- 1,0,0);
+    }
+    public void right() {
+        this.translate(1,0,0);
+    }
+    public void zoom (double a){
+        translate(0,0,a);
+    }
+    public void dezoom (double a){;
+        zoom(-a);
+    }
 }
 
