@@ -11,18 +11,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Translate;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -35,9 +31,8 @@ import static fr.antoromeochrist.projetlego.utils.CameraUtils.angleY;
 public class Controller implements Initializable {
 
     public static Brick brickClicked;
-    public static  int axisLeftRight = 0;
+    public static int axisLeftRight = 0;
 
-    private String currentText;
     private boolean isClickedClone=false;
     private boolean isClickedHide=false;
 
@@ -82,6 +77,16 @@ public class Controller implements Initializable {
 
 
     @FXML
+    private ImageView rtop;
+
+    @FXML
+    private ImageView rleft;
+    @FXML
+    private ImageView rright;
+    @FXML
+    private ImageView rbottom;
+
+    @FXML
     private ImageView top;
 
     @FXML
@@ -93,11 +98,15 @@ public class Controller implements Initializable {
 
     private ArrayList<ImageStorage> imageStorages = new ArrayList<>();
 
-    private boolean actionWithBrickDone = true;
+    private boolean actionWithDropDone = true;
     @FXML
     public ImageView brickSelection;
 
-    public ImageStorage brickSelectionData;
+    public ImageStorage dropSelectionData;
+    @FXML
+    private ColorPicker colorpicker;
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -132,16 +141,16 @@ public class Controller implements Initializable {
                     setGraphic(hbx);
                     hbx.setOnMousePressed(new EventHandler<MouseEvent>() {
                         @Override
-                        public void handle(MouseEvent mouseEvent) {
-                            actionWithBrickDone =false;
+                        public void handle(MouseEvent e) {
+                            actionWithDropDone =false;
                             System.out.println("Création de la brique-view:");
-                            brickSelectionData=piece;
+                            dropSelectionData =piece;
                             brickSelection.setFitHeight(100);
                             brickSelection.setFitWidth(100);
                             brickSelection.setImage(iv.getImage());
                             brickSelection.setOpacity(100);
-                            brickSelection.setX(iv.getX());
-                            brickSelection.setY(iv.getY());
+                            brickSelection.setX(e.getX());
+                            brickSelection.setY(e.getY());
                             brickSelection.setLayoutX(iv.getLayoutX());
                             brickSelection.setLayoutY(iv.getLayoutY());
                         }
@@ -152,7 +161,7 @@ public class Controller implements Initializable {
         anchorPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(!actionWithBrickDone){
+                if(!actionWithDropDone){
                     brickSelection.setX(mouseEvent.getX());
                     brickSelection.setY(mouseEvent.getY());
                 }
@@ -161,26 +170,55 @@ public class Controller implements Initializable {
 
         subScene.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(!actionWithBrickDone){
-                    actionWithBrickDone=true;
+            public void handle(MouseEvent e) {
+                if(!actionWithDropDone){
+                    actionWithDropDone =true;
                     clearBreakSelection();
-                    new Brick(brickSelectionData.getDimWithText());
+                    if(brickClicked !=null){
+                        new Brick(dropSelectionData.getDimWithText(),brickClicked.getX(), brickClicked.getY(), brickClicked.getZ(), "").setColor(colorpicker.getValue());
+                    }else{
+                        new Brick(dropSelectionData.getDimWithText(),0, 0, 0, "").setColor(colorpicker.getValue());
+                    }
                 }
+            }
+        });
+
+        colorpicker.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(brickClicked != null) brickClicked.setColor(colorpicker.getValue());
             }
         });
 
         anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                System.out.println(keyEvent.getCode());
                 if(keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)){
-                    System.out.println("echap");
-                    if(actionWithBrickDone == false) {
-                        actionWithBrickDone = true;
+                    if(actionWithDropDone == false) {
+                        actionWithDropDone = true;
                         clearBreakSelection();
                     }
                 }
+                    if(brickClicked != null){
+                        switch(keyEvent.getCode()){
+                            case X:
+                                axisLeftRight=1-axisLeftRight;
+                                break;
+                            case LEFT:
+                                brickClicked.left();
+                                break;
+                            case RIGHT:
+                                brickClicked.right();
+                                break;
+                            case UP:
+                                brickClicked.up();
+                                break;
+                            case DOWN:
+                                brickClicked.down();
+                                break;
+                        }
+                    }
+
             }
         });
 
@@ -194,52 +232,36 @@ public class Controller implements Initializable {
 
         searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
 
-        left.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
-        left.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseLeftReleased);
+        rleft.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
+        rleft.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseLeftReleased);
 
-        right.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
-        right.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseRightReleased);
+        rright.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
+        rright.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseRightReleased);
 
-        top.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
-        top.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseTopReleased);
+        rtop.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
+        rtop.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseTopReleased);
 
-        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
-        bottom.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseBottomReleased);
+        rbottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
+        rbottom.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseBottomReleased);
+
+
+        top.addEventFilter(MouseEvent.MOUSE_PRESSED,bT);
+        top.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseTopReleased);
+
+        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,bB);
+        bottom.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseBottomReleased);
+
+        left.addEventFilter(MouseEvent.MOUSE_PRESSED,bL);
+        left.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseLeftReleased);
+
+        right.addEventFilter(MouseEvent.MOUSE_PRESSED,bR);
+        right.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseRightReleased);
 
         plus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickPlus);
         plus.addEventFilter(MouseEvent.MOUSE_RELEASED,mousePlusReleased);
 
         minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
         minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
-        subScene.addEventFilter(DragEvent.DRAG_OVER,subSceneDragOver);
-        subScene.addEventFilter(DragEvent.DRAG_DROPPED,subSceneDrag);
-        subScene.setOnKeyPressed(e -> {
-            System.out.println("key");
-            if(brickClicked != null){
-                switch(e.getCode()){
-                    case SPACE:
-                        axisLeftRight=1-axisLeftRight;
-                    case LEFT:
-                        brickClicked.left();
-                    case RIGHT:
-                        brickClicked.right();
-                        break;
-                    case UP:
-                        brickClicked.up();
-                        break;
-                    case DOWN:
-                        brickClicked.down();
-                        break;
-                }
-            }
-        });
-        /*subScene.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                System.out.println("Subscene "+e.getX()+" "+e.getY()+" "+e.getZ());
-            }
-        });*/
-
         createContent();
     }
 
@@ -393,57 +415,6 @@ public class Controller implements Initializable {
         }
     };
 
-    EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent e) {
-            angleX-=45;
-            camera.addRotationsY(new DurationAngle(angleX,0.3f));
-            try {
-                left.setImage(new ImagePath("leftHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-    EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent e) {
-            angleX+=45;
-            camera.addRotationsY(new DurationAngle(angleX,0.3f));
-            try {
-                right.setImage(new ImagePath("rightHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-    EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent e) {
-            angleY+=45;
-            camera.addRotationsX(new DurationAngle(angleY,0.3f));
-            try {
-                top.setImage(new ImagePath("topHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-    EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent e) {
-            angleY-=45;
-            camera.addRotationsX(new DurationAngle(angleY,0.3f));
-            try {
-                bottom.setImage(new ImagePath("bottomHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
-
-
     EventHandler<MouseEvent> mousePlusReleased = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
@@ -466,6 +437,105 @@ public class Controller implements Initializable {
         }
     };
 
+
+    EventHandler<MouseEvent> rmouseLeftReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                rleft.setImage(new ImagePath("rleft.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+    EventHandler<MouseEvent> rmouseRightReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                rright.setImage(new ImagePath("rright.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+
+    EventHandler<MouseEvent> rmouseTopReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                rtop.setImage(new ImagePath("rtop.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+
+
+    EventHandler<MouseEvent> rmouseBottomReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            try {
+                rbottom.setImage(new ImagePath("rbottom.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            angleX-=22.5;
+            camera.addRotationsY(new DurationAngle(angleX,0.4f));
+            try {
+                rleft.setImage(new ImagePath("rleftHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            angleX+=22.5;
+            camera.addRotationsY(new DurationAngle(angleX,0.4f));
+            try {
+                rright.setImage(new ImagePath("rrightHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+
+    EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            angleY+=22.5;
+            camera.addRotationsX(new DurationAngle(angleY,0.4f));
+            try {
+                rtop.setImage(new ImagePath("rtopHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            angleY-=22.5;
+            camera.addRotationsX(new DurationAngle(angleY,0.4f));
+            try {
+                rbottom.setImage(new ImagePath("rbottomHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     EventHandler<MouseEvent> mouseLeftReleased = new EventHandler<MouseEvent>() {
         @Override
@@ -516,28 +586,51 @@ public class Controller implements Initializable {
         }
     };
 
-    EventHandler<DragEvent> subSceneDragOver = new EventHandler<DragEvent>() {
+    EventHandler<MouseEvent> bL = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(DragEvent e) {
-            if(e.getDragboard().hasFiles()){
-                e.acceptTransferModes(TransferMode.ANY);
+        public void handle(MouseEvent e) {
+            camera.left();
+            try {
+                left.setImage(new ImagePath("leftHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    EventHandler<MouseEvent> bR = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.right();
+            try {
+                right.setImage(new ImagePath("rightHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         }
     };
 
-    EventHandler<DragEvent> subSceneDrag = new EventHandler<DragEvent>() {
+    EventHandler<MouseEvent> bT = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(DragEvent e) {
-            Image img = e.getDragboard().getImage();
-            if(img.getUrl().contains("pomme")){
-                new Brick();
+        public void handle(MouseEvent e) {
+           camera.up();
+            try {
+                top.setImage(new ImagePath("topHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         }
     };
-
-
-
-
+    EventHandler<MouseEvent> bB = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            camera.down();
+            try {
+                bottom.setImage(new ImagePath("bottomHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     private List<ImageStorage> searchList(String searchWords, List<ImageStorage> listOfStrings) {
         List<String> searchWordsArray = Arrays.asList(searchWords.trim().split(" "));
@@ -551,22 +644,7 @@ public class Controller implements Initializable {
     public CameraUtils camera;
     private void createContent(){
         Brick.group =group;
-        /*ArrayList<String> colors = new ArrayList<>();
-        colors.add("#dd61ec");
-        colors.add("#b4490c");
-        colors.add("#5ac2d3");
-        ArrayList<Dim> dims = new ArrayList<>();
-        dims.add(new Dim(1,1));
-        dims.add(new Dim(1,1,2));
-        Random rd = new Random();
-        for(int i =0; i < 40;i++) {
-            String c = colors.get(rd.nextInt(colors.size()));
-            Dim d = dims.get(rd.nextInt(dims.size()));
-            int x = rd.nextInt(10)-5;
-            int y = rd.nextInt(10)-5;
-            int z = rd.nextInt(10)-5;
-            new Brick(d,x,z,y,c);
-        }*/
+        new Brick (new Dim(1,1),0,0);
         //Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
