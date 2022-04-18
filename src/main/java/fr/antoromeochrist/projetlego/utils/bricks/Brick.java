@@ -4,6 +4,7 @@ import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -19,13 +20,14 @@ public class Brick extends ArrayList<Box> {
 
     //Permet de recuperer l'objet group du controller et donc de relier les briques au group du controlleur.
     public static Group group;
-    public static HashMap<Brick, String> bricksSortByColors = new HashMap<>();
+    public static HashMap<Brick, Color> bricksSortByColors = new HashMap<>();
     public static ArrayList<Brick> environnement = new ArrayList<>();
+    public static ListView<Color> contentColorsStatic;
+
     private Dim dim;
     private double x;
     private double y;
     private double z;
-    private String hex;
     private Volume volume;
     private Color color;
     private String id;
@@ -44,8 +46,46 @@ public class Brick extends ArrayList<Box> {
         this.x = x;
         this.y = y;
         this.z = z;
-        createBrick();
-        this.setColor(hex);
+        create();
+        if (hex != "") this.setColor(Color.web(hex)); else this.setColor(Color.web("#808080"));
+        Brick b = this;
+        for (Box box : this) {
+            box.setOnMousePressed(mouseEvent -> {
+                if (Controller.brickClicked != null) {
+                    if (Controller.brickClicked.equals(this)) {
+                        setSelectMode(false);
+                        Controller.brickClicked = null;
+                    } else {
+                        Controller.brickClicked.setSelectMode(false);
+                        Controller.brickClicked = this;
+                        System.out.println("--> " + Controller.brickClicked);
+                        this.setSelectMode(true);
+                    }
+                } else {
+                    Controller.brickClicked = this;
+                    System.out.println("--> " + Controller.brickClicked);
+                    this.setSelectMode(true);
+                }
+            });
+
+            box.setOnMouseExited(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    if (this.equals(Controller.brickClicked)) {
+                        b.setSelectMode(false);
+                    }
+                }
+            });
+        }
+    }
+    public Brick(Dim dim, double x, double z, double y, Color c) {
+        this.id = UUID.randomUUID().toString();
+        this.dim = dim;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        create();
+        this.setColor(c);
         Brick b = this;
         for (Box box : this) {
             box.setOnMousePressed(mouseEvent -> {
@@ -77,7 +117,7 @@ public class Brick extends ArrayList<Box> {
         }
     }
 
-    public void createBrick() {
+    private void create() {
         int i1 = 0;
         volume = Volume.createAllVolume(new P3D(this.x, this.y, this.z), this.dim);
         if(!environnement.isEmpty()){
@@ -100,39 +140,39 @@ public class Brick extends ArrayList<Box> {
         group.getChildren().addAll(this);
     }
 
-    public static ArrayList<Brick> getBrickWithColor(String hex) {
+    public void hide(boolean b){
+        if(b) for(Box box : this) box.setOpacity(0); else for(Box box: this) box.setOpacity(100);
+    }
+
+    public void remove(){
+        group.getChildren().removeAll(this);
+        bricksSortByColors.remove(this);
+        environnement.remove(this);
+        if(getBrickWithColor(this.color).isEmpty()){
+            contentColorsStatic.getItems().remove(this.color);
+        }
+        this.remove();
+    }
+
+    public static ArrayList<Brick> getBrickWithColor(Color c) {
         ArrayList<Brick> bricks = new ArrayList<>();
-        for (Map.Entry<Brick, String> entry : bricksSortByColors.entrySet()) {
-            if (entry.getValue().equals(hex)) {
+        for (Map.Entry<Brick, Color> entry : bricksSortByColors.entrySet()) {
+            if (entry.getValue().equals(c)) {
                 bricks.add(entry.getKey());
             }
         }
         return bricks;
     }
 
+
     public void setColor(Color color) {
-        this.hex = String.format("#%02x%02x%02x", (int) color.getRed(), (int) color.getGreen(), (int) color.getBlue());
         for (Box b : this) b.setMaterial(new PhongMaterial(color));
         this.color = color;
-        if (!bricksSortByColors.containsKey(this)) {
-            bricksSortByColors.put(this, this.hex);
-        }
-        if (!bricksSortByColors.get(this).equals(this.hex)) {
-            bricksSortByColors.replace(this, this.hex);
-        }
-    }
-
-    public void setColor(String hex) {
-        this.hex = hex;
-        if (hex == "") this.hex = "#808080";
-        this.color = Color.web(this.hex);
-        for (Box box : this) box.setMaterial(new PhongMaterial(color));
-        if (!bricksSortByColors.containsKey(this)) {
-            bricksSortByColors.put(this, this.hex);
-        }
-        if (!bricksSortByColors.get(this).equals(this.hex)) {
-            bricksSortByColors.replace(this, this.hex);
-        }
+        if (!bricksSortByColors.containsKey(this)) bricksSortByColors.put(this, this.color);
+        if (!bricksSortByColors.get(this).equals(this.color)) bricksSortByColors.replace(this, this.color);
+        if(!contentColorsStatic.getItems().contains(this.color)) contentColorsStatic.getItems().add(this.color);
+        if(!contentColorsStatic.getItems().contains(this.color)) contentColorsStatic.getItems().add(this.color);
+        bricksSortByColors.replace(this,this.color);
     }
 
     public String getID() {
@@ -175,7 +215,7 @@ public class Brick extends ArrayList<Box> {
         this.y = y;
         this.z = z;
         if (isEmpty()) {
-            createBrick();
+            create();
         }
         for (Box box : this) {
             box.getTransforms().clear();
@@ -183,8 +223,8 @@ public class Brick extends ArrayList<Box> {
         }
     }
 
-    public String getColor() {
-        return hex;
+    public Color getColor(){
+        return color;
     }
 
     public Volume getVolume() {
@@ -192,7 +232,7 @@ public class Brick extends ArrayList<Box> {
     }
 
     public String toString() {
-        return "[" + hex + "|" + dim + "|" + volume + "]";
+        return "[" + color + "|" + dim + "|" + volume + "]";
     }
 
     public double getX() {

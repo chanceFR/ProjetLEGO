@@ -66,6 +66,15 @@ list-cell:filled:selected:focused, .list-cell:filled:selected {
 -fx-background-color: #121418;
 -fx-border-color: black;
 }
+#contentColors{
+-fx-background-color: #121418;
+-fx-border-color: black;
+}
+
+#contentColorsText{
+-fx-text-fill: #edeeef;
+}
+
 
 .menu-bar, .menu-item, .context-menu{
     -fx-background-color: #212328;

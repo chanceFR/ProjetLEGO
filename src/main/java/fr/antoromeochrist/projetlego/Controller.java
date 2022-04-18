@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -17,6 +18,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Translate;
 
@@ -104,7 +106,10 @@ public class Controller implements Initializable {
 
     public ImageStorage dropSelectionData;
     @FXML
-    private ColorPicker colorpicker;
+    public ColorPicker colorpicker;
+
+    @FXML
+    public ListView contentColors;
 
 
     @Override
@@ -158,6 +163,24 @@ public class Controller implements Initializable {
                 }
             }
         });
+
+        contentColors.setCellFactory(listView -> new ListCell<Color>() {
+            @Override
+            protected void updateItem(Color color, boolean empty) {
+                super.updateItem(color, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Rectangle iv = new Rectangle(0, 0, 10, 10);
+                    iv.setFill(color);
+                    iv.setStroke(Color.BLACK);
+                    setGraphic(iv);
+                }
+            }
+        });
+        Brick.contentColorsStatic=contentColors;
+
+
         anchorPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -177,7 +200,7 @@ public class Controller implements Initializable {
                     if(brickClicked !=null){
                         new Brick(dropSelectionData.getDimWithText(),brickClicked.getX(), brickClicked.getY(), brickClicked.getZ(), "").setColor(colorpicker.getValue());
                     }else{
-                        new Brick(dropSelectionData.getDimWithText(),0, 0, 0, "").setColor(colorpicker.getValue());
+                        new Brick(dropSelectionData.getDimWithText(),0, 0, 0, "#808080").setColor(colorpicker.getValue());
                     }
                 }
             }
@@ -186,7 +209,13 @@ public class Controller implements Initializable {
         colorpicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(brickClicked != null) brickClicked.setColor(colorpicker.getValue());
+                if(brickClicked != null){
+                    Color oldColor = brickClicked.getColor();
+                    brickClicked.setColor(colorpicker.getValue());
+                    System.out.println("Dic: "+Brick.bricksSortByColors);
+                    System.out.println("Brick with hex :"+Brick.getBrickWithColor(oldColor).size());
+                    if(Brick.getBrickWithColor(oldColor).isEmpty()) contentColors.getItems().remove(oldColor);
+                }
             }
         });
 
@@ -642,9 +671,8 @@ public class Controller implements Initializable {
 
 
     public CameraUtils camera;
-    private void createContent(){
-        Brick.group =group;
-        new Brick (new Dim(1,1),0,0);
+    private void createContent() {
+        Brick.group = group;
         //Translate pivot = new Translate();
         // Create and position camera
         camera = new CameraUtils(true);
@@ -660,7 +688,7 @@ public class Controller implements Initializable {
                 );*/
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
-        System.out.println("--> "+Brick.environnement);
+        System.out.println("--> " + Brick.environnement);
     }
 
 }
