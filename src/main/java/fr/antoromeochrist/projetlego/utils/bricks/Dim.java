@@ -43,9 +43,9 @@ public class Dim {
 
     public String toString(){
         String s =""+a;
-        s+=" X "+c;
+        s+="x"+c;
         if(b != 1){
-            s+=" X "+b;
+            s+="x"+b;
         }
         return s;
     }
