@@ -112,11 +112,6 @@ public class Controller implements Initializable {
 
     public ListView currentStep = new ListView();
 
-    @SuppressWarnings("unchecked")
-    private static <T extends Object> T cast(Object obj) {
-        return (T) obj;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Brick.contentColorsStatic=contentColors;
@@ -124,9 +119,9 @@ public class Controller implements Initializable {
         Brick.currentStepStatic= currentStep;
         Brick.group=group;
         camera = new CameraUtils(true);
-        angleY=-90;
+        angleY=-30;
         camera.addRotationsX(new DurationAngle(angleY,0.4f));
-        new Brick(new Dim(1,1),0,0,0,colorpicker.getValue());
+        new Brick(new Dim(1,1,4),0,0,0,colorpicker.getValue());
         steps.setCellFactory(listView -> new ListCell<ListView>() {
             @Override
             protected void updateItem(ListView lv, boolean empty) {
@@ -190,8 +185,18 @@ public class Controller implements Initializable {
         steps.getItems().add(currentStep);
 
         try {
-            imageStorages.add(new ImageStorage("1x1",new ImagePath("pomme.jpg")));
-            imageStorages.add(new ImageStorage("1x2",new ImagePath("pomme2.jpg")));
+            imageStorages.add(new ImageStorage("1x1",new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("1x2",new ImagePath("1x2.png")));
+            imageStorages.add(new ImageStorage("1x3",new ImagePath("1x3.png")));
+            imageStorages.add(new ImageStorage("1x4",new ImagePath("1x4.png")));
+            imageStorages.add(new ImageStorage("2x2",new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("2x3",new ImagePath("2x3.png")));
+            imageStorages.add(new ImageStorage("2x4",new ImagePath("2x4.png")));
+            imageStorages.add(new ImageStorage("3x3",new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("3x4",new ImagePath("3x4.png")));
+            imageStorages.add(new ImageStorage("4x4",new ImagePath("4x4.png")));
+            imageStorages.add(new ImageStorage("1x1x2",new ImagePath("1x1x2.png")));
+            imageStorages.add(new ImageStorage("1x1x4",new ImagePath("1x1x4.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -199,8 +204,8 @@ public class Controller implements Initializable {
 
         listView.setCellFactory(listView -> new ListCell<ImageStorage>() {
             @Override
-            protected void updateItem(ImageStorage piece, boolean empty) {
-                super.updateItem(piece, empty);
+            protected void updateItem(ImageStorage imSto, boolean empty) {
+                super.updateItem(imSto, empty);
                 if (empty) {
                     setGraphic(null);
                 } else {
@@ -208,10 +213,17 @@ public class Controller implements Initializable {
                     HBox hbx = new  HBox();
                     hbx.setAlignment(Pos.CENTER);
                     ImageView iv = new ImageView();
-                    iv.setImage(piece.getImage());
-                    iv.setFitHeight(100);
-                    iv.setFitWidth(100);
-                    Label lb = new Label("      "+piece.getText());
+                    iv.setImage(imSto.getImage());
+                    iv.setFitWidth(50);
+                    /*if(imSto.getDimWithText().getHeight() > 1){
+                        iv.setFitHeight(50*imSto.getDimWithText().getHeight());
+                    }
+                    else{
+                        iv.setFitHeight(50);
+                    }*/
+
+                    iv.setFitHeight(50);
+                    Label lb = new Label("      "+imSto.getText());
                     lb.setStyle("-fx-text-fill: #c25b11;");
                     hbx.setStyle("-fx-font-size: 10px;");
                     hbx.getChildren().addAll(
@@ -224,9 +236,15 @@ public class Controller implements Initializable {
                         public void handle(MouseEvent e) {
                             actionWithDropDone =false;
                             System.out.println("Création de la brique-view:");
-                            dropSelectionData =piece;
-                            brickSelection.setFitHeight(100);
-                            brickSelection.setFitWidth(100);
+                            dropSelectionData =imSto;
+                            /*if(imSto.getDimWithText().getHeight() > 1){
+                                brickSelection.setFitHeight(50*imSto.getDimWithText().getHeight());
+                            }
+                            else{
+                                brickSelection.setFitHeight(50);
+                            }*/
+                            brickSelection.setFitHeight(50);
+                            brickSelection.setFitWidth(50);
                             brickSelection.setImage(iv.getImage());
                             brickSelection.setOpacity(100);
                             brickSelection.setX(e.getX());
@@ -546,7 +564,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleX-=22.5;
+            angleX-=11.25;
             camera.addRotationsY(new DurationAngle(angleX,0.4f));
             try {
                 rleft.setImage(new ImagePath("rleftHover.png"));
@@ -558,7 +576,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleX+=22.5;
+            angleX+=11.25;
             camera.addRotationsY(new DurationAngle(angleX,0.4f));
             try {
                 rright.setImage(new ImagePath("rrightHover.png"));
@@ -571,7 +589,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleY+=22.5;
+            angleY+=11.25;
             camera.addRotationsX(new DurationAngle(angleY,0.4f));
             try {
                 rtop.setImage(new ImagePath("rtopHover.png"));
@@ -583,7 +601,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleY-=22.5;
+            angleY-=11.25;
             camera.addRotationsX(new DurationAngle(angleY,0.4f));
             try {
                 rbottom.setImage(new ImagePath("rbottomHover.png"));
