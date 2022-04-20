@@ -36,8 +36,6 @@ public class CameraUtils extends PerspectiveCamera {
         Brick.group.getChildren().add(this);
         getTransforms().addAll(x_axis,y_axis,z_axis);
         dezoom(20);
-        addRotationsX(new DurationAngle(-10,0.001f));
-        addRotationsY(new DurationAngle(-10,0.001f));
         timeline.setCycleCount(1);
         timeline.setOnFinished(new EventHandler<ActionEvent>() {
             @Override

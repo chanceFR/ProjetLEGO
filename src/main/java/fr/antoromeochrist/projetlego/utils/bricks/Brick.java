@@ -2,13 +2,11 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
 
 import java.util.ArrayList;
@@ -16,13 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Brick extends ArrayList<Box> {
+public class Brick extends ArrayList<Lego> {
 
     //Permet de recuperer l'objet group du controller et donc de relier les briques au group du controlleur.
     public static Group group;
     public static HashMap<Brick, Color> bricksSortByColors = new HashMap<>();
     public static ArrayList<Brick> environnement = new ArrayList<>();
     public static ListView<Color> contentColorsStatic;
+    public static ListView<ListView<Brick>> stepsStatic;
+    public static ListView<Brick> currentStepStatic;
 
     private Dim dim;
     private double x;
@@ -31,54 +31,23 @@ public class Brick extends ArrayList<Box> {
     private Volume volume;
     private Color color;
     private String id;
+    private Rectangle rect;
+    private boolean isHide;
 
-    public Brick(Dim dim, double x, double z) {
-        this(dim, x, z, 0, "#808080");
-    }
-
-    public Brick(Dim dim, double x, double z, String hex) {
-        this(dim, x, z, 0, hex);
-    }
-
-    public Brick(Dim dim, double x, double z, double y, String hex) {
-        this.id = UUID.randomUUID().toString();
-        this.dim = dim;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        create();
-        if (hex != "") this.setColor(Color.web(hex)); else this.setColor(Color.web("#808080"));
-        Brick b = this;
-        for (Box box : this) {
-            box.setOnMousePressed(mouseEvent -> {
-                if (Controller.brickClicked != null) {
-                    if (Controller.brickClicked.equals(this)) {
-                        setSelectMode(false);
-                        Controller.brickClicked = null;
-                    } else {
-                        Controller.brickClicked.setSelectMode(false);
-                        Controller.brickClicked = this;
-                        System.out.println("--> " + Controller.brickClicked);
-                        this.setSelectMode(true);
-                    }
-                } else {
-                    Controller.brickClicked = this;
-                    System.out.println("--> " + Controller.brickClicked);
-                    this.setSelectMode(true);
+    public static ListView<Brick> getStepWhereIsBrick(Brick b){
+        for(ListView<Brick> lv : stepsStatic.getItems()){
+            for(Brick br : lv.getItems()){
+                if(br.getID().equals(b.getID())){
+                    return lv;
                 }
-            });
-
-            box.setOnMouseExited(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    if (this.equals(Controller.brickClicked)) {
-                        b.setSelectMode(false);
-                    }
-                }
-            });
+            }
         }
+        return null;
     }
+
+
     public Brick(Dim dim, double x, double z, double y, Color c) {
+        this.isHide=false;
         this.id = UUID.randomUUID().toString();
         this.dim = dim;
         this.x = x;
@@ -87,8 +56,8 @@ public class Brick extends ArrayList<Box> {
         create();
         this.setColor(c);
         Brick b = this;
-        for (Box box : this) {
-            box.setOnMousePressed(mouseEvent -> {
+        for (Lego lego : this) {
+            lego.setOnMousePressed(mouseEvent -> {
                 if (Controller.brickClicked != null) {
                     if (Controller.brickClicked.equals(this)) {
                         setSelectMode(false);
@@ -105,16 +74,9 @@ public class Brick extends ArrayList<Box> {
                     this.setSelectMode(true);
                 }
             });
-
-            box.setOnMouseExited(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    if (this.equals(Controller.brickClicked)) {
-                        b.setSelectMode(false);
-                    }
-                }
-            });
+            lego.cyl();
         }
+        currentStepStatic.getItems().add(this);
     }
 
     private void create() {
@@ -128,20 +90,35 @@ public class Brick extends ArrayList<Box> {
         }
         if (!environnement.contains(this)) environnement.add(this);
         for (int i = 0; i < volume.size(); i++) {
-            Box box = new Box();
-            box.setWidth(1);
-            box.setHeight(1);
-            box.setDepth(1);
-            box.setTranslateX(volume.get(i).getX());
-            box.setTranslateY(volume.get(i).getY());
-            box.setTranslateZ(volume.get(i).getZ());
-            this.add(box);
+            Lego lego = new Lego();
+            lego.setWidth(1);
+            lego.setHeight(1);
+            lego.setDepth(1);
+            lego.setTranslateX(volume.get(i).getX());
+            lego.setTranslateY(volume.get(i).getY());
+            lego.setTranslateZ(volume.get(i).getZ());
+            lego.cyl();
+            this.add(lego);
         }
-        group.getChildren().addAll(this);
+        for(Lego lego: this){
+            group.getChildren().add(lego);
+            group.getChildren().add(lego.getCylinder());
+        }
     }
 
     public void hide(boolean b){
-        if(b) for(Box box : this) box.setOpacity(0); else for(Box box: this) box.setOpacity(100);
+        isHide=b;
+        if(b){
+            for(Lego lego : this){
+                lego.setOpacity(0);
+                lego.cyl();
+            }
+        } else{
+            for(Lego lego: this){
+                lego.setOpacity(100);
+                lego.cyl();
+            }
+        }
     }
 
     public void remove(){
@@ -151,6 +128,7 @@ public class Brick extends ArrayList<Box> {
         if(getBrickWithColor(this.color).isEmpty()){
             contentColorsStatic.getItems().remove(this.color);
         }
+        getStepWhereIsBrick(this).getItems().remove(this);
         this.remove();
     }
 
@@ -166,7 +144,10 @@ public class Brick extends ArrayList<Box> {
 
 
     public void setColor(Color color) {
-        for (Box b : this) b.setMaterial(new PhongMaterial(color));
+        for (Lego b : this) {
+            b.setMaterial(new PhongMaterial(color));
+            b.cyl();
+        }
         this.color = color;
         if (!bricksSortByColors.containsKey(this)) bricksSortByColors.put(this, this.color);
         if (!bricksSortByColors.get(this).equals(this.color)) bricksSortByColors.replace(this, this.color);
@@ -190,6 +171,7 @@ public class Brick extends ArrayList<Box> {
                 get(i).setTranslateX(volume.get(i).getX());
                 get(i).setTranslateY(volume.get(i).getY());
                 get(i).setTranslateZ(volume.get(i).getZ());
+                get(i).cyl();
             }
         }
     }
@@ -217,9 +199,10 @@ public class Brick extends ArrayList<Box> {
         if (isEmpty()) {
             create();
         }
-        for (Box box : this) {
-            box.getTransforms().clear();
-            box.getTransforms().add(new Translate(this.x, this.y, this.z));
+        for (Lego lego : this) {
+            lego.getTransforms().clear();
+            lego.getTransforms().add(new Translate(this.x, this.y, this.z));
+            lego.cyl();
         }
     }
 
@@ -268,10 +251,29 @@ public class Brick extends ArrayList<Box> {
             green-=j;
             blue-=k;
             Color c = Color.rgb((int)red,(int)green,(int)blue);
-            for (Box box : this) box.setMaterial(new PhongMaterial(c));
+            for (Lego lego : this){
+                lego.setMaterial(new PhongMaterial(c));
+                lego.cyl();
+            }
         } else {
             this.setColor(color);
         }
         return this;
+    }
+
+    public Dim getDim() {
+        return dim;
+    }
+
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public void setRect(Rectangle rect) {
+        this.rect = rect;
+    }
+
+    public boolean isHide() {
+        return isHide;
     }
 }
