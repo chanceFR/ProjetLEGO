@@ -3,6 +3,7 @@ import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.bricks.GridBrick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.event.ActionEvent;
@@ -121,7 +122,6 @@ public class Controller implements Initializable {
         camera = new CameraUtils(true);
         angleY=-30;
         camera.addRotationsX(new DurationAngle(angleY,0.4f));
-        new Brick(new Dim(1,1,4),0,0,0,colorpicker.getValue());
         steps.setCellFactory(listView -> new ListCell<ListView>() {
             @Override
             protected void updateItem(ListView lv, boolean empty) {

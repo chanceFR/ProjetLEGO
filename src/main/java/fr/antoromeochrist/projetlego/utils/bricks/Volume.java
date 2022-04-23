@@ -33,6 +33,13 @@ public class Volume extends ArrayList<P3D> {
         s+=">";
         return s;
     }
+    private static void logIntersection(Volume a, Volume b,P3D inter){
+        System.out.println("Volume a: "+a);
+        System.out.println("Volume b:"+b);
+        System.out.println("Inter: "+inter);
+    }
+
+
     public static boolean volumeIntersection(Brick b, ArrayList<Brick> bricks){
         for(Brick brick : bricks){
             if(!brick.getID().equals(b.getID())) {
@@ -43,11 +50,14 @@ public class Volume extends ArrayList<P3D> {
         }
         return false;
     }
-    public static boolean volumeIntersection(Volume v, ArrayList<Brick> bricks){
+
+    public static boolean volumeIntersection(Volume v, ArrayList<Brick> bricks,Brick remove){
         for(Brick brick : bricks){
+            if(!brick.equals(remove)) {
                 if (volumeIntersection(brick.getVolume(), v)) {
                     return true;
                 }
+            }
         }
         return false;
     }
@@ -55,7 +65,10 @@ public class Volume extends ArrayList<P3D> {
     public static boolean volumeIntersection(Volume a,Volume b){
         for(P3D p1 : a){
             for(P3D p2: b){
-                if(p1.equals(p2)) return true;
+                if(p1.equals(p2)){
+                    logIntersection(a,b,p1);
+                    return true;
+                }
             }
         }
         return false;
