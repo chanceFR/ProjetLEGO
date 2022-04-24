@@ -226,6 +226,13 @@ public class Brick extends ArrayList<Lego> {
 
     public void move(double x, double y, double z) {
         Volume temp = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+        if(!Controller.actionWithDropDone){
+            int increment = 1;
+            while (Volume.volumeIntersection(temp, environnement, this)) {
+                temp = Volume.createAllVolume(new P3D(x, y-increment, z), this.dim);
+                increment++;
+            }
+        }
         if (!Volume.volumeIntersection(temp, environnement, this)) {
             this.x = x;
             this.y = y;
@@ -238,6 +245,7 @@ public class Brick extends ArrayList<Lego> {
                 get(i).cyl();
             }
         }
+
     }
 
 
