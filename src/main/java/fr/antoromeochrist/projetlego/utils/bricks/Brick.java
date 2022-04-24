@@ -182,10 +182,10 @@ public class Brick extends ArrayList<Lego> {
             group.getChildren().removeAll(border);
             for (Lego lego : this) group.getChildren().remove(lego.getCylinder());
             bricksSortByColors.remove(this);
-            environnement.remove(this);
-            if (getBrickWithColor(this.color).isEmpty()) {
+            if(getBrickWithColor(this.color).isEmpty()) {
                 Controller.contentColorsRemoveColor(this.color);
             }
+            environnement.remove(this);
             getStepWhereIsBrick(this).getItems().remove(this);
             this.remove();
         }

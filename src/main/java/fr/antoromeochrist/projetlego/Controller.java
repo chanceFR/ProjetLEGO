@@ -828,13 +828,15 @@ public class Controller implements Initializable {
         colorPick.setValue(c);
         Brick.contentColorsStatic.getItems().add(colorPick);
     }
-
     public static void contentColorsRemoveColor(Color c){
+        ColorPick toRem = null;
         for(ColorPick color : Brick.contentColorsStatic.getItems()){
             if(color.getValue().equals(c)){
-                Brick.contentColorsStatic.getItems().remove(color);
+                toRem = color;
+                break;
             }
         }
+        Brick.contentColorsStatic.getItems().remove(toRem);
     }
 
 }
