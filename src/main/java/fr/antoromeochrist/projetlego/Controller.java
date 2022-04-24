@@ -1,8 +1,10 @@
 package fr.antoromeochrist.projetlego;
+
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.ColorPick;
+import fr.antoromeochrist.projetlego.utils.bricks.GridBrick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.event.ActionEvent;
@@ -18,8 +20,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.*;
@@ -95,7 +97,7 @@ public class Controller implements Initializable {
     private ImageView bottom;
 
     private ArrayList<ImageStorage> imageStorages = new ArrayList<>();
-    private boolean actionWithDropDone = true;
+    public static boolean actionWithDropDone = true;
     @FXML
     public ImageView brickSelection;
 
@@ -114,7 +116,13 @@ public class Controller implements Initializable {
     @FXML
     public Label addStep;
 
-    private boolean updateForced=false;
+    private boolean updateForced = false;
+
+    public GridBrick grid;
+
+    private Brick brickMove;
+
+    private boolean isEnterInSubScene = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -123,10 +131,10 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 steps.getItems().add(new ListView());
-                currentStep=(ListView) steps.getItems().get(steps.getItems().size()-1);
+                currentStep = (ListView) steps.getItems().get(steps.getItems().size() - 1);
                 addStep.setTextFill(Color.web("#ffffff"));
-                Brick.currentStepStatic=currentStep;
-                Brick.stepsStatic=steps;
+                Brick.currentStepStatic = currentStep;
+                Brick.stepsStatic = steps;
             }
         });
 
@@ -137,13 +145,14 @@ public class Controller implements Initializable {
             }
         });
 
-        Brick.contentColorsStatic=contentColors;
-        Brick.stepsStatic=steps;
-        Brick.currentStepStatic= currentStep;
-        Brick.group=group;
+        Brick.contentColorsStatic = contentColors;
+        Brick.stepsStatic = steps;
+        Brick.currentStepStatic = currentStep;
+        Brick.group = group;
+        grid = new GridBrick(20, 20);
         camera = new CameraUtils(true);
-        angleY=-30;
-        camera.addRotationsX(new DurationAngle(angleY,0.4f));
+        angleY = -30;
+        camera.addRotationsX(new DurationAngle(angleY, 0.4f));
 
         steps.setCellFactory(listView -> new ListCell<ListView>() {
             @Override
@@ -153,7 +162,7 @@ public class Controller implements Initializable {
                     setGraphic(null);
                 } else {
 
-                    VBox vbx= new  VBox();
+                    VBox vbx = new VBox();
                     vbx.setPrefWidth(0);
                     vbx.setStyle("-fx-font-size: 10px;");
                     vbx.setStyle("-fx-background-color: transparent;");
@@ -161,7 +170,7 @@ public class Controller implements Initializable {
                     hbx.setSpacing(10);
                     hbx.setStyle("-fx-font-size: 10px;");
                     hbx.setStyle("-fx-background-color: transparent;");
-                    TextField field = new TextField("step "+steps.getItems().size());
+                    TextField field = new TextField("step " + steps.getItems().size());
                     field.setPrefWidth(400);
                     field.setStyle("-fx-background-color: #121418;\n" +
                             "    -fx-text-inner-color: #808080;\n" +
@@ -178,29 +187,30 @@ public class Controller implements Initializable {
                     view.setFitWidth(20);
                     view.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         boolean isHide = false;
+
                         @Override
                         public void handle(MouseEvent mouseEvent) {
-                            if(isHide){
-                                isHide=false;
+                            if (isHide) {
+                                isHide = false;
                                 try {
                                     view.setImage(new ImagePath("noview.png"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
-                            }else{
-                                isHide=true;
+                            } else {
+                                isHide = true;
                                 try {
                                     view.setImage(new ImagePath("view.png"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
                             }
-                            for(Object obj: lv.getItems()) ((Brick)obj).hide(isHide);
+                            for (Object obj : lv.getItems()) ((Brick) obj).hide(isHide);
                         }
                     });
 
                     ImageView trash = null;
-                    if(steps.getItems().size() > 1) {
+                    if (steps.getItems().size() > 1) {
                         trash = new ImageView();
                         try {
                             trash.setImage(new ImagePath("trash.png"));
@@ -222,51 +232,51 @@ public class Controller implements Initializable {
                     }
                     lv.setStyle("-fx-background-color: transparent;");
                     lv.setFixedCellSize(50);
-                    lv.setCellFactory(o -> new ListCell<Brick>(){
+                    lv.setCellFactory(o -> new ListCell<Brick>() {
                         @Override
                         protected void updateItem(Brick o, boolean empty) {
                             super.updateItem(o, empty);
                             if (empty) {
                                 setGraphic(null);
                             } else {
-                                    HBox hbx1 = new HBox();
-                                    hbx1.setAlignment(Pos.CENTER_LEFT);
-                                    hbx1.setStyle("-fx-font-size: 12px;");
-                                    ImageView iv = new ImageView();
-                                    iv.setImage(ImageStorage.getImage(imageStorages, o.getDim().toString()));
-                                    iv.setFitHeight(20);
-                                    iv.setFitWidth(20);
-                                    Label lb = new Label("      " + o.getDim().toString()+"             ");
-                                    lb.setStyle("-fx-text-fill: #808080;");
-                                    Label lb2 = new Label("     ");
-                                    System.out.println("color: " + o.getColor().getRed() * 255 + " " + o.getColor().getGreen() * 255 + " " + o.getColor().getBlue() * 255);
-                                    hbx1.getChildren().addAll(
-                                            iv,
-                                            o.getRect(),
-                                            lb,
-                                            o.getHidestatus(),
-                                            lb2,
-                                            o.getTrash()
-                                    );
-                                    hbx1.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                                        @Override
-                                        public void handle(MouseEvent mouseEvent) {
-                                            if (brickClicked != null) brickClicked.setSelectMode(false);
-                                            brickClicked = o;
-                                            o.setSelectMode(true);
-                                        }
-                                    });
-                                    setGraphic(hbx1);
-                                lv.setPrefHeight(lv.getItems().size() * 50+5);
+                                HBox hbx1 = new HBox();
+                                hbx1.setAlignment(Pos.CENTER_LEFT);
+                                hbx1.setStyle("-fx-font-size: 12px;");
+                                ImageView iv = new ImageView();
+                                iv.setImage(ImageStorage.getImage(imageStorages, o.getDim().toString()));
+                                iv.setFitHeight(20);
+                                iv.setFitWidth(20);
+                                Label lb = new Label("      " + o.getDim().toString() + "             ");
+                                lb.setStyle("-fx-text-fill: #808080;");
+                                Label lb2 = new Label("     ");
+                                System.out.println("color: " + o.getColor().getRed() * 255 + " " + o.getColor().getGreen() * 255 + " " + o.getColor().getBlue() * 255);
+                                hbx1.getChildren().addAll(
+                                        iv,
+                                        o.getRect(),
+                                        lb,
+                                        o.getHidestatus(),
+                                        lb2,
+                                        o.getTrash()
+                                );
+                                hbx1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                    @Override
+                                    public void handle(MouseEvent mouseEvent) {
+                                        if (brickClicked != null) brickClicked.setSelectMode(false);
+                                        brickClicked = o;
+                                        o.setSelectMode(true);
+                                    }
+                                });
+                                setGraphic(hbx1);
+                                lv.setPrefHeight(lv.getItems().size() * 50 + 5);
                             }
                         }
-                        });
-                    if(steps.getItems().size() > 1){
-                        hbx.getChildren().addAll(field,view,trash);
-                    }else{
-                        hbx.getChildren().addAll(field,view);
+                    });
+                    if (steps.getItems().size() > 1) {
+                        hbx.getChildren().addAll(field, view, trash);
+                    } else {
+                        hbx.getChildren().addAll(field, view);
                     }
-                    vbx.getChildren().addAll(hbx,lv);
+                    vbx.getChildren().addAll(hbx, lv);
                     setGraphic(vbx);
                 }
             }
@@ -275,18 +285,18 @@ public class Controller implements Initializable {
 
 
         try {
-            imageStorages.add(new ImageStorage("1x1",new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("1x2",new ImagePath("1x2.png")));
-            imageStorages.add(new ImageStorage("1x3",new ImagePath("1x3.png")));
-            imageStorages.add(new ImageStorage("1x4",new ImagePath("1x4.png")));
-            imageStorages.add(new ImageStorage("2x2",new ImagePath("2x2.png")));
-            imageStorages.add(new ImageStorage("2x3",new ImagePath("2x3.png")));
-            imageStorages.add(new ImageStorage("2x4",new ImagePath("2x4.png")));
-            imageStorages.add(new ImageStorage("3x3",new ImagePath("3x3.png")));
-            imageStorages.add(new ImageStorage("3x4",new ImagePath("3x4.png")));
-            imageStorages.add(new ImageStorage("4x4",new ImagePath("4x4.png")));
-            imageStorages.add(new ImageStorage("1x1x2",new ImagePath("1x1x2.png")));
-            imageStorages.add(new ImageStorage("1x1x4",new ImagePath("1x1x4.png")));
+            imageStorages.add(new ImageStorage("1x1", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("1x2", new ImagePath("1x2.png")));
+            imageStorages.add(new ImageStorage("1x3", new ImagePath("1x3.png")));
+            imageStorages.add(new ImageStorage("1x4", new ImagePath("1x4.png")));
+            imageStorages.add(new ImageStorage("2x2", new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("2x3", new ImagePath("2x3.png")));
+            imageStorages.add(new ImageStorage("2x4", new ImagePath("2x4.png")));
+            imageStorages.add(new ImageStorage("3x3", new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("3x4", new ImagePath("3x4.png")));
+            imageStorages.add(new ImageStorage("4x4", new ImagePath("4x4.png")));
+            imageStorages.add(new ImageStorage("1x1x2", new ImagePath("1x1x2.png")));
+            imageStorages.add(new ImageStorage("1x1x4", new ImagePath("1x1x4.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -300,7 +310,7 @@ public class Controller implements Initializable {
                     setGraphic(null);
                 } else {
                     // Create a HBox to hold our displayed value
-                    HBox hbx1 = new  HBox();
+                    HBox hbx1 = new HBox();
                     hbx1.setAlignment(Pos.CENTER);
                     ImageView iv = new ImageView();
                     iv.setImage(imSto.getImage());
@@ -313,7 +323,7 @@ public class Controller implements Initializable {
                     }*/
 
                     iv.setFitHeight(50);
-                    Label lb = new Label("      "+imSto.getText());
+                    Label lb = new Label("      " + imSto.getText());
                     lb.setStyle("-fx-text-fill: #c25b11;");
                     hbx1.setStyle("-fx-font-size: 10px;");
                     hbx1.getChildren().addAll(
@@ -324,9 +334,12 @@ public class Controller implements Initializable {
                     hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent e) {
-                            actionWithDropDone =false;
+                            clearBreakSelection();
+                            actionWithDropDone = false;
+                            isEnterInSubScene = false;
+                            brickMove = null;
                             System.out.println("Création de la brique-view:");
-                            dropSelectionData =imSto;
+                            dropSelectionData = imSto;
                             brickSelection.setFitHeight(50);
                             brickSelection.setFitWidth(50);
                             brickSelection.setImage(iv.getImage());
@@ -348,12 +361,12 @@ public class Controller implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    color.setPrefSize(10,10);
+                    color.setPrefSize(10, 10);
                     color.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
-                            for(Map.Entry<Brick,Color> entry: Brick.bricksSortByColors.entrySet()){
-                                if(entry.getValue().equals(color.getOldValue())){
+                            for (Map.Entry<Brick, Color> entry : Brick.bricksSortByColors.entrySet()) {
+                                if (entry.getValue().equals(color.getOldValue())) {
                                     entry.getKey().setColor(color.getValue());
                                 }
                             }
@@ -364,43 +377,45 @@ public class Controller implements Initializable {
                 }
             }
         });
-
         anchorPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if(!actionWithDropDone){
-                    brickSelection.setX(mouseEvent.getX());
-                    brickSelection.setY(mouseEvent.getY());
+                if (!actionWithDropDone && isEnterInSubScene) {
+                    brickMove.move(grid.getMouseCoors()[0], 0, grid.getMouseCoors()[1]);
+                    brickMove.setSelectMode(true);
+                } else {
+                    brickMove = null;
                 }
             }
         });
 
-        //Ajout de brick en les glissant avec la souris
-        subScene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        subScene.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent e) {
-                if(!actionWithDropDone){
-                    actionWithDropDone =true;
+            public void handle(MouseEvent mouseEvent) {
+                if (!actionWithDropDone && !isEnterInSubScene) {
+                    isEnterInSubScene = true;
                     clearBreakSelection();
-                    if(brickClicked !=null){
-                        new Brick(dropSelectionData.getDimWithText(),brickClicked.getX(), brickClicked.getY(), brickClicked.getZ(), colorpicker.getValue()).setColor(colorpicker.getValue());
+                    if (brickClicked != null) {
                         brickClicked.setSelectMode(false);
-                    }else{
-                        new Brick(dropSelectionData.getDimWithText(),0, 0, 0, colorpicker.getValue()).setColor(colorpicker.getValue());
                     }
+                    System.out.println("XZ:" + Arrays.asList(grid.getMouseCoors()));
+                    brickMove = new Brick(dropSelectionData.getDimWithText(), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
+                    brickMove.setSelectMode(true);
+                    brickClicked = brickMove;
                 }
             }
         });
+
         colorpicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(brickClicked != null){
+                if (brickClicked != null) {
                     Color oldColor = brickClicked.getColor();
                     brickClicked.setColor(colorpicker.getValue());
                     brickClicked.getRect().setFill(colorpicker.getValue());
-                    System.out.println("Dic: "+Brick.bricksSortByColors);
-                    System.out.println("Brick with hex :"+Brick.getBrickWithColor(oldColor).size());
-                    if(Brick.getBrickWithColor(oldColor).isEmpty()) contentColors.getItems().remove(oldColor);
+                    System.out.println("Dic: " + Brick.bricksSortByColors);
+                    System.out.println("Brick with hex :" + Brick.getBrickWithColor(oldColor).size());
+                    if (Brick.getBrickWithColor(oldColor).isEmpty()) contentColors.getItems().remove(oldColor);
                 }
             }
         });
@@ -408,76 +423,75 @@ public class Controller implements Initializable {
         anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if(keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)){
-                    if(actionWithDropDone == false) {
+                if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                    if (actionWithDropDone == false) {
                         actionWithDropDone = true;
-                        clearBreakSelection();
                     }
                 }
-                    if(brickClicked != null){
-                        switch(keyEvent.getCode()){
-                            case W:
-                                brickClicked.down();
-                                break;
-                            case X:
-                                brickClicked.up();
-                                break;
-                            case LEFT:
-                                brickClicked.leftX();
-                                break;
-                            case RIGHT:
-                                brickClicked.rightX();
-                                break;
-                            case UP:
-                                brickClicked.rightZ();
-                                break;
-                            case DOWN:
-                                brickClicked.leftZ();
-                                break;
-                        }
+                if (brickClicked != null) {
+                    switch (keyEvent.getCode()) {
+                        case W:
+                            brickClicked.down();
+                            break;
+                        case X:
+                            brickClicked.up();
+                            break;
+                        case LEFT:
+                            brickClicked.leftX();
+                            break;
+                        case RIGHT:
+                            brickClicked.rightX();
+                            break;
+                        case UP:
+                            brickClicked.rightZ();
+                            break;
+                        case DOWN:
+                            brickClicked.leftZ();
+                            break;
                     }
+                }
 
             }
         });
 
-        clonee.addEventFilter(MouseEvent.MOUSE_PRESSED,mousePressedClone);
-        clonee.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseReleasedClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_PRESSED, mousePressedClone);
+        clonee.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseReleasedClone);
 
-        hide.addEventFilter(MouseEvent.MOUSE_PRESSED,mousePressedHide);
-        hide.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseReleasedHide);
+        hide.addEventFilter(MouseEvent.MOUSE_PRESSED, mousePressedHide);
+        hide.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseReleasedHide);
 
-        searchBar.addEventFilter(KeyEvent.KEY_PRESSED,keyPressedSearchBar);
+        searchBar.addEventFilter(KeyEvent.KEY_PRESSED, keyPressedSearchBar);
 
-        rleft.addEventFilter(MouseEvent.MOUSE_PRESSED,rL);
+        rleft.addEventFilter(MouseEvent.MOUSE_PRESSED, rL);
         rleft.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseLeftReleased);
 
-        rright.addEventFilter(MouseEvent.MOUSE_PRESSED,rR);
+        rright.addEventFilter(MouseEvent.MOUSE_PRESSED, rR);
         rright.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseRightReleased);
 
-        rtop.addEventFilter(MouseEvent.MOUSE_PRESSED,rT);
+        rtop.addEventFilter(MouseEvent.MOUSE_PRESSED, rT);
         rtop.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseTopReleased);
 
-        rbottom.addEventFilter(MouseEvent.MOUSE_PRESSED,rB);
+        rbottom.addEventFilter(MouseEvent.MOUSE_PRESSED, rB);
         rbottom.addEventFilter(MouseEvent.MOUSE_RELEASED, rmouseBottomReleased);
 
 
-        top.addEventFilter(MouseEvent.MOUSE_PRESSED,bT);
+        top.addEventFilter(MouseEvent.MOUSE_PRESSED, bT);
         top.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseTopReleased);
 
-        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,o);
+        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED, o);
         bottom.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseBottomReleased);
 
-        left.addEventFilter(MouseEvent.MOUSE_PRESSED,bL);
+        left.addEventFilter(MouseEvent.MOUSE_PRESSED, bL);
         left.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseLeftReleased);
 
-        right.addEventFilter(MouseEvent.MOUSE_PRESSED,bR);
+        right.addEventFilter(MouseEvent.MOUSE_PRESSED, bR);
         right.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseRightReleased);
 
-        plus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickPlus);
-        plus.addEventFilter(MouseEvent.MOUSE_RELEASED,mousePlusReleased);
+        plus.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseClickPlus);
+        plus.addEventFilter(MouseEvent.MOUSE_RELEASED, mousePlusReleased);
 
-        minus.addEventFilter(MouseEvent.MOUSE_PRESSED,mouseClickMinus);
-        minus.addEventFilter(MouseEvent.MOUSE_RELEASED,mouseMinusReleased);
+        minus.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseClickMinus);
+        minus.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseMinusReleased);
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
     }
@@ -494,7 +508,7 @@ public class Controller implements Initializable {
     @FXML
     void search(ActionEvent event) {
         listView.getItems().clear();
-        listView.getItems().addAll(searchList(searchBar.getText(),imageStorages));
+        listView.getItems().addAll(searchList(searchBar.getText(), imageStorages));
     }
 
     EventHandler<MouseEvent> mousePressedHide = new EventHandler<MouseEvent>() {
@@ -520,12 +534,12 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> mouseReleasedHide = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-                try {
-                    hideicon.setImage(new ImagePath("hide.jpg"));
-                    hidetext.setFill(Color.web("#edeeef"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+            try {
+                hideicon.setImage(new ImagePath("hide.jpg"));
+                hidetext.setFill(Color.web("#edeeef"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
 
         }
     };
@@ -533,26 +547,26 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> mousePressedClone = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            if(brickClicked != null) {
+            if (brickClicked != null) {
                 new Brick(brickClicked.getDim(), brickClicked.getX(), brickClicked.getY(), brickClicked.getZ(), brickClicked.getColor());
             }
             try {
-                    cloneeicon.setImage(new ImagePath("clonehover.jpg"));
-                    cloneetext.setFill(Color.web("#42C0FB"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+                cloneeicon.setImage(new ImagePath("clonehover.jpg"));
+                cloneetext.setFill(Color.web("#42C0FB"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
         }
     };
     EventHandler<MouseEvent> mouseReleasedClone = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-                try {
-                    cloneeicon.setImage(new ImagePath("clone.jpg"));
-                    cloneetext.setFill(Color.web("#edeeef"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+            try {
+                cloneeicon.setImage(new ImagePath("clone.jpg"));
+                cloneetext.setFill(Color.web("#edeeef"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
         }
     };
     EventHandler<KeyEvent> keyPressedSearchBar = new EventHandler<KeyEvent>() {
@@ -636,7 +650,6 @@ public class Controller implements Initializable {
     };
 
 
-
     EventHandler<MouseEvent> rmouseTopReleased = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
@@ -647,7 +660,6 @@ public class Controller implements Initializable {
             }
         }
     };
-
 
 
     EventHandler<MouseEvent> rmouseBottomReleased = new EventHandler<MouseEvent>() {
@@ -664,8 +676,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rL = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleX-=11.25;
-            camera.addRotationsY(new DurationAngle(angleX,0.4f));
+            angleX -= 11.25;
+            camera.addRotationsY(new DurationAngle(angleX, 0.4f));
             try {
                 rleft.setImage(new ImagePath("rleftHover.png"));
             } catch (FileNotFoundException ex) {
@@ -676,8 +688,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rR = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleX+=11.25;
-            camera.addRotationsY(new DurationAngle(angleX,0.4f));
+            angleX += 11.25;
+            camera.addRotationsY(new DurationAngle(angleX, 0.4f));
             try {
                 rright.setImage(new ImagePath("rrightHover.png"));
             } catch (FileNotFoundException ex) {
@@ -689,8 +701,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rT = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleY+=11.25;
-            camera.addRotationsX(new DurationAngle(angleY,0.4f));
+            angleY += 11.25;
+            camera.addRotationsX(new DurationAngle(angleY, 0.4f));
             try {
                 rtop.setImage(new ImagePath("rtopHover.png"));
             } catch (FileNotFoundException ex) {
@@ -701,8 +713,8 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> rB = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            angleY-=11.25;
-            camera.addRotationsX(new DurationAngle(angleY,0.4f));
+            angleY -= 11.25;
+            camera.addRotationsX(new DurationAngle(angleY, 0.4f));
             try {
                 rbottom.setImage(new ImagePath("rbottomHover.png"));
             } catch (FileNotFoundException ex) {
@@ -735,7 +747,6 @@ public class Controller implements Initializable {
     };
 
 
-
     EventHandler<MouseEvent> mouseTopReleased = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
@@ -746,7 +757,6 @@ public class Controller implements Initializable {
             }
         }
     };
-
 
 
     EventHandler<MouseEvent> mouseBottomReleased = new EventHandler<MouseEvent>() {
@@ -786,7 +796,7 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> bT = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-           camera.up();
+            camera.up();
             try {
                 top.setImage(new ImagePath("topHover.png"));
             } catch (FileNotFoundException ex) {
@@ -814,24 +824,25 @@ public class Controller implements Initializable {
         }).collect(Collectors.toList());
     }
 
-    public static boolean colorInContentColors(Color c){
-        for(ColorPick color : Brick.contentColorsStatic.getItems()){
-            if(color.getValue().equals(c)){
+    public static boolean colorInContentColors(Color c) {
+        for (ColorPick color : Brick.contentColorsStatic.getItems()) {
+            if (color.getValue().equals(c)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static void contentColorAddColor(Color c){
+    public static void contentColorAddColor(Color c) {
         ColorPick colorPick = new ColorPick();
         colorPick.setValue(c);
         Brick.contentColorsStatic.getItems().add(colorPick);
     }
-    public static void contentColorsRemoveColor(Color c){
+
+    public static void contentColorsRemoveColor(Color c) {
         ColorPick toRem = null;
-        for(ColorPick color : Brick.contentColorsStatic.getItems()){
-            if(color.getValue().equals(c)){
+        for (ColorPick color : Brick.contentColorsStatic.getItems()) {
+            if (color.getValue().equals(c)) {
                 toRem = color;
                 break;
             }

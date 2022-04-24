@@ -66,7 +66,7 @@ public class Brick extends ArrayList<Lego> {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.rect = new Rectangle(0,0,10,10);
+        this.rect = new Rectangle(0, 0, 10, 10);
         this.rect.setStroke(Color.BLACK);
         this.border = new ArrayList<>();
         this.create();
@@ -103,20 +103,22 @@ public class Brick extends ArrayList<Lego> {
         Brick b = this;
         for (Lego lego : this) {
             lego.setOnMousePressed(mouseEvent -> {
-                if (Controller.brickClicked != null) {
-                    if (Controller.brickClicked.equals(this)) {
-                        setSelectMode(false);
-                        Controller.brickClicked = null;
+                if (Controller.actionWithDropDone) {
+                    if (Controller.brickClicked != null) {
+                        if (Controller.brickClicked.equals(this)) {
+                            setSelectMode(false);
+                            Controller.brickClicked = null;
+                        } else {
+                            Controller.brickClicked.setSelectMode(false);
+                            Controller.brickClicked = this;
+                            //System.out.println("--> " + Controller.brickClicked);
+                            this.setSelectMode(true);
+                        }
                     } else {
-                        Controller.brickClicked.setSelectMode(false);
                         Controller.brickClicked = this;
                         //System.out.println("--> " + Controller.brickClicked);
                         this.setSelectMode(true);
                     }
-                } else {
-                    Controller.brickClicked = this;
-                    //System.out.println("--> " + Controller.brickClicked);
-                    this.setSelectMode(true);
                 }
             });
             lego.cyl();
@@ -172,7 +174,7 @@ public class Brick extends ArrayList<Lego> {
     public void remove() {
         if (!isDelete) { //evite des bugs si on clique deux fois sur le bonton corbeille
             isDelete = true;
-            if(Controller.brickClicked != null) {
+            if (Controller.brickClicked != null) {
                 if (Controller.brickClicked.getID().equals(this.getID())) {
                     Controller.brickClicked = null;
                 }
@@ -182,7 +184,7 @@ public class Brick extends ArrayList<Lego> {
             group.getChildren().removeAll(border);
             for (Lego lego : this) group.getChildren().remove(lego.getCylinder());
             bricksSortByColors.remove(this);
-            if(getBrickWithColor(this.color).isEmpty()) {
+            if (getBrickWithColor(this.color).isEmpty()) {
                 Controller.contentColorsRemoveColor(this.color);
             }
             environnement.remove(this);
@@ -210,7 +212,7 @@ public class Brick extends ArrayList<Lego> {
         this.color = color;
         if (!bricksSortByColors.containsKey(this)) bricksSortByColors.put(this, this.color);
         if (!bricksSortByColors.get(this).equals(this.color)) bricksSortByColors.replace(this, this.color);
-        if (!Controller.colorInContentColors(this.color))Controller.contentColorAddColor(this.color);
+        if (!Controller.colorInContentColors(this.color)) Controller.contentColorAddColor(this.color);
         bricksSortByColors.replace(this, this.color);
     }
 
@@ -219,11 +221,15 @@ public class Brick extends ArrayList<Lego> {
     }
 
     public void translate(double x, double y, double z) {
-        Volume temp = Volume.createAllVolume(new P3D(this.x + x, this.y + y, this.z + z), this.dim);
+        move(this.x + x, this.y + y, this.z + z);
+    }
+
+    public void move(double x, double y, double z) {
+        Volume temp = Volume.createAllVolume(new P3D(x, y, z), this.dim);
         if (!Volume.volumeIntersection(temp, environnement, this)) {
-            this.x += x;
-            this.y += y;
-            this.z += z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
             volume = temp;
             for (int i = 0; i < volume.size(); i++) {
                 get(i).setTranslateX(volume.get(i).getX());
@@ -475,7 +481,7 @@ public class Brick extends ArrayList<Lego> {
         for (Cylinder bord : border) {
             bord.setMaterial(new PhongMaterial(c));
         }
-        if(!isDelete){
+        if (!isDelete) {
             Brick.group.getChildren().addAll(border);
         }
     }
