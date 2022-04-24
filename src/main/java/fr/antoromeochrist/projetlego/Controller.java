@@ -223,8 +223,10 @@ public class Controller implements Initializable {
                             @Override
                             public void handle(MouseEvent mouseEvent) {
                                 for (Object o : lv.getItems()) {
-                                    Brick b = (Brick) o;
-                                    b.remove();
+                                    if(o instanceof Brick){
+                                        Brick b = (Brick) o;
+                                        b.remove();
+                                    }
                                 }
                                 steps.getItems().remove(lv);
                             }
