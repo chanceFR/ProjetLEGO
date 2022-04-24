@@ -26,7 +26,7 @@ public class Brick extends ArrayList<Lego> {
     public static Group group;
     public static HashMap<Brick, Color> bricksSortByColors = new HashMap<>();
     public static ArrayList<Brick> environnement = new ArrayList<>();
-    public static ListView<Color> contentColorsStatic;
+    public static ListView<ColorPick> contentColorsStatic;
     public static ListView<ListView<Brick>> stepsStatic;
     public static ListView<Brick> currentStepStatic;
     private Dim dim;
@@ -66,14 +66,16 @@ public class Brick extends ArrayList<Lego> {
         this.x = x;
         this.y = y;
         this.z = z;
-        border = new ArrayList<>();
-        create();
+        this.rect = new Rectangle(0,0,10,10);
+        this.rect.setStroke(Color.BLACK);
+        this.border = new ArrayList<>();
+        this.create();
         this.setColor(c);
-        hidestatus = new ImageView();
-        hidestatus.setFitHeight(12);
-        hidestatus.setFitWidth(12);
-        setViewstatusHide(false);
-        hidestatus.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        this.hidestatus = new ImageView();
+        this.hidestatus.setFitHeight(12);
+        this.hidestatus.setFitWidth(12);
+        this.setViewstatusHide(false);
+        this.hidestatus.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (isHide()) {
@@ -83,15 +85,15 @@ public class Brick extends ArrayList<Lego> {
                 }
             }
         });
-        trash = new ImageView();
+        this.trash = new ImageView();
         try {
-            trash.setImage(new ImagePath("trash.png"));
+            this.trash.setImage(new ImagePath("trash.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        trash.setFitWidth(12);
-        trash.setFitHeight(12);
-        trash.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        this.trash.setFitWidth(12);
+        this.trash.setFitHeight(12);
+        this.trash.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 remove();
@@ -150,7 +152,7 @@ public class Brick extends ArrayList<Lego> {
     }
 
     public void hide(boolean b) {
-        isHide = b;
+        this.isHide = b;
         setViewstatusHide(b);
         if (b) {
             for (Lego lego : this) {
@@ -182,7 +184,7 @@ public class Brick extends ArrayList<Lego> {
             bricksSortByColors.remove(this);
             environnement.remove(this);
             if (getBrickWithColor(this.color).isEmpty()) {
-                contentColorsStatic.getItems().remove(this.color);
+                Controller.contentColorsRemoveColor(this.color);
             }
             getStepWhereIsBrick(this).getItems().remove(this);
             this.remove();
@@ -199,8 +201,8 @@ public class Brick extends ArrayList<Lego> {
         return bricks;
     }
 
-
     public void setColor(Color color) {
+        rect.setFill(color);
         for (Lego b : this) {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
@@ -208,8 +210,7 @@ public class Brick extends ArrayList<Lego> {
         this.color = color;
         if (!bricksSortByColors.containsKey(this)) bricksSortByColors.put(this, this.color);
         if (!bricksSortByColors.get(this).equals(this.color)) bricksSortByColors.replace(this, this.color);
-        if (!contentColorsStatic.getItems().contains(this.color))contentColorsStatic.getItems().add(this.color);
-
+        if (!Controller.colorInContentColors(this.color))Controller.contentColorAddColor(this.color);
         bricksSortByColors.replace(this, this.color);
     }
 

@@ -2,8 +2,7 @@ package fr.antoromeochrist.projetlego;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
-import fr.antoromeochrist.projetlego.utils.bricks.Dim;
-import fr.antoromeochrist.projetlego.utils.bricks.GridBrick;
+import fr.antoromeochrist.projetlego.utils.bricks.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.event.ActionEvent;
@@ -21,7 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.*;
@@ -146,6 +144,7 @@ public class Controller implements Initializable {
         camera = new CameraUtils(true);
         angleY=-30;
         camera.addRotationsX(new DurationAngle(angleY,0.4f));
+
         steps.setCellFactory(listView -> new ListCell<ListView>() {
             @Override
             protected void updateItem(ListView lv, boolean empty) {
@@ -168,6 +167,38 @@ public class Controller implements Initializable {
                             "    -fx-text-inner-color: #808080;\n" +
                             "    -fx-font-size: 12px;\n" +
                             "    -fx-border-radius: 1px;");
+
+                    ImageView view = new ImageView();
+                    try {
+                        view.setImage(new ImagePath("view.png"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    view.setFitHeight(20);
+                    view.setFitWidth(20);
+                    view.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        boolean isHide = false;
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                            if(isHide){
+                                isHide=false;
+                                try {
+                                    view.setImage(new ImagePath("noview.png"));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                isHide=true;
+                                try {
+                                    view.setImage(new ImagePath("view.png"));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            for(Object obj: lv.getItems()) ((Brick)obj).hide(isHide);
+                        }
+                    });
+
                     ImageView trash = null;
                     if(steps.getItems().size() > 1) {
                         trash = new ImageView();
@@ -190,7 +221,7 @@ public class Controller implements Initializable {
                         });
                     }
                     lv.setStyle("-fx-background-color: transparent;");
-                    lv.setPrefHeight(51);
+                    lv.setFixedCellSize(50);
                     lv.setCellFactory(o -> new ListCell<Brick>(){
                         @Override
                         protected void updateItem(Brick o, boolean empty) {
@@ -208,10 +239,7 @@ public class Controller implements Initializable {
                                     Label lb = new Label("      " + o.getDim().toString()+"             ");
                                     lb.setStyle("-fx-text-fill: #808080;");
                                     Label lb2 = new Label("     ");
-                                    o.setRect(new Rectangle(0, 0, 10, 10));
                                     System.out.println("color: " + o.getColor().getRed() * 255 + " " + o.getColor().getGreen() * 255 + " " + o.getColor().getBlue() * 255);
-                                    o.getRect().setFill(o.getColor());
-                                    o.getRect().setStroke(Color.BLACK);
                                     hbx1.getChildren().addAll(
                                             iv,
                                             o.getRect(),
@@ -228,18 +256,16 @@ public class Controller implements Initializable {
                                             o.setSelectMode(true);
                                         }
                                     });
-                                    lv.setFixedCellSize(50);
-                                    lv.setPrefHeight(lv.getItems().size() * 50 + 5);
                                     setGraphic(hbx1);
+                                lv.setPrefHeight(lv.getItems().size() * 50+5);
                             }
                         }
                         });
                     if(steps.getItems().size() > 1){
-                        hbx.getChildren().addAll(field,trash);
+                        hbx.getChildren().addAll(field,view,trash);
                     }else{
-                        hbx.getChildren().addAll(field);
+                        hbx.getChildren().addAll(field,view);
                     }
-
                     vbx.getChildren().addAll(hbx,lv);
                     setGraphic(vbx);
                 }
@@ -315,17 +341,26 @@ public class Controller implements Initializable {
             }
         });
 
-        contentColors.setCellFactory(listView -> new ListCell<Color>() {
+        contentColors.setCellFactory(listView -> new ListCell<ColorPick>() {
             @Override
-            protected void updateItem(Color color, boolean empty) {
+            protected void updateItem(ColorPick color, boolean empty) {
                 super.updateItem(color, empty);
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    Rectangle re = new Rectangle(0, 0, 10, 10);
-                    re.setFill(color);
-                    re.setStroke(Color.BLACK);
-                    setGraphic(re);
+                    color.setPrefSize(10,10);
+                    color.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            for(Map.Entry<Brick,Color> entry: Brick.bricksSortByColors.entrySet()){
+                                if(entry.getValue().equals(color.getOldValue())){
+                                    entry.getKey().setColor(color.getValue());
+                                }
+                            }
+                        }
+                    });
+
+                    setGraphic(color);
                 }
             }
         });
@@ -356,7 +391,6 @@ public class Controller implements Initializable {
                 }
             }
         });
-
         colorpicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -778,6 +812,29 @@ public class Controller implements Initializable {
             return searchWordsArray.stream().allMatch(word ->
                     input.getText().toLowerCase().contains(word.toLowerCase()));
         }).collect(Collectors.toList());
+    }
+
+    public static boolean colorInContentColors(Color c){
+        for(ColorPick color : Brick.contentColorsStatic.getItems()){
+            if(color.getValue().equals(c)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void contentColorAddColor(Color c){
+        ColorPick colorPick = new ColorPick();
+        colorPick.setValue(c);
+        Brick.contentColorsStatic.getItems().add(colorPick);
+    }
+
+    public static void contentColorsRemoveColor(Color c){
+        for(ColorPick color : Brick.contentColorsStatic.getItems()){
+            if(color.getValue().equals(c)){
+                Brick.contentColorsStatic.getItems().remove(color);
+            }
+        }
     }
 
 }

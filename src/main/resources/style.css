@@ -91,3 +91,64 @@ list-cell:filled:selected:focused, .list-cell:filled:selected {
 .menu-item:hover {
     -fx-background-color: #121418;
 }
+
+
+/* The main scrollbar CSS class of ListView */
+#listView .scroll-bar:horizontal ,
+#listView  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+#listView .increment-button ,#listView .decrement-button {
+    -fx-background-color:transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+#listView .scroll-bar:horizontal .track ,
+#listView .scroll-bar:vertical .track{
+     -fx-background-color: transparent;
+	 -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+#listView .scroll-bar:horizontal .thumb,
+#listView .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+}
+
+
+
+/*--*/
+
+
+
+
+
+
+/* The main scrollbar CSS class of ListView */
+#steps .scroll-bar:horizontal ,
+#steps  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+#steps .increment-button ,#listView .decrement-button {
+    -fx-background-color:transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+#steps .scroll-bar:horizontal .track ,
+#steps .scroll-bar:vertical .track{
+     -fx-background-color: transparent;
+	 -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+#steps .scroll-bar:horizontal .thumb,
+#steps .scroll-bar:vertical .thumb {
+    -fx-background-color:#808080;
+}
+
+
+

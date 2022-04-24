@@ -59,7 +59,7 @@
                 <Group>
                     <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="201.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="255.0" />
-                        <ListView fx:id="listView" layoutX="20.0" layoutY="24.0" prefHeight="447.0" prefWidth="217.0" stylesheets="@../../../style.css" />
+                        <ListView fx:id="listView" layoutX="20.0" layoutY="24.0" prefHeight="441.0" prefWidth="217.0" stylesheets="@../../../style.css" />
                   <ColorPicker fx:id="colorpicker" layoutX="192.0" layoutY="-7.0" prefHeight="25.0" prefWidth="45.0" style="-fx-background-color: transparent;">
                      <value>
                         <Color red="0.501960813999176" green="0.501960813999176" blue="0.501960813999176" />
