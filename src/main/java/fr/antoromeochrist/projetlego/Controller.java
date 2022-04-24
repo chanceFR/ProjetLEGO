@@ -111,10 +111,34 @@ public class Controller implements Initializable {
     @FXML
     public ListView steps;
 
-    public ListView currentStep = new ListView();
+    public ListView currentStep;
+
+    @FXML
+    public Label addStep;
+
+    private boolean updateForced=false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        currentStep = new ListView();
+        addStep.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                steps.getItems().add(new ListView());
+                currentStep=(ListView) steps.getItems().get(steps.getItems().size()-1);
+                addStep.setTextFill(Color.web("#ffffff"));
+                Brick.currentStepStatic=currentStep;
+                Brick.stepsStatic=steps;
+            }
+        });
+
+        addStep.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                addStep.setTextFill(Color.web("#808080"));
+            }
+        });
+
         Brick.contentColorsStatic=contentColors;
         Brick.stepsStatic=steps;
         Brick.currentStepStatic= currentStep;
@@ -129,60 +153,100 @@ public class Controller implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    lv.setMinSize(steps.getHeight()/6,steps.getWidth());
-                    lv.setStyle("-fx-background-color: transparent;");
+
                     VBox vbx= new  VBox();
-                    vbx.setAlignment(Pos.CENTER);
+                    vbx.setPrefWidth(0);
                     vbx.setStyle("-fx-font-size: 10px;");
+                    vbx.setStyle("-fx-background-color: transparent;");
+                    HBox hbx = new HBox();
+                    hbx.setSpacing(10);
+                    hbx.setStyle("-fx-font-size: 10px;");
+                    hbx.setStyle("-fx-background-color: transparent;");
                     TextField field = new TextField("step "+steps.getItems().size());
+                    field.setPrefWidth(400);
                     field.setStyle("-fx-background-color: #121418;\n" +
                             "    -fx-text-inner-color: #808080;\n" +
                             "    -fx-font-size: 12px;\n" +
                             "    -fx-border-radius: 1px;");
-                    //ajouter des options
-                    lv.setCellFactory(bb -> new ListCell<Brick>(){
+                    ImageView trash = null;
+                    if(steps.getItems().size() > 1) {
+                        trash = new ImageView();
+                        try {
+                            trash.setImage(new ImagePath("trash.png"));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        trash.setFitHeight(12);
+                        trash.setFitWidth(12);
+                        trash.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent mouseEvent) {
+                                for (Object o : lv.getItems()) {
+                                    Brick b = (Brick) o;
+                                    b.remove();
+                                }
+                                steps.getItems().remove(lv);
+                            }
+                        });
+                    }
+                    lv.setStyle("-fx-background-color: transparent;");
+                    lv.setPrefHeight(51);
+                    lv.setCellFactory(o -> new ListCell<Brick>(){
                         @Override
-                        protected void updateItem(Brick bb, boolean empty) {
-                            super.updateItem(bb, empty);
+                        protected void updateItem(Brick o, boolean empty) {
+                            super.updateItem(o, empty);
                             if (empty) {
                                 setGraphic(null);
                             } else {
-                                HBox hbx = new  HBox();
-                                hbx.setAlignment(Pos.CENTER_LEFT);
-                                hbx.setStyle("-fx-font-size: 12px;");
-                                ImageView iv = new ImageView();
-                                iv.setImage(ImageStorage.getImage(imageStorages,bb.getDim().toString()));
-                                iv.setFitHeight(20);
-                                iv.setFitWidth(20);
-                                Label lb = new Label("            "+bb.getDim().toString());
-                                lb.setStyle("-fx-text-fill: #808080;");
-                                bb.setRect(new Rectangle(0, 0, 10, 10));
-                                System.out.println("color: "+bb.getColor().getRed()*255+" "+bb.getColor().getGreen()*255+" "+bb.getColor().getBlue()*255);
-                                bb.getRect().setFill(bb.getColor());
-                                bb.getRect().setStroke(Color.BLACK);
-                                hbx.getChildren().addAll(
-                                        iv,
-                                        lb,
-                                        bb.getRect()
-                                );
-                                hbx.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                                    @Override
-                                    public void handle(MouseEvent mouseEvent) {
-                                        if(brickClicked != null) brickClicked.setSelectMode(false);
-                                        brickClicked=bb;
-                                        bb.setSelectMode(true);
-                                    }
-                                });
-                                setGraphic(hbx);
+                                    HBox hbx1 = new HBox();
+                                    hbx1.setAlignment(Pos.CENTER_LEFT);
+                                    hbx1.setStyle("-fx-font-size: 12px;");
+                                    ImageView iv = new ImageView();
+                                    iv.setImage(ImageStorage.getImage(imageStorages, o.getDim().toString()));
+                                    iv.setFitHeight(20);
+                                    iv.setFitWidth(20);
+                                    Label lb = new Label("      " + o.getDim().toString()+"             ");
+                                    lb.setStyle("-fx-text-fill: #808080;");
+                                    Label lb2 = new Label("     ");
+                                    o.setRect(new Rectangle(0, 0, 10, 10));
+                                    System.out.println("color: " + o.getColor().getRed() * 255 + " " + o.getColor().getGreen() * 255 + " " + o.getColor().getBlue() * 255);
+                                    o.getRect().setFill(o.getColor());
+                                    o.getRect().setStroke(Color.BLACK);
+                                    hbx1.getChildren().addAll(
+                                            iv,
+                                            o.getRect(),
+                                            lb,
+                                            o.getHidestatus(),
+                                            lb2,
+                                            o.getTrash()
+                                    );
+                                    hbx1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                        @Override
+                                        public void handle(MouseEvent mouseEvent) {
+                                            if (brickClicked != null) brickClicked.setSelectMode(false);
+                                            brickClicked = o;
+                                            o.setSelectMode(true);
+                                        }
+                                    });
+                                    lv.setFixedCellSize(50);
+                                    lv.setPrefHeight(lv.getItems().size() * 50 + 5);
+                                    setGraphic(hbx1);
                             }
                         }
                         });
-                    vbx.getChildren().addAll(field,lv);
+                    if(steps.getItems().size() > 1){
+                        hbx.getChildren().addAll(field,trash);
+                    }else{
+                        hbx.getChildren().addAll(field);
+                    }
+
+                    vbx.getChildren().addAll(hbx,lv);
                     setGraphic(vbx);
                 }
             }
         });
         steps.getItems().add(currentStep);
+
 
         try {
             imageStorages.add(new ImageStorage("1x1",new ImagePath("1x1.png")));
@@ -210,8 +274,8 @@ public class Controller implements Initializable {
                     setGraphic(null);
                 } else {
                     // Create a HBox to hold our displayed value
-                    HBox hbx = new  HBox();
-                    hbx.setAlignment(Pos.CENTER);
+                    HBox hbx1 = new  HBox();
+                    hbx1.setAlignment(Pos.CENTER);
                     ImageView iv = new ImageView();
                     iv.setImage(imSto.getImage());
                     iv.setFitWidth(50);
@@ -225,24 +289,18 @@ public class Controller implements Initializable {
                     iv.setFitHeight(50);
                     Label lb = new Label("      "+imSto.getText());
                     lb.setStyle("-fx-text-fill: #c25b11;");
-                    hbx.setStyle("-fx-font-size: 10px;");
-                    hbx.getChildren().addAll(
+                    hbx1.setStyle("-fx-font-size: 10px;");
+                    hbx1.getChildren().addAll(
                             iv,
                             lb
                     );
-                    setGraphic(hbx);
-                    hbx.setOnMousePressed(new EventHandler<MouseEvent>() {
+                    setGraphic(hbx1);
+                    hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent e) {
                             actionWithDropDone =false;
                             System.out.println("Création de la brique-view:");
                             dropSelectionData =imSto;
-                            /*if(imSto.getDimWithText().getHeight() > 1){
-                                brickSelection.setFitHeight(50*imSto.getDimWithText().getHeight());
-                            }
-                            else{
-                                brickSelection.setFitHeight(50);
-                            }*/
                             brickSelection.setFitHeight(50);
                             brickSelection.setFitWidth(50);
                             brickSelection.setImage(iv.getImage());
@@ -324,20 +382,23 @@ public class Controller implements Initializable {
                 }
                     if(brickClicked != null){
                         switch(keyEvent.getCode()){
+                            case W:
+                                brickClicked.down();
+                                break;
                             case X:
-                                axisLeftRight=1-axisLeftRight;
-                                break;
-                            case LEFT:
-                                brickClicked.left();
-                                break;
-                            case RIGHT:
-                                brickClicked.right();
-                                break;
-                            case UP:
                                 brickClicked.up();
                                 break;
+                            case LEFT:
+                                brickClicked.leftX();
+                                break;
+                            case RIGHT:
+                                brickClicked.rightX();
+                                break;
+                            case UP:
+                                brickClicked.rightZ();
+                                break;
                             case DOWN:
-                                brickClicked.down();
+                                brickClicked.leftZ();
                                 break;
                         }
                     }
@@ -369,7 +430,7 @@ public class Controller implements Initializable {
         top.addEventFilter(MouseEvent.MOUSE_PRESSED,bT);
         top.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseTopReleased);
 
-        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,bB);
+        bottom.addEventFilter(MouseEvent.MOUSE_PRESSED,o);
         bottom.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseBottomReleased);
 
         left.addEventFilter(MouseEvent.MOUSE_PRESSED,bL);
@@ -405,11 +466,14 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> mousePressedHide = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            if(brickClicked.isHide()){
-                brickClicked.hide(false);
-            }else{
-                brickClicked.hide(true);
+            if (brickClicked != null) {
+                if (brickClicked.isHide()) {
+                    brickClicked.hide(false);
+                } else {
+                    brickClicked.hide(true);
+                }
             }
+
             try {
                 hideicon.setImage(new ImagePath("hidehover.jpg"));
                 hidetext.setFill(Color.web("#42C0FB"));
@@ -435,7 +499,9 @@ public class Controller implements Initializable {
     EventHandler<MouseEvent> mousePressedClone = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            new Brick(brickClicked.getDim(),brickClicked.getX(), brickClicked.getY() ,brickClicked.getZ(),brickClicked.getColor());
+            if(brickClicked != null) {
+                new Brick(brickClicked.getDim(), brickClicked.getX(), brickClicked.getY(), brickClicked.getZ(), brickClicked.getColor());
+            }
             try {
                     cloneeicon.setImage(new ImagePath("clonehover.jpg"));
                     cloneetext.setFill(Color.web("#42C0FB"));
@@ -694,7 +760,7 @@ public class Controller implements Initializable {
             }
         }
     };
-    EventHandler<MouseEvent> bB = new EventHandler<MouseEvent>() {
+    EventHandler<MouseEvent> o = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
             camera.down();

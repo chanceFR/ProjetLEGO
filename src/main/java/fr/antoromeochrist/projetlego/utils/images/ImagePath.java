@@ -9,11 +9,13 @@ import java.io.FileNotFoundException;
 
 public class ImagePath extends Image{
 
-    private String url;
+    private String path;
     public ImagePath(String path) throws FileNotFoundException {
         super(new BufferedInputStream(new FileInputStream("src/main/resources/"+path)));
+        this.path=path;
     }
     public String getPath(){
-        return url;
+        return path;
     }
+
 }
