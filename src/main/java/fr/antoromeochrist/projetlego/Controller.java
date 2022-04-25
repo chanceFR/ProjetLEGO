@@ -540,7 +540,6 @@ public class Controller implements Initializable {
                                  * */
 
                                 Label lb2 = new Label("     ");
-                                System.out.println("color: " + o.getColor().getRed() * 255 + " " + o.getColor().getGreen() * 255 + " " + o.getColor().getBlue() * 255);
                                 hbx1.getChildren().addAll(
                                         iv,
                                         o.getRect(),
@@ -553,8 +552,6 @@ public class Controller implements Initializable {
                                     @Override
                                     public void handle(MouseEvent mouseEvent) {
                                         if (model.brickClicked != null) model.brickClicked.setSelectMode(false);
-                                        model.brickClicked = o;
-                                        o.setSelectMode(true);
                                     }
                                 });
                                 setGraphic(hbx1);
@@ -690,14 +687,13 @@ public class Controller implements Initializable {
                             //clearBreakSelection();
                             model.actionWithDropDone = false;
                             model.isEnterInSubScene = false;
-                            model.brickMove = null;
                             model.dropSelectionData = imSto;
                             brickSelection.setFitHeight(50);
                             brickSelection.setFitWidth(50);
                             brickSelection.setImage(iv.getImage());
                             brickSelection.setOpacity(100);
-                            brickSelection.setX(e.getX());
-                            brickSelection.setY(e.getY());
+                            brickSelection.setX(e.getSceneX()-50);
+                            brickSelection.setY(e.getSceneY()-50);
                             brickSelection.setLayoutX(iv.getLayoutX());
                             brickSelection.setLayoutY(iv.getLayoutY());
                         }
@@ -804,7 +800,6 @@ public class Controller implements Initializable {
                      *
                      * */
                     if (model.getBrickWithColor(oldColor) == null) {
-                        System.out.println("Suppresion de la couleur inutile #2");
                         contentColorsRemoveColor(oldColor);
                     }
                 }
@@ -823,19 +818,12 @@ public class Controller implements Initializable {
         listView.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
-                if (!model.actionWithDropDone && model.isEnterInSubScene) {
-                    model.brickMove.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    model.brickMove.setSelectMode(true);
-                } else if (!model.actionWithDropDone) {
+                if (!model.actionWithDropDone) {
                     brickSelection.setX(e.getSceneX() - 50);
                     brickSelection.setY(e.getSceneY() - 50);
-                    model.brickMove = null;
-                } else {
-                    if (model.brickMove != null) model.brickMove = null;
                 }
             }
         });
-
 
         /*
          *
@@ -857,9 +845,8 @@ public class Controller implements Initializable {
                     if (model.brickClicked != null) {
                         model.brickClicked.setSelectMode(false);
                     }
-                    model.brickMove = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
-                    model.brickMove.setSelectMode(true);
-                    model.brickClicked = model.brickMove;
+                    model.brickClicked= new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
+                    model.brickClicked.setSelectMode(true);
                 }
             }
         });
@@ -873,14 +860,11 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent e) {
                 if (!model.actionWithDropDone && model.isEnterInSubScene) {
-                    model.brickMove.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    model.brickMove.setSelectMode(true);
+                    model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+                    model.brickClicked.setSelectMode(true);
                 } else if (!model.actionWithDropDone) {
                     brickSelection.setX(e.getSceneX() - 50);
                     brickSelection.setY(e.getSceneY() - 50);
-                    model.brickMove = null;
-                } else {
-                    if (model.brickMove != null) model.brickMove = null;
                 }
             }
         });
@@ -893,33 +877,12 @@ public class Controller implements Initializable {
         anchorPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                /*
-                 * Si vous avez fait un click et que le drag and drop était en cours
-                 * */
                 if (model.actionWithDropDone == false) {
-                    /*
-                     * * La brique cesse de suivre la souris
-                     */
                     model.actionWithDropDone = true;
-                    /*
-                     *
-                     * Il doit plus y avoir de brique selectionné(brickClicked) ni de brique en mouvement(brickmove)
-                     *
-                     * Rappel: la brique selectionné(brickClicked) est celle qui est cliqué par la souris
-                     *
-                     *
-                     *
-                     * Rappel: la brique en mouvement(brickMove) est la brique qui n'a pas fini d'être placé et
-                     * qui suit le mouvement de la souris en fonction de ses coordonnes dans la grille
-                     * temps que l'on a pas appuiyé sur échap ou qu'on est cliqué dessus.
-                     *
-                     *
-                     *
-                     * */
-                    if (model.brickClicked != null) model.brickClicked.setSelectMode(false);
-                    //reset
-                    model.brickMove = null;
-                    model.brickClicked = null;
+                    model.brickClicked.setSelectMode(false);
+                }else{
+                    model.actionWithDropDone=false;
+                    model.isEnterInSubScene=true;
                 }
             }
         });
@@ -932,56 +895,15 @@ public class Controller implements Initializable {
         anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                /*
-                 * Si vous avez appuiyer sur la touche échap et que le drag and drop était en cours
-                 * */
                 if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
                     if (model.actionWithDropDone == false) {
                         /*
                          * * La brique cesse de suivre la souris
                          */
                         model.actionWithDropDone = true;
-                        /*
-                         *
-                         * Il doit plus y avoir de brique selectionné(brickClicked) ni de brique en mouvement(brickmove)
-                         *
-                         * Rappel: la brique selectionné(brickClicked) est celle qui est cliqué par la souris
-                         *
-                         *
-                         *
-                         * Rappel: la brique en mouvement(brickMove) est la brique qui n'a pas fini d'être placé et
-                         * qui suit le mouvement de la souris en fonction de ses coordonnes dans la grille
-                         * temps que l'on a pas appuiyé sur échap ou qu'on est cliqué dessus.
-                         *
-                         *
-                         *
-                         * */
                         if (model.brickClicked != null) model.brickClicked.setSelectMode(false);
-                        //reset
-                        model.brickMove = null;
-                        model.brickClicked = null;
                     }
                 }
-                /*
-                 * Si on sélectionne une brique et que l'on touche sur des touches
-                 * On peut la faire monter,descendre,avancer,reculer sur l'axe X,Y,Z
-                 * en ofnction des touches
-                 *
-                 * Déplacement sur l'axe des X:
-                 *
-                 * - flèche de gauche(vers la gauche)
-                 * - flèche de droite(vers la droite)
-                 *
-                 * Déplacement sur l'axe des Z:
-                 *
-                 * - flèche du haut(vers l'arrière)
-                 * - flèche du bas(vers l'avant)
-                 *
-                 * Déplacement sur l'axe des Y:
-                 * -W (vers le haut)
-                 * -X(vers le bas)
-                 *
-                 * */
                 if (model.brickClicked != null) {
                     switch (keyEvent.getCode()) {
                         case W:
@@ -1001,6 +923,9 @@ public class Controller implements Initializable {
                             break;
                         case DOWN:
                             model.brickClicked.leftZ();
+                            break;
+                        case S:
+                            model.brickClicked.rotate();
                             break;
                     }
                 }
@@ -1399,16 +1324,12 @@ public class Controller implements Initializable {
         for (Object o : contentColors.getItems()) {
             if (o instanceof ColorPick) {
                 Color c2 = ((ColorPick) o).getValue();
-                System.out.println("c  Value:" + c);
-                System.out.println("c2 Value:" + c2);
                 if (c2.equals(c)) {
                     toRem = (ColorPick) o;
-                    System.out.println("Trouvé: " + toRem);
                     break;
                 }
             }
         }
-        System.out.println("rem color: " + toRem);
         contentColors.getItems().remove(toRem);
     }
 

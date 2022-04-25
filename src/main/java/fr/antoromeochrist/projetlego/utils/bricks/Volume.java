@@ -83,7 +83,7 @@ public class Volume extends ArrayList<P3D> {
      */
     public static Volume createAllVolume(P3D point, Dim dim) {
         Volume v = new Volume();
-        for (int i = 0; i < dim.getWeight(); i++) {
+        for (int i = 0; i < dim.getWidth(); i++) {
             for (int j = 0; j < dim.getHeight(); j++) {
                 for (int k = 0; k < dim.getDepth(); k++) {
                     P3D p = new P3D(point);

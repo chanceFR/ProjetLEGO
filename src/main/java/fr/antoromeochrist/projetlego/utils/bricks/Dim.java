@@ -107,7 +107,7 @@ public class Dim {
      *
      * @return width
      */
-    public int getWeight() {
+    public int getWidth() {
         return width;
     }
 
@@ -129,6 +129,15 @@ public class Dim {
         return depth;
     }
 
+    /**
+     * Permet de retourner une dimension
+     * Utile: pour permettre de rotate une brick
+     */
+    public void rotate(){
+        int oldDepth=this.depth;
+        this.depth=this.width;
+        this.width=oldDepth;
+    }
     /**
      * Affichage de la dimension
      *

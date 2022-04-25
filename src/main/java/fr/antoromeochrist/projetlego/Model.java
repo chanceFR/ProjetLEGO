@@ -19,7 +19,6 @@ public class Model {
     public ArrayList<ImageStorage> imageStorages;
     public boolean actionWithDropDone;
     public boolean updateForced;
-    public Brick brickMove;
     public boolean isEnterInSubScene;
     public ArrayList<Step> instruction;
 
