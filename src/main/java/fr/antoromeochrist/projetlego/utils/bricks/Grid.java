@@ -15,7 +15,7 @@ public class Grid extends ArrayList<MinBrick> {
     private double[] coors;
 
     public Grid(int width, int depth,Color c){
-        coors=new double[2];
+        coors=new double[3];
         Rotate rotateX = new Rotate();
         rotateX.setAngle(90);
         rotateX.setPivotX(0);
@@ -45,7 +45,7 @@ public class Grid extends ArrayList<MinBrick> {
                 c4.setMaterial(new PhongMaterial(c));
                 Brick.group.getChildren().add(c4);
                 Box b= new Box();
-                b.setHeight(1);
+                b.setHeight(0.01);
                 b.setWidth(1);
                 b.setDepth(1);
                 b.setTranslateX(x);
@@ -55,13 +55,21 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setOnMouseEntered(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        coors[0]=b.getTranslateX();
-                        coors[1]=b.getTranslateZ();
+                        setCoors(b.getTranslateX(),b.getTranslateY(),b.getTranslateZ());
                     }
                 });
                 Brick.group.getChildren().add(b);
             }
         }
+    }
+
+    public void setCoors(Box b){
+        setCoors(b.getTranslateX(),b.getTranslateY(),b.getTranslateZ());
+    }
+    public void setCoors(double x,double y,double z){
+        coors[0]=x;
+        coors[1]=y;
+        coors[2]=z;
     }
 
     public double[] getMouseCoors(){

@@ -120,7 +120,7 @@ public class Controller implements Initializable {
 
     private boolean updateForced = false;
 
-    public Grid grid;
+    public static Grid grid;
 
     private Brick brickMove;
 
@@ -407,7 +407,7 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (!actionWithDropDone && isEnterInSubScene) {
-                    brickMove.move(grid.getMouseCoors()[0], 0, grid.getMouseCoors()[1]);
+                    brickMove.move(grid.getMouseCoors()[0],  grid.getMouseCoors()[1],grid.getMouseCoors()[2]);
                     brickMove.setSelectMode(true);
                 } else {
                     brickMove = null;

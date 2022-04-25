@@ -103,6 +103,14 @@ public class Brick extends ArrayList<MinBrick> {
 
         Brick b = this;
         for (MinBrick minBrick : this) {
+
+            minBrick.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    Controller.grid.setCoors(minBrick);
+                }
+            });
+
             minBrick.setOnMousePressed(mouseEvent -> {
                 if (Controller.actionWithDropDone) {
                     if (Controller.brickClicked != null) {
