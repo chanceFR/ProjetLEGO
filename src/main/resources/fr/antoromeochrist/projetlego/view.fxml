@@ -167,7 +167,6 @@
             <Image url="@../../../rright.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="brickSelection" fitHeight="1.0" fitWidth="1.0" layoutX="1046.0" layoutY="648.0" opacity="0.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="rtop" fitHeight="31.0" fitWidth="29.0" layoutX="709.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../rtop.png" />
@@ -182,5 +181,6 @@
       <Label fx:id="contentColorsText" layoutX="906.0" layoutY="148.0" text="Content colors" />
       <ListView fx:id="steps" layoutX="836.0" layoutY="255.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="221.0" stylesheets="@../../../style.css" />
       <Label fx:id="addStep" layoutX="992.0" layoutY="228.0" prefHeight="17.0" prefWidth="65.0" text="+ add step" textFill="GREY" />
+      <ImageView fx:id="brickSelection" fitHeight="1.0" fitWidth="1.0" layoutX="1046.0" layoutY="648.0" opacity="0.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

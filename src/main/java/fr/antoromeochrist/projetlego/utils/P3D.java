@@ -2,35 +2,49 @@ package fr.antoromeochrist.projetlego.utils;
 
 import javafx.geometry.Point3D;
 
+/**
+ * Cette classe est un Point3d
+ * <p>
+ * Cette classe sert juste à modifié la méthode toString
+ */
 public class P3D extends Point3D {
     public P3D(double v, double v1, double v2) {
         super(v, v1, v2);
     }
 
     public P3D(P3D P3D) {
-        super(P3D.getX(),P3D.getY(),P3D.getZ());
+        super(P3D.getX(), P3D.getY(), P3D.getZ());
     }
 
-    public String toString(){
+    public String toString() {
         String s = "";
-        if(this.getX() % 1 == 0){
-            s+="("+(int)this.getX()+";";
-        }else{
-            s+="("+this.getX()+";";
+        if (this.getX() % 1 == 0) {
+            s += "(" + (int) this.getX() + ";";
+        } else {
+            s += "(" + this.getX() + ";";
         }
-        if(this.getY() % 1 == 0){
-            s+=(int)this.getY()+";";
-        }else{
-            s+=this.getY()+";";
+        if (this.getY() % 1 == 0) {
+            s += (int) this.getY() + ";";
+        } else {
+            s += this.getY() + ";";
         }
-        if(this.getZ() % 1 == 0){
-            s+=(int)this.getZ()+")";
-        }else{
-            s+=this.getZ()+")";
+        if (this.getZ() % 1 == 0) {
+            s += (int) this.getZ() + ")";
+        } else {
+            s += this.getZ() + ")";
         }
         return s;
     }
-    public P3D add(double a, double b,double c){
-        return new P3D(this.getX()+a,this.getY()+b,this.getZ()+c);
+
+    /**
+     * Ajouter un point avec des coordonnées
+     *
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public P3D add(double a, double b, double c) {
+        return new P3D(this.getX() + a, this.getY() + b, this.getZ() + c);
     }
 }
