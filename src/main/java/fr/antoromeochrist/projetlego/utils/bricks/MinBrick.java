@@ -3,11 +3,11 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 
-public class Lego extends Box {
+public class MinBrick extends Box {
 
     private Cylinder cylinder;
 
-    public Lego(){
+    public MinBrick(){
         cylinder = new Cylinder(0.30,0.30);
         cyl();
     }

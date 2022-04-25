@@ -3,8 +3,9 @@ package fr.antoromeochrist.projetlego;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
-import fr.antoromeochrist.projetlego.utils.bricks.ColorPick;
-import fr.antoromeochrist.projetlego.utils.bricks.GridBrick;
+import fr.antoromeochrist.projetlego.utils.ColorPick;
+import fr.antoromeochrist.projetlego.utils.bricks.Grid;
+import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.event.ActionEvent;
@@ -20,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
@@ -118,14 +120,17 @@ public class Controller implements Initializable {
 
     private boolean updateForced = false;
 
-    public GridBrick grid;
+    public Grid grid;
 
     private Brick brickMove;
 
     private boolean isEnterInSubScene = false;
 
+    public ArrayList<Step> instruction;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        instruction = new ArrayList<Step>();
         currentStep = new ListView();
         addStep.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -149,7 +154,7 @@ public class Controller implements Initializable {
         Brick.stepsStatic = steps;
         Brick.currentStepStatic = currentStep;
         Brick.group = group;
-        grid = new GridBrick(20, 20);
+        grid = new Grid(20, 20,Color.web("#616161"));
         camera = new CameraUtils(true);
         angleY = -30;
         camera.addRotationsX(new DurationAngle(angleY, 0.4f));
@@ -161,7 +166,6 @@ public class Controller implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-
                     VBox vbx = new VBox();
                     vbx.setPrefWidth(0);
                     vbx.setStyle("-fx-font-size: 10px;");
@@ -170,47 +174,63 @@ public class Controller implements Initializable {
                     hbx.setSpacing(10);
                     hbx.setStyle("-fx-font-size: 10px;");
                     hbx.setStyle("-fx-background-color: transparent;");
-                    TextField field = new TextField("step " + steps.getItems().size());
-                    field.setPrefWidth(400);
+                    TextField field = new TextField();
+                    field.setPrefWidth(200);
                     field.setStyle("-fx-background-color: #121418;\n" +
                             "    -fx-text-inner-color: #808080;\n" +
                             "    -fx-font-size: 12px;\n" +
                             "    -fx-border-radius: 1px;");
+                    int i = steps.getItems().indexOf(lv);
+                    try{
+                        instruction.get(i);
+                    }catch(Exception e) {
+                        instruction.add(new Step("step "+i));
+                    }
+                    final Step current=instruction.get(i);
 
+                    field.textProperty().addListener((observable, oldValue, newValue) -> {
+                        System.out.println("textfield changed from " + oldValue + " to " + newValue);
+                        current.setText(newValue);
+                        field.setText(newValue);
+                    });
+
+                    field.setText(current.getText());
                     ImageView view = new ImageView();
                     try {
-                        view.setImage(new ImagePath("view.png"));
+                        if(current.isHide()){
+                            view.setImage(new ImagePath("noview.png"));
+                        }else{
+                            view.setImage(new ImagePath("view.png"));
+                        }
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                     view.setFitHeight(20);
                     view.setFitWidth(20);
                     view.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                        boolean isHide = false;
-
                         @Override
                         public void handle(MouseEvent mouseEvent) {
-                            if (isHide) {
-                                isHide = false;
-                                try {
-                                    view.setImage(new ImagePath("noview.png"));
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                isHide = true;
+                            if (current.isHide()) {
+                                current.hide(false);
                                 try {
                                     view.setImage(new ImagePath("view.png"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
+                            } else {
+                                current.hide(true);
+                                try {
+                                    view.setImage(new ImagePath("noview.png"));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                            for (Object obj : lv.getItems()) ((Brick) obj).hide(isHide);
+                            for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
                         }
                     });
-
+                    for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
                     ImageView trash = null;
-                    if (steps.getItems().size() > 1) {
+                    if (steps.getItems().indexOf(lv) > 0) {
                         trash = new ImageView();
                         try {
                             trash.setImage(new ImagePath("trash.png"));
@@ -234,6 +254,8 @@ public class Controller implements Initializable {
                     }
                     lv.setStyle("-fx-background-color: transparent;");
                     lv.setFixedCellSize(50);
+                    if(lv.getItems().isEmpty()) lv.setPrefHeight(55);
+                    if(lv.getItems().size()>0) lv.setPrefHeight(lv.getItems().size() * 50 + 5);
                     lv.setCellFactory(o -> new ListCell<Brick>() {
                         @Override
                         protected void updateItem(Brick o, boolean empty) {
@@ -273,10 +295,12 @@ public class Controller implements Initializable {
                             }
                         }
                     });
-                    if (steps.getItems().size() > 1) {
+                    if (steps.getItems().indexOf(lv) >0) {
                         hbx.getChildren().addAll(field, view, trash);
                     } else {
-                        hbx.getChildren().addAll(field, view);
+                        Rectangle rect = new Rectangle(0,0,10,10);
+                        rect.setOpacity(0);
+                        hbx.getChildren().addAll(field, view,rect);
                     }
                     vbx.getChildren().addAll(hbx, lv);
                     setGraphic(vbx);
@@ -390,7 +414,6 @@ public class Controller implements Initializable {
                 }
             }
         });
-
         subScene.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -400,7 +423,6 @@ public class Controller implements Initializable {
                     if (brickClicked != null) {
                         brickClicked.setSelectMode(false);
                     }
-                    System.out.println("XZ:" + Arrays.asList(grid.getMouseCoors()));
                     brickMove = new Brick(dropSelectionData.getDimWithText(), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
                     brickMove.setSelectMode(true);
                     brickClicked = brickMove;
@@ -418,6 +440,15 @@ public class Controller implements Initializable {
                     System.out.println("Dic: " + Brick.bricksSortByColors);
                     System.out.println("Brick with hex :" + Brick.getBrickWithColor(oldColor).size());
                     if (Brick.getBrickWithColor(oldColor).isEmpty()) contentColors.getItems().remove(oldColor);
+                }
+            }
+        });
+
+        anchorPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (actionWithDropDone == false) {
+                    actionWithDropDone = true;
                 }
             }
         });

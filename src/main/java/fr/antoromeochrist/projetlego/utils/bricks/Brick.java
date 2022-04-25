@@ -1,6 +1,7 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
 import fr.antoromeochrist.projetlego.Controller;
+import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import javafx.event.EventHandler;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Brick extends ArrayList<Lego> {
+public class Brick extends ArrayList<MinBrick> {
 
     //Permet de recuperer l'objet group du controller et donc de relier les briques au group du controlleur.
     public static Group group;
@@ -101,8 +102,8 @@ public class Brick extends ArrayList<Lego> {
         });
 
         Brick b = this;
-        for (Lego lego : this) {
-            lego.setOnMousePressed(mouseEvent -> {
+        for (MinBrick minBrick : this) {
+            minBrick.setOnMousePressed(mouseEvent -> {
                 if (Controller.actionWithDropDone) {
                     if (Controller.brickClicked != null) {
                         if (Controller.brickClicked.equals(this)) {
@@ -121,7 +122,7 @@ public class Brick extends ArrayList<Lego> {
                     }
                 }
             });
-            lego.cyl();
+            minBrick.cyl();
         }
         currentStepStatic.getItems().add(this);
     }
@@ -137,19 +138,19 @@ public class Brick extends ArrayList<Lego> {
         }
         if (!environnement.contains(this)) environnement.add(this);
         for (int i = 0; i < volume.size(); i++) {
-            Lego lego = new Lego();
-            lego.setWidth(1);
-            lego.setHeight(1);
-            lego.setDepth(1);
-            lego.setTranslateX(volume.get(i).getX());
-            lego.setTranslateY(volume.get(i).getY());
-            lego.setTranslateZ(volume.get(i).getZ());
-            lego.cyl();
-            this.add(lego);
+            MinBrick minBrick = new MinBrick();
+            minBrick.setWidth(1);
+            minBrick.setHeight(1);
+            minBrick.setDepth(1);
+            minBrick.setTranslateX(volume.get(i).getX());
+            minBrick.setTranslateY(volume.get(i).getY());
+            minBrick.setTranslateZ(volume.get(i).getZ());
+            minBrick.cyl();
+            this.add(minBrick);
         }
-        for (Lego lego : this) {
-            group.getChildren().add(lego);
-            group.getChildren().add(lego.getCylinder());
+        for (MinBrick minBrick : this) {
+            group.getChildren().add(minBrick);
+            group.getChildren().add(minBrick.getCylinder());
         }
     }
 
@@ -157,15 +158,15 @@ public class Brick extends ArrayList<Lego> {
         this.isHide = b;
         setViewstatusHide(b);
         if (b) {
-            for (Lego lego : this) {
-                lego.setOpacity(0);
-                lego.cyl();
+            for (MinBrick minBrick : this) {
+                minBrick.setOpacity(0);
+                minBrick.cyl();
             }
             setBorderColor(Color.web("#808080"));
         } else {
-            for (Lego lego : this) {
-                lego.setOpacity(100);
-                lego.cyl();
+            for (MinBrick minBrick : this) {
+                minBrick.setOpacity(100);
+                minBrick.cyl();
             }
             removeBorder();
         }
@@ -182,7 +183,7 @@ public class Brick extends ArrayList<Lego> {
             group.getChildren().removeAll(this);
             setSelectMode(false);
             group.getChildren().removeAll(border);
-            for (Lego lego : this) group.getChildren().remove(lego.getCylinder());
+            for (MinBrick minBrick : this) group.getChildren().remove(minBrick.getCylinder());
             bricksSortByColors.remove(this);
             if (getBrickWithColor(this.color).isEmpty()) {
                 Controller.contentColorsRemoveColor(this.color);
@@ -205,7 +206,7 @@ public class Brick extends ArrayList<Lego> {
 
     public void setColor(Color color) {
         rect.setFill(color);
-        for (Lego b : this) {
+        for (MinBrick b : this) {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }

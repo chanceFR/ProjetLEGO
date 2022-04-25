@@ -10,11 +10,11 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import java.util.ArrayList;
 
-public class GridBrick extends ArrayList<Lego> {
+public class Grid extends ArrayList<MinBrick> {
 
     private double[] coors;
 
-    public GridBrick(int width,int depth){
+    public Grid(int width, int depth,Color c){
         coors=new double[2];
         Rotate rotateX = new Rotate();
         rotateX.setAngle(90);
@@ -29,23 +29,22 @@ public class GridBrick extends ArrayList<Lego> {
         for(int x = -width; x<width;x++){
             for(int z = -depth;z<depth;z++){
                 P3D start = new P3D(x,0,z);
-                Cylinder c1 =null;
-                Cylinder c2 = null;
                 if(z%2 == 0) {
-                    c1= createCyl(start.add(0, 0.5, 0.5), 1, 0.01);
+                    Cylinder c1= createCyl(start.add(0, 0.5, 0.5), 1, 0.01);
                     c1.getTransforms().add(rotateZ);
-                    c1.setMaterial(new PhongMaterial(Color.web("#808080")));
+                    c1.setMaterial(new PhongMaterial(c));
+                    Brick.group.getChildren().add(c1);
                 }
                 if(x %2 == 0) {
-                    c2 = createCyl(start.add(-0.5, 0.5, 0), 1, 0.01);
+                    Cylinder c2 = createCyl(start.add(-0.5, 0.5, 0), 1, 0.01);
                     c2.getTransforms().add(rotateX);
-                    c2.setMaterial(new PhongMaterial(Color.web("#808080")));
+                    c2.setMaterial(new PhongMaterial(c));
+                    Brick.group.getChildren().add(c2);
                 }
-                if(c1 != null) Brick.group.getChildren().add(c1);
-                if(c2 !=null)Brick.group.getChildren().add(c2);
-                Brick.group.getChildren().add(createCyl(start.add(0,0.5,0),0.01,0.30));
+                Cylinder c4 = createCyl(start.add(0,0.5,0),0.01,0.30);
+                c4.setMaterial(new PhongMaterial(c));
+                Brick.group.getChildren().add(c4);
                 Box b= new Box();
-                //b.setHeight(0.01);
                 b.setHeight(1);
                 b.setWidth(1);
                 b.setDepth(1);
@@ -79,6 +78,4 @@ public class GridBrick extends ArrayList<Lego> {
         c.setRadius(radius);
         return c;
     }
-
-
 }

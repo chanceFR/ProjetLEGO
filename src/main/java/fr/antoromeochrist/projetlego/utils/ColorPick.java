@@ -1,4 +1,4 @@
-package fr.antoromeochrist.projetlego.utils.bricks;
+package fr.antoromeochrist.projetlego.utils;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.ColorPicker;
