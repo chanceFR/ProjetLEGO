@@ -237,7 +237,6 @@ public class Brick extends ArrayList<MinBrick> {
             i1++;
             volume = Volume.createAllVolume(new P3D(this.x, this.y - i1, this.z), this.dim);
         }
-        if(!Controller.model.bricks.containsKey(this)) Controller.model.bricks.put(this, Color.web("808080"));
         for (int i = 0; i < volume.size(); i++) {
             if(recreate){
                 MinBrick minBrick = this.get(i);
@@ -324,12 +323,12 @@ public class Brick extends ArrayList<MinBrick> {
      * @param color la couleur
      */
     public void setColor(Color color) {
+        brickHaveColorInDictionnary(color);
         rect.setFill(color);
         for (MinBrick b : this) {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
-        colorCheck(color);
         if (!Controller.me.colorInContentColors(color)) Controller.me.contentColorAddColor(color);
     }
 
@@ -362,7 +361,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void move(double x, double y, double z) {
         Volume temp = Volume.createAllVolume(new P3D(x, y, z), this.dim);
-        if (!Controller.model.actionWithDropDone) {
+        if (!Controller.model.hasDrop) {
             int increment = 1;
             while (Volume.volumeIntersection(temp, Controller.model.bricks.keySet(), this)) {
                 temp = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
@@ -771,8 +770,8 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
 
-    private void colorCheck(Color color){
-        if (!Controller.model.bricks.containsKey(this)){
+    private void brickHaveColorInDictionnary(Color color){
+        if (Controller.model.bricks.containsKey(this)){
             Controller.model.bricks.replace(this, color);
         }else{
             Controller.model.bricks.put(this, color);
