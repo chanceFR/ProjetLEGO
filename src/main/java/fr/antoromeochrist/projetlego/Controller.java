@@ -170,6 +170,7 @@ public class Controller implements Initializable {
         currentStep = new ListView();
         //init//
 
+
         /*
          * Menu de droite - gestion des étapes
          * Object concerné: addStep
