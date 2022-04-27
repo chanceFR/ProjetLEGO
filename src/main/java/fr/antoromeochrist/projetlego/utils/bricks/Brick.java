@@ -235,7 +235,14 @@ public class Brick extends ArrayList<MinBrick> {
                             Fast.log("La brique sélectionné ne bouge pas.");
                         }
                     } else {
-                        Controller.model.brickClicked.setState(State.NONE,555);
+                        Brick old = Controller.model.brickClicked;
+                        old.setState(State.NONE,555);
+                        if(old.isHide){
+                            /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
+                              elle doit garder la bordure #808080
+                            */
+                            old.setBorderColor(Color.web("#808080"));
+                        }
                         Controller.model.brickClicked = this;
                         this.setState(State.FOLLOW_THE_MOUSE, 4);
                     }
