@@ -149,7 +149,6 @@ public class CameraUtils extends PerspectiveCamera {
         this.y += y;
         this.z += z;
         this.getTransforms().add(new Translate(x, y, z));
-        System.out.println("Tr: " + this.x + " " + this.y + " " + this.z);
     }
 
     /**

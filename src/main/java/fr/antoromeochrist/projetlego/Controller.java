@@ -6,10 +6,6 @@ import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
-import javafx.animation.PauseTransition;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -64,7 +59,7 @@ public class Controller implements Initializable {
     public CameraUtils camera;
 
     @FXML
-    private TextField searchBar;
+    public TextField searchBar;
 
     @FXML
     private ListView<ImageStorage> listView;
@@ -120,7 +115,7 @@ public class Controller implements Initializable {
     @FXML
     private ImageView bottom;
     @FXML
-    public ImageView brickSelection;
+    public ImageView imageOfBrickSelectedInSearchMenu;
 
     @FXML
     public ColorPicker colorpicker;
@@ -168,19 +163,12 @@ public class Controller implements Initializable {
     public static final float rot = 11.25f;
 
 
-    /**
-     * Permet de vérifier si on tape du texte dans un
-     */
-    public boolean isInTextField;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //init//
         me = this;
         model = new Model();
         currentStep = new ListView();
-        isInTextField = false;
-        //searchBar.setEditable(false);//eviter que quand on allume le logiciel on écrit déjà dedans (bug)
         //init//
 
         /*
@@ -469,9 +457,14 @@ public class Controller implements Initializable {
                         }
                     });
 
-                    //Lors de la création:
-                    //Les briques seront caché/visible + leurs boutons ça dépend du coup.
+                    /*
+                    Lors de la création:
+                    Les briques seront caché/visible + leurs boutons(view) qui switch entre 2 images.
+                    Oeil normal et oeil barré
+                     */
+
                     for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
+
 
                     /*
                      * Menu de droite - gestion des étapes
@@ -569,9 +562,8 @@ public class Controller implements Initializable {
                                     @Override
                                     public void handle(MouseEvent mouseEvent) {
                                         //Fast.log("Vous avez sélectionné une brique depuis le menu des étapes.");
-                                        if (model.brickClicked != null)
-                                            model.brickClicked.setState(BrickState.NONE, 11);
-                                        brk.setState(BrickState.SELECT, 5);
+                                        if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 12);
+                                        brk.setState(State.SHOW_IS_SELECT, 13);
                                         model.brickClicked = brk;
                                         mouseEvent.consume();//anti bug graphique
                                     }
@@ -708,14 +700,14 @@ public class Controller implements Initializable {
                         public void handle(MouseEvent e) {
                             model.dropInProgress = true;
                             model.dropSelectionData = imSto;
-                            brickSelection.setFitHeight(50);
-                            brickSelection.setFitWidth(50);
-                            brickSelection.setImage(iv.getImage());
-                            brickSelection.setOpacity(100);
-                            brickSelection.setX(e.getSceneX() - 50);
-                            brickSelection.setY(e.getSceneY() - 50);
-                            brickSelection.setLayoutX(iv.getLayoutX());
-                            brickSelection.setLayoutY(iv.getLayoutY());
+                            imageOfBrickSelectedInSearchMenu.setFitHeight(50);
+                            imageOfBrickSelectedInSearchMenu.setFitWidth(50);
+                            imageOfBrickSelectedInSearchMenu.setImage(iv.getImage());
+                            imageOfBrickSelectedInSearchMenu.setOpacity(100);
+                            imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                            imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
+                            imageOfBrickSelectedInSearchMenu.setLayoutX(iv.getLayoutX());
+                            imageOfBrickSelectedInSearchMenu.setLayoutY(iv.getLayoutY());
                             e.consume();//anti bug graphique
                         }
                     });
@@ -842,8 +834,8 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent e) {
                 if (model.dropInProgress) {
-                    brickSelection.setX(e.getSceneX() - 50);
-                    brickSelection.setY(e.getSceneY() - 50);
+                    imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                    imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
                 }
             }
         });
@@ -851,12 +843,11 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent e) {
                 if (model.dropInProgress) {
-                    brickSelection.setX(e.getSceneX() - 50);
-                    brickSelection.setY(e.getSceneY() - 50);
+                    imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                    imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
                 }
             }
         });
-
 
         /*
          *
@@ -866,6 +857,7 @@ public class Controller implements Initializable {
         subScene.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
                 /*
                  * Si le drop vient de commencé
                  *
@@ -875,10 +867,12 @@ public class Controller implements Initializable {
                 if (model.dropInProgress) {
                     clearBreakSelection();
                     if (model.brickClicked != null) {
-                        model.brickClicked.setState(BrickState.NONE, 12);
+                        //On déselectionne l'ancienne brique si il y en avait une
+                        model.brickClicked.setState(State.NONE, 14);
                     }
+                    //On met la brique qui provient du drop comme brick selectionné
                     model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
-                    model.brickClicked.setState(BrickState.SELECTCANMOVE);
+                    model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                     model.dropInProgress = false;
                 }
             }
@@ -893,21 +887,22 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent e) {
                 if (model.brickClicked != null) {
-                    if (model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
+                    if (model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE)) {
                         model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                        model.brickClicked.setState(BrickState.SELECTCANMOVE);
                     }
                 }
             }
         });
 
+        //Si on quitte la fenètre, la brique  set met en select !
         subScene.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (model.brickClicked != null) {
-                    if (!model.brickClicked.getState().equals(BrickState.SELECT))
-                        model.brickClicked.setState(BrickState.SELECT, 7);
+                    if (!model.brickClicked.getState().equals(State.SHOW_IS_SELECT))
+                        model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
                 }
+                searchBar.setDisable(false);
             }
         });
 
@@ -920,57 +915,76 @@ public class Controller implements Initializable {
         anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                /*Si on écrit pas pour donner le nom d'une étape ou qu'on recherche pas une brique
-                Si on fait pas cette vérification la brique bouge quand on tape z,q,s,d,r dans la zone de texte
-                 */
-                if (!isInTextField) { //Anti-conflit donc
-                    if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                        /*
-                         * * La brique cesse de suivre la souris
-                         */
-                        if (model.brickClicked != null) {
-                            model.brickClicked.setState(BrickState.SELECT, 8);
-                        }
-                    }
+                //evites que du texte se tapes quand on bouge la brique avec les touches
+                if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                    /*
+                     * * La brique cesse de suivre la souris
+                     */
                     if (model.brickClicked != null) {
-                        switch (keyEvent.getCode()) {
-                            case W:
-                                model.brickClicked.up();
-                                break;
-                            case X:
-                                model.brickClicked.down();
-                                break;
-                            case LEFT:
-                            case Q:
-                                model.brickClicked.leftX();
-                                break;
-                            case D:
-                            case RIGHT:
-                                model.brickClicked.rightX();
-                                break;
-                            case Z:
-                            case UP:
-                                model.brickClicked.rightZ();
-                                break;
-                            case S:
-                            case DOWN:
+                        model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
+                    }
+                }
+                if (model.brickClicked != null) {
+                    switch (keyEvent.getCode()) {
+                        case H:
+                            if (model.brickClicked.isHide()) model.brickClicked.hide(false);
+                            else model.brickClicked.hide(true);
+
+                            break;
+                        case T:
+                            model.brickClicked.createClone();
+
+                            break;
+                        case W:
+
+                            model.brickClicked.up();
+                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+
+                            break;
+                        case X:
+
+                            model.brickClicked.down();
+                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                            break;
+                        case LEFT:
+                        case Q:
+                            model.brickClicked.leftX();
+                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                            break;
+                        case D:
+                        case RIGHT:
+                            model.brickClicked.rightX();
+                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                            break;
+                        case Z:
+                        case UP:
+                            model.brickClicked.rightZ();
+                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+
+                            break;
+                        case S:
+                        case DOWN:
+                            if (model.brickClicked != null) {
                                 model.brickClicked.leftZ();
-                                break;
-                            case R:
+                                model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                            }
+                            break;
+                        case R:
+                            if (model.brickClicked != null)
                                 model.brickClicked.rotate();
-                                break;
-                            case G:
+
+                            break;
+                        case G:
+                            if (model.brickClicked != null)
                                 model.brickClicked.remove();
-                                break;
-                        }
+
+                            break;
                     }
                 }
 
+
             }
         });
-
-
-
         /*
          *
          * Mise à jour de la list view avec notre fonction de recherche
@@ -1290,11 +1304,11 @@ public class Controller implements Initializable {
      * Mise à jour de l'image qui représente la {@link Brick}
      */
     private void clearBreakSelection() {
-        brickSelection.setFitHeight(1);
-        brickSelection.setFitWidth(1);
-        brickSelection.setLayoutX(1046);
-        brickSelection.setLayoutY(648);
-        brickSelection.setOpacity(0);
+        imageOfBrickSelectedInSearchMenu.setFitHeight(1);
+        imageOfBrickSelectedInSearchMenu.setFitWidth(1);
+        imageOfBrickSelectedInSearchMenu.setLayoutX(1046);
+        imageOfBrickSelectedInSearchMenu.setLayoutY(648);
+        imageOfBrickSelectedInSearchMenu.setOpacity(0);
     }
 
     /**

@@ -74,10 +74,10 @@ public class Grid extends ArrayList<MinBrick> {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if(Controller.model.brickClicked != null){
-                            if (Controller.model.brickClicked.getState().equals(BrickState.SELECT)) {
-                                Controller.model.brickClicked.setState(BrickState.SELECTCANMOVE);
+                            if (Controller.model.brickClicked.getState().equals(State.SHOW_IS_SELECT)) {
+                                Controller.model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                             } else {
-                                Controller.model.brickClicked.setState(BrickState.SELECT);
+                                Controller.model.brickClicked.setState(State.SHOW_IS_SELECT);
                             }
                         }
                     }
