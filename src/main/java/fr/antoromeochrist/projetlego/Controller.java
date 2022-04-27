@@ -883,6 +883,23 @@ public class Controller implements Initializable {
                 }
             }
         });
+        /*
+         * Temps qu'on a pas cliqué sur la brique, la brique bouge dans la grille.
+         *
+         * Si il y a pas eu de drop: l'image sélectionné bouge temps qu'on rentre pas dans la subscene
+         *
+         * */
+        subScene.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                if (model.brickClicked != null) {
+                    if (model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
+                        model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+                        model.brickClicked.setState(BrickState.SELECTCANMOVE);
+                    }
+                }
+            }
+        });
 
         subScene.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override

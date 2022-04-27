@@ -64,6 +64,12 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setTranslateY(0);
                 b.setTranslateZ(z);
                 b.setOpacity(0);
+                b.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
+                    }
+                });
                 b.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
@@ -72,23 +78,6 @@ public class Grid extends ArrayList<MinBrick> {
                                 Controller.model.brickClicked.setState(BrickState.SELECTCANMOVE);
                             } else {
                                 Controller.model.brickClicked.setState(BrickState.SELECT);
-                            }
-                        }
-                    }
-                });
-                /*
-                 * Temps qu'on a pas cliqué sur la brique, la brique bouge dans la grille.
-                 *
-                 * Si il y a pas eu de drop: l'image sélectionné bouge temps qu'on rentre pas dans la subscene
-                 *
-                 * */
-                b.setOnMouseMoved(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        if (Controller.model.brickClicked != null) {
-                            if (Controller.model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
-                                Controller.model.brickClicked.move(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
-                                Controller.model.brickClicked.setState(BrickState.SELECTCANMOVE);
                             }
                         }
                     }
