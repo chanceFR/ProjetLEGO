@@ -7,6 +7,9 @@ import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -22,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -163,12 +167,20 @@ public class Controller implements Initializable {
      */
     public static final float rot = 11.25f;
 
+
+    /**
+     * Permet de vérifier si on tape du texte dans un
+     */
+    public boolean isInTextField;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //init//
         me = this;
         model = new Model();
         currentStep = new ListView();
+        isInTextField = false;
+        //searchBar.setEditable(false);//eviter que quand on allume le logiciel on écrit déjà dedans (bug)
         //init//
 
         /*
@@ -395,16 +407,17 @@ public class Controller implements Initializable {
                      * Menu de droite - gestion des étapes
                      * Objet concerné: field
                      *
-                     * On met à jour sa valeur textuelle quand l'utilisateur change le texte lui-même
+                     * On met à jour sa valeur textuelle quand l'utilisateur change le texte
+                     *
                      *
                      * */
-                    field.textProperty().addListener((observable, oldValue, newValue) -> {
-                        current.setText(newValue);
-                        field.setText(newValue);
-                    });
 
                     //field prendra forcément la valeur contenue dans current lors de sa création.
                     field.setText(current.getText());
+                    field.textProperty().addListener((observable, oldValue, newValue) -> {
+                        current.setText(newValue);
+                        //Fast.log("World typed in step n°" + steps.getItems().indexOf(lv) + " (" + oldValue + "-> " + newValue + ")");
+                    });
 
                     /*
                      * Menu de droite - gestion des étapes
@@ -548,14 +561,17 @@ public class Controller implements Initializable {
                                         lb2,
                                         brk.getTrash()
                                 );
+
                                 /*
                                  Si on clique sur une brique depuis le menu des étapes ça la sélectionne
                                  */
                                 hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
                                     @Override
                                     public void handle(MouseEvent mouseEvent) {
-                                        if (model.brickClicked != null) model.brickClicked.setState(BrickState.NONE,11);
-                                        brk.setState(BrickState.SELECT,5);
+                                        //Fast.log("Vous avez sélectionné une brique depuis le menu des étapes.");
+                                        if (model.brickClicked != null)
+                                            model.brickClicked.setState(BrickState.NONE, 11);
+                                        brk.setState(BrickState.SELECT, 5);
                                         model.brickClicked = brk;
                                         mouseEvent.consume();//anti bug graphique
                                     }
@@ -735,7 +751,7 @@ public class Controller implements Initializable {
                         @Override
                         public void handle(ActionEvent actionEvent) {
                             if (cp.getOldValue().equals(cp.getValue())) {
-                                //Fast.log("meme couleur mec !");
+                                ////Fast.log("meme couleur mec !");
                                 return;
                             }
                             /*
@@ -749,14 +765,14 @@ public class Controller implements Initializable {
                                     entry.getKey().setColor(cp.getValue());
                                 }
                             }
-                            //Fast.log("je met à jour les briques avec la nouvelle couleur.");
+                            ////Fast.log("je met à jour les briques avec la nouvelle couleur.");
                             /*
                              * Suppresion de doublon si il en trouve
                              * */
                             if (hasDuplicate(cp.getValue())) {
                                 contentColorsRemoveColor(cp.getValue());
                             }
-                            Fast.checkSize(3, contentColors.getItems());
+                            //Fast.checkSize(3, contentColors.getItems());
                         }
                     });
                     setGraphic(cp);
@@ -782,7 +798,7 @@ public class Controller implements Initializable {
                 if (model.brickClicked != null) {
                     Color oldColor = model.brickClicked.getColor();
                     if (oldColor.equals(colorpicker.getValue())) { //pas de changement de couleur
-                        //Fast.log("meme couleur");
+                        ////Fast.log("meme couleur");
                         return;
                     }
                     /*
@@ -793,7 +809,7 @@ public class Controller implements Initializable {
                      * On ajoute la nouvelle couleur si elle est pas dans contentColors
                      */
                     if (!colorInContentColors(colorpicker.getValue())) {
-                        //Fast.log("Couleur non présente on l'ajoute");
+                        ////Fast.log("Couleur non présente on l'ajoute");
                         contentColorAddColor(colorpicker.getValue());
                     }
                     model.brickClicked.setColor(colorpicker.getValue());
@@ -803,10 +819,10 @@ public class Controller implements Initializable {
                      * dans le content colors(à droite de l'écran)
                      *
                      * */
-                    Fast.checkSize(1, model.bricks);
-                    Fast.checkSize(2, model.getBrickWithColor(oldColor));
+                    //Fast.checkSize(1, model.bricks);
+                    //Fast.checkSize(2, model.getBrickWithColor(oldColor));
                     if (model.getBrickWithColor(oldColor) == null) {
-                        //Fast.log("Suppression de l'ancienne couleur");
+                        ////Fast.log("Suppression de l'ancienne couleur");
                         contentColorsRemoveColor(oldColor);
                     }
                 }
@@ -859,46 +875,11 @@ public class Controller implements Initializable {
                 if (model.dropInProgress) {
                     clearBreakSelection();
                     if (model.brickClicked != null) {
-                        model.brickClicked.setState(BrickState.NONE,12);
+                        model.brickClicked.setState(BrickState.NONE, 12);
                     }
                     model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
                     model.brickClicked.setState(BrickState.SELECTCANMOVE);
                     model.dropInProgress = false;
-                }
-            }
-        });
-        /*
-         * Temps qu'on a pas cliqué sur la brique, la brique bouge dans la grille.
-         *
-         * Si il y a pas eu de drop: l'image sélectionné bouge temps qu'on rentre pas dans la subscene
-         *
-         * */
-        subScene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.brickClicked != null) {
-                    if (model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
-                        model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                        model.brickClicked.setState(BrickState.SELECTCANMOVE);
-                    }
-                }
-            }
-        });
-
-        /*
-         * Si on clique et que la brique pouvait bougé dans la grille
-         * On vient de faire le drop.
-         *
-         * */
-        anchorPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (model.brickClicked != null) {
-                    if (model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
-                        model.brickClicked.setState(BrickState.SELECT,6);
-                    }else{
-                        model.brickClicked.setState(BrickState.SELECTCANMOVE);
-                    }
                 }
             }
         });
@@ -907,7 +888,8 @@ public class Controller implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (model.brickClicked != null) {
-                    if(!model.brickClicked.getState().equals(BrickState.SELECT)) model.brickClicked.setState(BrickState.SELECT,7);
+                    if (!model.brickClicked.getState().equals(BrickState.SELECT))
+                        model.brickClicked.setState(BrickState.SELECT, 7);
                 }
             }
         });
@@ -921,49 +903,70 @@ public class Controller implements Initializable {
         anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                    /*
-                     * * La brique cesse de suivre la souris
-                     */
-                    if (model.brickClicked != null){
-                        model.brickClicked.setState(BrickState.SELECT,8);
+                /*Si on écrit pas pour donner le nom d'une étape ou qu'on recherche pas une brique
+                Si on fait pas cette vérification la brique bouge quand on tape z,q,s,d,r dans la zone de texte
+                 */
+                if (!isInTextField) { //Anti-conflit donc
+                    if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                        /*
+                         * * La brique cesse de suivre la souris
+                         */
+                        if (model.brickClicked != null) {
+                            model.brickClicked.setState(BrickState.SELECT, 8);
+                        }
                     }
-                }
-                if (model.brickClicked != null) {
-                    switch (keyEvent.getCode()) {
-                        case W:
-                            model.brickClicked.up();
-                            break;
-                        case X:
-                            model.brickClicked.down();
-                            break;
-                        case LEFT:
-                        case Q:    
-                            model.brickClicked.leftX();
-                            break;
-                        case D:    
-                        case RIGHT:
-                            model.brickClicked.rightX();
-                            break;
-                        case Z:    
-                        case UP:
-                            model.brickClicked.rightZ();
-                            break;
-                        case S:    
-                        case DOWN:
-                            model.brickClicked.leftZ();
-                            break;
-                        case R:
-                            model.brickClicked.rotate();
-                            break;
-                        case G:
-                            model.brickClicked.remove();
-                            break;
+                    if (model.brickClicked != null) {
+                        switch (keyEvent.getCode()) {
+                            case W:
+                                model.brickClicked.up();
+                                break;
+                            case X:
+                                model.brickClicked.down();
+                                break;
+                            case LEFT:
+                            case Q:
+                                model.brickClicked.leftX();
+                                break;
+                            case D:
+                            case RIGHT:
+                                model.brickClicked.rightX();
+                                break;
+                            case Z:
+                            case UP:
+                                model.brickClicked.rightZ();
+                                break;
+                            case S:
+                            case DOWN:
+                                model.brickClicked.leftZ();
+                                break;
+                            case R:
+                                model.brickClicked.rotate();
+                                break;
+                            case G:
+                                model.brickClicked.remove();
+                                break;
+                        }
                     }
                 }
 
             }
         });
+
+
+
+        /*
+         *
+         * Mise à jour de la list view avec notre fonction de recherche
+         *
+         *
+         * */
+        searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
+            listView.getItems().clear();
+            listView.getItems().addAll(searchList(searchBar.getText(), model.imageStorages));
+        });
+
+
+
         /*
          *
          *
@@ -1029,16 +1032,6 @@ public class Controller implements Initializable {
                 }
             }
         });
-        searchBar.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent e) {
-                if (e.getCode().equals(KeyCode.ENTER)) {
-                    listView.getItems().clear();
-                    listView.getItems().addAll(searchList(searchBar.getText(), model.imageStorages));
-                }
-            }
-        });
-
 
         plus.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -1324,12 +1317,12 @@ public class Controller implements Initializable {
      * @return un boolean
      */
     public boolean colorInContentColors(Color c) {
-        //Fast.log("Couleur présente dans le content color");
+        ////Fast.log("Couleur présente dans le content color");
         return numberOfColorPickerWith(c) > 0;
     }
 
     public boolean hasDuplicate(Color c) {
-        //Fast.log("doublon trouvé dans le content color!");
+        ////Fast.log("doublon trouvé dans le content color!");
         return numberOfColorPickerWith(c) > 1;
     }
 
@@ -1397,5 +1390,4 @@ public class Controller implements Initializable {
         }
         return null;
     }
-
 }

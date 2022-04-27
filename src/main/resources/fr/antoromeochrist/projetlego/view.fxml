@@ -3,7 +3,6 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.SceneAntialiasing?>
 <?import javafx.scene.SubScene?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -33,6 +32,7 @@
                 <Group fx:id="group" />
             </root>
         </SubScene>
+      <Rectangle fx:id="antibug" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="43.0" layoutX="513.0" layoutY="136.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="71.0" />
 
         <!-- Cote gauche du logiciel -->
         <VBox fx:id="vbox" layoutX="-2.0" layoutY="130.0" prefHeight="530.0" prefWidth="260.0">
@@ -42,16 +42,8 @@
                     <children>
                         <!-- Rectangle pour la taille du groupe-->
                         <Rectangle arcWidth="5.0" fill="#2c2f35" height="57.0" smooth="false" stroke="BLACK" strokeType="INSIDE" width="257.0" />
-                        <!-- Bouton -->
-                        <Button fx:id="searchButton" layoutX="192.0" layoutY="12.0" mnemonicParsing="false" onAction="#search" prefHeight="32.0" prefWidth="45.0" stylesheets="@../../../style.css" text="">
-                            <graphic>
-                                <ImageView fitHeight="13.0" fitWidth="14.0">
-                                    <Image url="@../../../loupe.png" />
-                                </ImageView>
-                            </graphic>
-                        </Button>
                         <!-- Zone de texte ou on peut ecrire-->
-                        <TextField fx:id="searchBar" layoutX="19.0" layoutY="12.0" prefHeight="33.0" prefWidth="178.0" stylesheets="@../../../style.css" />
+                        <TextField fx:id="searchBar" layoutX="19.0" layoutY="12.0" prefHeight="33.0" prefWidth="217.0" promptText="search... 🔍" stylesheets="@../../../style.css" />
                     </children>
                 </Group>
 
@@ -127,9 +119,43 @@
         </menus>
       </MenuBar>
       <Circle fill="#121418" layoutX="782.0" layoutY="210.0" radius="44.0" stroke="#121418" strokeType="INSIDE" strokeWidth="0.0" />
+      <ListView fx:id="contentColors" layoutX="836.0" layoutY="173.0" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" prefHeight="57.0" prefWidth="221.0" stylesheets="@../../../style.css" />
+      <Label fx:id="contentColorsText" layoutX="906.0" layoutY="148.0" text="Content colors" />
+      <ListView fx:id="steps" layoutX="836.0" layoutY="255.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="221.0" stylesheets="@../../../style.css" />
+      <Label fx:id="addStep" layoutX="979.0" layoutY="228.0" prefHeight="17.0" prefWidth="78.0" text="+ add step" textFill="GREY" />
       <ImageView fx:id="top" fitHeight="32.0" fitWidth="30.0" layoutX="767.0" layoutY="169.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../top.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rbottom" fitHeight="31.0" fitWidth="29.0" layoutX="735.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rbottom.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rleft" fitHeight="31.0" fitWidth="29.0" layoutX="615.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rleft.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="minus" fitHeight="32.0" fitWidth="30.0" layoutX="546.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../minus.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="plus" fitHeight="32.0" fitWidth="30.0" layoutX="514.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../plus.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rright" fitHeight="31.0" fitWidth="45.0" layoutX="649.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rright.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rtop" fitHeight="31.0" fitWidth="29.0" layoutX="709.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rtop.png" />
          </image>
       </ImageView>
       <ImageView fx:id="left" fitHeight="32.0" fitWidth="30.0" layoutX="741.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">
@@ -147,40 +173,6 @@
             <Image url="@../../../right.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="plus" fitHeight="32.0" fitWidth="30.0" layoutX="514.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../plus.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="minus" fitHeight="32.0" fitWidth="30.0" layoutX="546.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../minus.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rleft" fitHeight="31.0" fitWidth="29.0" layoutX="615.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rleft.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rright" fitHeight="31.0" fitWidth="29.0" layoutX="649.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rright.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rtop" fitHeight="31.0" fitWidth="29.0" layoutX="709.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rtop.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rbottom" fitHeight="31.0" fitWidth="29.0" layoutX="735.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rbottom.png" />
-         </image>
-      </ImageView>
-      <ListView fx:id="contentColors" layoutX="836.0" layoutY="173.0" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" prefHeight="57.0" prefWidth="221.0" stylesheets="@../../../style.css" />
-      <Label fx:id="contentColorsText" layoutX="906.0" layoutY="148.0" text="Content colors" />
-      <ListView fx:id="steps" layoutX="836.0" layoutY="255.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="221.0" stylesheets="@../../../style.css" />
-      <Label fx:id="addStep" layoutX="992.0" layoutY="228.0" prefHeight="17.0" prefWidth="65.0" text="+ add step" textFill="GREY" />
       <ImageView fx:id="brickSelection" fitHeight="1.0" fitWidth="1.0" layoutX="1046.0" layoutY="648.0" opacity="0.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

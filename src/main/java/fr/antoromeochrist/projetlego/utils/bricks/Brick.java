@@ -51,6 +51,7 @@ import java.util.UUID;
                                    .... .. .....
                                        ....
 */
+
 /**
  * La classe Brick permet de créér des briques en fonction de leur dimension.
  * <p>
@@ -127,9 +128,8 @@ public class Brick extends ArrayList<MinBrick> {
     private boolean isHide, isDelete;
 
     /**
-    * Etat de la brique
-    *
-    * */
+     * Etat de la brique
+     */
     private BrickState brickState;
 
 
@@ -226,16 +226,17 @@ public class Brick extends ArrayList<MinBrick> {
              **/
             minBrick.setOnMouseClicked(mouseEvent -> {
                 if (Controller.model.brickClicked != null) {
-                    if (!Controller.model.brickClicked.equals(this)) { //conflit avec l'event subScene.mouseClick sinon
-                        if (brickState.equals(brickState.SELECT)) {
-                            setState(brickState.SELECTCANMOVE);
-                        } else if (brickState.equals(brickState.SELECTCANMOVE)) {
-                            setState(brickState.SELECT, 2);
+                    //si c'est déjà la brique sélectionne
+                    if (Controller.model.brickClicked.equals(this)) {
+                        if (getState().equals(BrickState.SELECT)) {
+                            setState(BrickState.SELECTCANMOVE);
                         } else {
-                            setState(brickState.SELECTCANMOVE);
+                            setState(BrickState.SELECT);
                         }
-                        Controller.model.brickClicked.setState(brickState.NONE, 13);
+                    } else {
+                        Controller.model.brickClicked.setState(BrickState.NONE);
                         Controller.model.brickClicked = this;
+                        this.setState(BrickState.SELECTCANMOVE, 13);
                     }
                 }
             });
@@ -309,6 +310,7 @@ public class Brick extends ArrayList<MinBrick> {
                 minBrick.cyl();
             }
             removeBorder();
+            setState(this.brickState);
         }
     }
 
@@ -327,7 +329,7 @@ public class Brick extends ArrayList<MinBrick> {
             //suppresion dans le content color si il reste plus de brick de sa couleur
             Color beforeDel = getColor();
             if (Controller.model.getBrickWithColor(beforeDel) == null) {
-                Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
+                //Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
                 Controller.me.contentColorsRemoveColor(beforeDel);
             }
             //on conserve l'étape ou était la brique
@@ -346,22 +348,22 @@ public class Brick extends ArrayList<MinBrick> {
            Cas: il reste au moins 1 brick dans la même étape après la suppresion
             */
             if (stepWhere.getItems().size() > 0) {
-                Fast.log("Il reste au moins 1 brick dans la même étape après la suppresion");
+                //Fast.log("Il reste au moins 1 brick dans la même étape après la suppresion");
                 //on prend le dernier de l'étape
                 Controller.model.brickClicked = stepWhere.getItems().get(stepWhere.getItems().size() - 1);
-                Fast.log("---");
-                Controller.model.brickClicked.setState(brickState.SELECT,9);
+                //Fast.log("---");
+                Controller.model.brickClicked.setState(BrickState.SELECT, 9);
             } else { //Cas: il n'y a plus de brique dans l'étape actuelle après la suppresion
                         /*
                         Il faut trouver une autre brique d'une autre étape si il y en a
                          */
-                Fast.log("Il n'y a plus de brique dans l'étape actuelle après la suppresion");
+                //Fast.log("Il n'y a plus de brique dans l'étape actuelle après la suppresion");
                 if (Controller.me.steps.getItems().size() > 1) {
-                    Fast.log("Recherche dans les autres étapes...");
+                    //Fast.log("Recherche dans les autres étapes...");
                     //on prend la dernière étape qui n'est pas égale à stepWhere
                     int indexLS = Controller.me.steps.getItems().size() - 1;
                     ListView<Brick> lastStep = (ListView<Brick>) Controller.me.steps.getItems().get(indexLS);
-                    while(lastStep.equals(stepWhere) && indexLS > 0){
+                    while (lastStep.equals(stepWhere) && indexLS > 0) {
                         indexLS--;
                         lastStep = (ListView<Brick>) Controller.me.steps.getItems().get(indexLS);
                     }
@@ -370,18 +372,18 @@ public class Brick extends ArrayList<MinBrick> {
                     //Si l'étape restante est l'étape 1, il faut vérfier qu'elle n'est pas vide
                     //rappel la seul étape qui a le droit d'être vide c'est l'étape 1
                     if (indexLS == 0) {
-                        Fast.log("Il reste que l'étape 1, regardons si elle est vide");
+                        //Fast.log("Il reste que l'étape 1, regardons si elle est vide");
                         if (lastStep.getItems().size() > 0) {
                             //on prend le dernier élément.
                             Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
-                            Controller.model.brickClicked.setState(brickState.SELECT,3);
+                            Controller.model.brickClicked.setState(BrickState.SELECT, 3);
                         }
                     } else { //on sait que forcement l'étape n'est pas vide, sinon elle existerait plus
                         //on prend le dernier élément.
-                        Fast.log("On a trouvé une étape");
+                        //Fast.log("On a trouvé une étape");
                         if (lastStep.getItems().size() > 0) {
                             Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
-                            Controller.model.brickClicked.setState(brickState.SELECT,4);
+                            Controller.model.brickClicked.setState(BrickState.SELECT, 4);
                         } else {
                             Controller.model.brickClicked = null;//il y a plus de brique sur le plateau
                         }
@@ -403,8 +405,8 @@ public class Brick extends ArrayList<MinBrick> {
                     Controller.me.steps.getItems().remove(stepWhere);
                 }
                 //pour que les briques ce remettre dans la dernière étape qui existe
-                Controller.me.currentStep= (ListView) Controller.me.steps.getItems().get(Controller.me.steps.getItems().size()-1);
-            }else{
+                Controller.me.currentStep = (ListView) Controller.me.steps.getItems().get(Controller.me.steps.getItems().size() - 1);
+            } else {
                 //On ajuste la taille
                 stepWhere.setPrefHeight(stepWhere.getItems().size() * 50 + 5);
             }
@@ -483,7 +485,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void up() {
         this.translate(0, -1, 0);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -491,7 +493,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void down() {
         this.translate(0, 1, 0);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -499,7 +501,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftX() {
         this.translate(-1, 0, 0);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -507,7 +509,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightX() {
         this.translate(1, 0, 0);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -515,7 +517,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftZ() {
         this.translate(0, 0, -1);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -523,7 +525,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightZ() {
         this.translate(0, 0, 1);
-        setState(brickState.SELECTCANMOVE);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -585,10 +587,11 @@ public class Brick extends ArrayList<MinBrick> {
 
     /**
      * Mettre à jour les bordures en fonction de l'état de la brique
+     *
      * @param brickState état
      */
     public void setState(BrickState brickState) {
-        switch(brickState){
+        switch (brickState) {
             case SELECT:
                 setBorderColor(Color.web("#7CFC00"));
                 break;
@@ -600,16 +603,17 @@ public class Brick extends ArrayList<MinBrick> {
                 break;
         }
         BrickState old = this.brickState;
-        this.brickState =brickState;
-        Fast.log(old+" --> "+this.brickState);
+        this.brickState = brickState;
+        //Fast.log(old+" --> "+this.brickState);
     }
 
     /**
      * Mettre à jour les bordures en fonction de l'état de la brique
+     *
      * @param brickState état
      */
-    public void setState(BrickState brickState,int i) {
-        switch(brickState){
+    public void setState(BrickState brickState, int i) {
+        switch (brickState) {
             case SELECT:
                 setBorderColor(Color.web("#7CFC00"));
                 break;
@@ -621,8 +625,8 @@ public class Brick extends ArrayList<MinBrick> {
                 break;
         }
         BrickState old = this.brickState;
-        this.brickState =brickState;
-        Fast.log(old+" --> "+this.brickState +"| debug"+i);
+        this.brickState = brickState;
+        //Fast.log(old+" --> "+this.brickState +"| debug"+i);
     }
 
     /**
@@ -806,23 +810,23 @@ public class Brick extends ArrayList<MinBrick> {
                 createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
             }
         }
-        if(isIn(dim.getWidth(),new int[]{2,3,4}) && dim.getDepth()==1){
-            border.get(8).setTranslateZ(border.get(8).getTranslateZ()-1.5);
-            border.get(9).setTranslateZ(border.get(9).getTranslateZ()-1.5);
-            border.get(10).setTranslateZ(border.get(10).getTranslateZ()+1.5);
-            border.get(11).setTranslateZ(border.get(11).getTranslateZ()+1.5);
+        if (isIn(dim.getWidth(), new int[]{2, 3, 4}) && dim.getDepth() == 1) {
+            border.get(8).setTranslateZ(border.get(8).getTranslateZ() - 1.5);
+            border.get(9).setTranslateZ(border.get(9).getTranslateZ() - 1.5);
+            border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 1.5);
+            border.get(11).setTranslateZ(border.get(11).getTranslateZ() + 1.5);
         }
-        if(isIn(dim.getWidth(),new int[]{3,4}) && dim.getDepth()==2){
-            border.get(8).setTranslateZ(border.get(8).getTranslateZ()-1);
-            border.get(9).setTranslateZ(border.get(9).getTranslateZ()-1);
-            border.get(10).setTranslateZ(border.get(10).getTranslateZ()+1);
-            border.get(11).setTranslateZ(border.get(11).getTranslateZ()+1);
+        if (isIn(dim.getWidth(), new int[]{3, 4}) && dim.getDepth() == 2) {
+            border.get(8).setTranslateZ(border.get(8).getTranslateZ() - 1);
+            border.get(9).setTranslateZ(border.get(9).getTranslateZ() - 1);
+            border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 1);
+            border.get(11).setTranslateZ(border.get(11).getTranslateZ() + 1);
         }
-        if(dim.getWidth() ==4 && dim.getDepth()==3){
-            border.get(8).setTranslateZ(border.get(8).getTranslateZ()-0.5);
-            border.get(9).setTranslateZ(border.get(9).getTranslateZ()-0.5);
-            border.get(10).setTranslateZ(border.get(10).getTranslateZ()+0.5);
-            border.get(11).setTranslateZ(border.get(11).getTranslateZ()+0.5);
+        if (dim.getWidth() == 4 && dim.getDepth() == 3) {
+            border.get(8).setTranslateZ(border.get(8).getTranslateZ() - 0.5);
+            border.get(9).setTranslateZ(border.get(9).getTranslateZ() - 0.5);
+            border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 0.5);
+            border.get(11).setTranslateZ(border.get(11).getTranslateZ() + 0.5);
         }
     }
 
@@ -866,6 +870,7 @@ public class Brick extends ArrayList<MinBrick> {
      * Mettre à jour l'image qui permet de voir depuis "steps"
      * <p>
      * si l'image est caché
+     *
      * @param b booléen
      */
     private void setViewstatusHide(boolean b) {
@@ -888,10 +893,10 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
 
-    private void brickHaveColorInDictionnary(Color color){
-        if (Controller.model.bricks.containsKey(this)){
+    private void brickHaveColorInDictionnary(Color color) {
+        if (Controller.model.bricks.containsKey(this)) {
             Controller.model.bricks.replace(this, color);
-        }else{
+        } else {
             Controller.model.bricks.put(this, color);
         }
     }
@@ -899,23 +904,23 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Permet d'appliquer une rotation de 90 degrée sur une brique
      */
-    public void rotate(){
-        if(dim.getDepth() == 1 && dim.getWidth() == 1){ //ex 1x1x2
+    public void rotate() {
+        if (dim.getDepth() == 1 && dim.getWidth() == 1) { //ex 1x1x2
             return;
         }
-        Dim newDim = new Dim(this.dim.getWidth(),this.dim.getDepth(),this.dim.getHeight());
+        Dim newDim = new Dim(this.dim.getWidth(), this.dim.getDepth(), this.dim.getHeight());
         newDim.rotate();
-        if(newDim.getWidth() != this.dim.getWidth() || newDim.getDepth() != this.dim.getWidth()){
+        if (newDim.getWidth() != this.dim.getWidth() || newDim.getDepth() != this.dim.getWidth()) {
             this.removeBorder();
             this.dim.rotate();
             this.create(true);
-            this.setState(brickState.SELECT,1);
+            this.setState(BrickState.SELECTCANMOVE, 1);
         }
     }
 
-    private boolean isIn(int i, int[] interval){
-        for(int p= 0;p<interval.length;p++){
-            if(interval[p]==i){
+    private boolean isIn(int i, int[] interval) {
+        for (int p = 0; p < interval.length; p++) {
+            if (interval[p] == i) {
                 return true;
             }
         }
