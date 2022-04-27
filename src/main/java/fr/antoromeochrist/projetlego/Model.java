@@ -17,7 +17,7 @@ public class Model {
     public HashMap<Brick, Color> bricks;
     public Brick brickClicked;
     public ArrayList<ImageStorage> imageStorages;
-    public boolean hasDrop;
+    public boolean dropInProgress;
     public ArrayList<Step> instruction;
 
     /**
@@ -30,7 +30,7 @@ public class Model {
 
     public Model() {
         bricks = new HashMap<>();
-        hasDrop = true;
+        dropInProgress = false;
         instruction = new ArrayList<Step>();
         imageStorages = new ArrayList<>();
         try {

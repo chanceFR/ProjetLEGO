@@ -3,7 +3,9 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.event.EventHandler;
+import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -122,7 +124,14 @@ public class Brick extends ArrayList<MinBrick> {
      * @see fr.antoromeochrist.projetlego.Model
      */
     private Rectangle rect;
-    private boolean isHide, isDelete,isSelect;
+    private boolean isHide, isDelete;
+
+    /**
+    * Etat de la brique
+    *
+    * */
+    private BrickState BrickState;
+
 
     /**
      * Constructeur pour construire une brique
@@ -212,13 +221,20 @@ public class Brick extends ArrayList<MinBrick> {
                 }
             });
             /*
-             *
+             * On vient de cliquer sur la brique
              * Permet de d'afficher les bordures
              *
              **/
             minBrick.setOnMousePressed(mouseEvent -> {
-                Controller.model.brickClicked=this;
-                setSelectMode(!isSelect);
+                Controller.model.brickClicked.setState(BrickState.NONE);
+                Controller.model.brickClicked = this;
+                if (BrickState.equals(BrickState.SELECT)) {
+                    setState(BrickState.SELECTCANMOVE);
+                } else if (BrickState.equals(BrickState.SELECTCANMOVE)) {
+                    setState(BrickState.SELECT);
+                } else {
+                    setState(BrickState.SELECTCANMOVE);
+                }
             });
             minBrick.cyl();
         }
@@ -227,10 +243,11 @@ public class Brick extends ArrayList<MinBrick> {
 
     /**
      * Permet de recreer graphiquement une brique
-     * @param recreate si on l'avait déjà créé et qu'on l'a recréé
+     *
+     * @param recreate si on l'avait déjà créé et qu'on l'a recréé (en appliquand une rotation)
      */
     private void create(boolean recreate) {
-        isDelete=false;
+        isDelete = false;
         int i1 = 0;
         volume = Volume.createAllVolume(new P3D(this.x, this.y, this.z), this.dim);
         while (Volume.volumeIntersection(this, Controller.model.bricks.keySet())) {
@@ -238,7 +255,7 @@ public class Brick extends ArrayList<MinBrick> {
             volume = Volume.createAllVolume(new P3D(this.x, this.y - i1, this.z), this.dim);
         }
         for (int i = 0; i < volume.size(); i++) {
-            if(recreate){
+            if (recreate) {
                 MinBrick minBrick = this.get(i);
                 minBrick.setWidth(1);
                 minBrick.setHeight(1);
@@ -248,7 +265,7 @@ public class Brick extends ArrayList<MinBrick> {
                 minBrick.setTranslateZ(volume.get(i).getZ());
                 minBrick.cyl();
                 this.add(minBrick);
-            }else{
+            } else {
                 MinBrick minBrick = new MinBrick();
                 minBrick.setWidth(1);
                 minBrick.setHeight(1);
@@ -261,7 +278,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
         }
         Controller.model.brickClicked = this;
-        if(!recreate){
+        if (!recreate) {
             for (MinBrick minBrick : this) {
                 Controller.me.group.getChildren().add(minBrick);
                 Controller.me.group.getChildren().add(minBrick.getCylinder());
@@ -296,23 +313,90 @@ public class Brick extends ArrayList<MinBrick> {
      * Suppression de la brique
      */
     public void remove() {
-        if (!isDelete) { //evite des bugs si on clique deux fois sur le bonton corbeille
+        if (!isDelete) { //evite des bugs si on clique deux fois sur le bouton corbeille(à cause de lag)
             isDelete = true;
-            if (Controller.model.brickClicked != null) {
-                if (Controller.model.brickClicked.getID().equals(this.getID())) {
+            /*suppression des briques*/
+            Controller.me.group.getChildren().removeAll(this);
+            //suppresion des bordures
+            Controller.me.group.getChildren().removeAll(border);
+            //suppression des cylindes
+            for (MinBrick minBrick : this) Controller.me.group.getChildren().remove(minBrick.getCylinder());
+            //suppresion dans le content color si il reste plus de brick de sa couleur
+            Color beforeDel = getColor();
+            if (Controller.model.getBrickWithColor(beforeDel) == null) {
+                Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
+                Controller.me.contentColorsRemoveColor(beforeDel);
+            }
+            //on conserve l'étape ou était la brique
+            ListView<Brick> stepWhere = Controller.me.getStepWhereIsBrick(this);
+            //suppresion de la brique dans l'étape
+            stepWhere.getItems().remove(this);
+            /*
+             * On doit attribuer la brickClicked si jamais il existe
+             *
+             * */
+
+           /*
+           Objectif: Quand on supprime la brick sélectionné, on veut attribuer la valeur
+                      brickClicked à l'une des briques de la même étape
+
+           Cas: il reste au moins 1 brick dans la même étape après la suppresion
+            */
+            if (stepWhere.getItems().size() > 0) {
+                Fast.log("Il reste au moins 1 brick dans la même étape après la suppresion");
+                //on prend le dernier de l'étape
+                Controller.model.brickClicked = stepWhere.getItems().get(stepWhere.getItems().size() - 1);
+                this.setState(BrickState.NONE);
+                Controller.model.brickClicked.setState(BrickState.SELECT);
+            } else { //Cas: il n'y a plus de brique dans l'étape actuelle après la suppresion
+                        /*
+                        Il faut trouver une autre brique d'une autre étape si il y en a
+                         */
+                Fast.log("Il n'y a plus de brique dans l'étape actuelle après la suppresion");
+                if (Controller.me.steps.getItems().size() > 1) {
+                    Fast.log("Autre étape trouvé : recherche de brique.");
+                    //on prend la dernière étape.
+                    int indexLS = Controller.me.steps.getItems().size() - 1;
+                    ListView<Brick> lastStep = (ListView<Brick>) Controller.me.steps.getItems().get(indexLS);
+                    //Cas limite:
+                    //Si l'étape restante est l'étape 1, il faut vérfier qu'elle n'est pas vide
+                    //rappel la seul étape qui a le droit d'être vide c'est l'étape 1
+                    if (indexLS == 0) {
+                        Fast.log("Il reste que l'étape 1, regardons si elle est vide");
+                        if (lastStep.getItems().size() > 0) {
+                            //on prend le dernier élément.
+                            Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
+                            this.setState(BrickState.NONE);
+                            Controller.model.brickClicked.setState(BrickState.SELECT);
+                        }
+                    } else { //on sait que forcement l'étape n'est pas vide, sinon elle existerait plus
+                        //on prend le dernier élément.
+                        Fast.log("On a trouvé une étape");
+                        if (lastStep.getItems().size() > 0) {
+                            Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
+                            this.setState(BrickState.NONE);
+                            Controller.model.brickClicked.setState(BrickState.SELECT);
+                        } else {
+                            Controller.model.brickClicked = null;//il y a plus de brique sur le plateau
+                        }
+                    }
+                } else {
                     Controller.model.brickClicked = null;
                 }
             }
-            Controller.me.group.getChildren().removeAll(this);
-            setSelectMode(false);
-            Controller.me.group.getChildren().removeAll(border);
-            for (MinBrick minBrick : this) Controller.me.group.getChildren().remove(minBrick.getCylinder());
-            Color beforeDel = getColor();
-            if (Controller.model.getBrickWithColor(beforeDel) == null) {
-                Controller.me.contentColorsRemoveColor(beforeDel);
-            }
-            Controller.me.getStepWhereIsBrick(this).getItems().remove(this);
+
+
             Controller.model.bricks.remove(this);
+            /*
+             * On supprime l'étape d'ou vient la dernière brique.
+             * L'étape n'a donc plus de bricque.
+             * */
+            if (stepWhere.getItems().size() == 0) {
+                //on supprime que si c'est pas la première étape évidemment !
+                if (Controller.me.steps.getItems().indexOf(stepWhere) > 0) {
+                    Controller.me.steps.getItems().remove(stepWhere);
+                }
+            }
             this.clear();
         }
     }
@@ -361,7 +445,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void move(double x, double y, double z) {
         Volume temp = Volume.createAllVolume(new P3D(x, y, z), this.dim);
-        if (!Controller.model.hasDrop) {
+        if (!Controller.model.dropInProgress) {
             int increment = 1;
             while (Volume.volumeIntersection(temp, Controller.model.bricks.keySet(), this)) {
                 temp = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
@@ -388,7 +472,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void up() {
         this.translate(0, -1, 0);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -396,7 +480,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void down() {
         this.translate(0, 1, 0);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -404,7 +488,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftX() {
         this.translate(-1, 0, 0);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -412,7 +496,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightX() {
         this.translate(1, 0, 0);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -420,7 +504,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftZ() {
         this.translate(0, 0, -1);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -428,7 +512,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightZ() {
         this.translate(0, 0, 1);
-        setSelectMode(true);
+        setState(BrickState.SELECTCANMOVE);
     }
 
     /**
@@ -488,22 +572,21 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     /**
-     * Mettre les bordures de la brique en bleu pour
-     * <p>
-     * montrer qu'elle est sélectionné ou les retirer.
-     *s
-     * @param b booléen
+     * Mettre à jour les bordures en fonction de l'état de la brique
+     * @param BrickState état
      */
-    public void setSelectMode(boolean b) {
-        isSelect=b;
-        if (b) {
-            setBorderColor(Color.web("#42C0FB"));
-        } else {
-            if (isHide) {
-                setBorderColor(Color.web("#808080"));
-            } else {
+    public void setState(BrickState BrickState) {
+        this.BrickState = BrickState;
+        switch(this.BrickState){
+            case SELECT:
+                setBorderColor(Color.web("#7CFC00"));
+                break;
+            case SELECTCANMOVE:
+                setBorderColor(Color.web("#42C0FB"));
+                break;
+            default:
                 removeBorder();
-            }
+                break;
         }
     }
 
@@ -788,10 +871,10 @@ public class Brick extends ArrayList<MinBrick> {
         Dim newDim = new Dim(this.dim.getWidth(),this.dim.getDepth(),this.dim.getHeight());
         newDim.rotate();
         if(newDim.getWidth() != this.dim.getWidth() || newDim.getDepth() != this.dim.getWidth()){
-            this.setSelectMode(false);
+            this.removeBorder();
             this.dim.rotate();
             this.create(true);
-            this.setSelectMode(true);
+            this.setState(BrickState.SELECT);
         }
     }
 
@@ -804,4 +887,7 @@ public class Brick extends ArrayList<MinBrick> {
         return false;
     }
 
+    public BrickState getState() {
+        return BrickState;
+    }
 }
