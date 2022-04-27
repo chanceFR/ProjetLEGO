@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class Controller implements Initializable {
 
     /**
-     * Permet l'accès aux variables du modèle depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}</a>.
+     * Permet l'accès aux variables du modèle depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}.
      * sans que ces classes externes aient à appeler le contrôleur dans le constructeur car ces classes externes auront besoin de ses variables.
      *
      * <p>
@@ -42,7 +42,7 @@ public class Controller implements Initializable {
     public static Model model;
 
     /**
-     * Permet l'accès aux variables du contrôleur(this) depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}</a>.
+     * Permet l'accès aux variables du contrôleur(this) depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}.
      * sans que ces classes externes aient à appeler le contrôleur dans le constructeur car ces classes externes auront besoin de ses variables.
      * <p>
      * Exemple:
@@ -134,7 +134,7 @@ public class Controller implements Initializable {
      * Cette variable permet de stocker l'étape actuelle pour ainsi
      * insérer chaque nouvelle briques que l'on pose dedans.
      * <p>
-     * Cette variable peut pointer vers une autre <a href="#{@link}">{@link ListView}</a> si jamais
+     * Cette variable peut pointer vers une autre <a href="#{@link}">{@link ListView} si jamais
      * on clique le bouton sur le bouton "addStep"
      *
      * @see fr.antoromeochrist.projetlego.utils.bricks.Step
@@ -143,7 +143,7 @@ public class Controller implements Initializable {
 
 
     /**
-     * La grille permet de faire bouger une <a href="#{@link}">{@link Brick}</a> lors du drag and drop.
+     * La grille permet de faire bouger une <a href="#{@link}">{@link Brick} lors du drag and drop.
      * <p>
      * La grille ne permet pas la superposition des briques puisqu'elle
      * fonctionne avec l'évènement suivant: la souris entre dans l'une des cases de la grille,
@@ -432,10 +432,9 @@ public class Controller implements Initializable {
                      * doivent se caché et inversement.
                      *
                      * */
-                    view.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    view.setOnMousePressed(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent mouseEvent) {
-                            mouseEvent.consume();
                             if (current.isHide()) {
                                 current.hide(false);
                                 try {
@@ -453,6 +452,7 @@ public class Controller implements Initializable {
                             }
                             //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
                             for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
+                            mouseEvent.consume();//anti bug graphique
                         }
                     });
 
@@ -485,10 +485,9 @@ public class Controller implements Initializable {
                          * Evement si on veut caché une brique
                          *
                          * */
-                        trash.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        trash.setOnMousePressed(new EventHandler<MouseEvent>() {
                             @Override
                             public void handle(MouseEvent mouseEvent) {
-                                mouseEvent.consume();
                                 for (Object o : lv.getItems()) {
                                     if (o instanceof Brick) {
                                         Brick b = (Brick) o;
@@ -496,6 +495,7 @@ public class Controller implements Initializable {
                                     }
                                 }
                                 steps.getItems().remove(lv);
+                                mouseEvent.consume();//anti bug graphique
                             }
                         });
                     }
@@ -551,13 +551,13 @@ public class Controller implements Initializable {
                                 /*
                                  Si on clique sur une brique depuis le menu des étapes ça la sélectionne
                                  */
-                                hbx1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
                                     @Override
                                     public void handle(MouseEvent mouseEvent) {
-                                        mouseEvent.consume();
-                                        if (model.brickClicked != null) model.brickClicked.setState(BrickState.NONE);
-                                        brk.setState(BrickState.SELECT);
+                                        if (model.brickClicked != null) model.brickClicked.setState(BrickState.NONE,11);
+                                        brk.setState(BrickState.SELECT,5);
                                         model.brickClicked = brk;
+                                        mouseEvent.consume();//anti bug graphique
                                     }
                                 });
                                 setGraphic(hbx1);
@@ -690,8 +690,6 @@ public class Controller implements Initializable {
                     hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent e) {
-                            e.consume();
-                            //clearBreakSelection();
                             model.dropInProgress = true;
                             model.dropSelectionData = imSto;
                             brickSelection.setFitHeight(50);
@@ -702,6 +700,7 @@ public class Controller implements Initializable {
                             brickSelection.setY(e.getSceneY() - 50);
                             brickSelection.setLayoutX(iv.getLayoutX());
                             brickSelection.setLayoutY(iv.getLayoutY());
+                            e.consume();//anti bug graphique
                         }
                     });
                 }
@@ -736,7 +735,7 @@ public class Controller implements Initializable {
                         @Override
                         public void handle(ActionEvent actionEvent) {
                             if (cp.getOldValue().equals(cp.getValue())) {
-                                Fast.log("meme couleur mec !");
+                                //Fast.log("meme couleur mec !");
                                 return;
                             }
                             /*
@@ -750,7 +749,7 @@ public class Controller implements Initializable {
                                     entry.getKey().setColor(cp.getValue());
                                 }
                             }
-                            Fast.log("je met à jour les briques avec la nouvelle couleur.");
+                            //Fast.log("je met à jour les briques avec la nouvelle couleur.");
                             /*
                              * Suppresion de doublon si il en trouve
                              * */
@@ -783,7 +782,7 @@ public class Controller implements Initializable {
                 if (model.brickClicked != null) {
                     Color oldColor = model.brickClicked.getColor();
                     if (oldColor.equals(colorpicker.getValue())) { //pas de changement de couleur
-                        Fast.log("meme couleur");
+                        //Fast.log("meme couleur");
                         return;
                     }
                     /*
@@ -794,7 +793,7 @@ public class Controller implements Initializable {
                      * On ajoute la nouvelle couleur si elle est pas dans contentColors
                      */
                     if (!colorInContentColors(colorpicker.getValue())) {
-                        Fast.log("Couleur non présente on l'ajoute");
+                        //Fast.log("Couleur non présente on l'ajoute");
                         contentColorAddColor(colorpicker.getValue());
                     }
                     model.brickClicked.setColor(colorpicker.getValue());
@@ -807,7 +806,7 @@ public class Controller implements Initializable {
                     Fast.checkSize(1, model.bricks);
                     Fast.checkSize(2, model.getBrickWithColor(oldColor));
                     if (model.getBrickWithColor(oldColor) == null) {
-                        Fast.log("Suppression de l'ancienne couleur");
+                        //Fast.log("Suppression de l'ancienne couleur");
                         contentColorsRemoveColor(oldColor);
                     }
                 }
@@ -860,7 +859,7 @@ public class Controller implements Initializable {
                 if (model.dropInProgress) {
                     clearBreakSelection();
                     if (model.brickClicked != null) {
-                        model.brickClicked.setState(BrickState.NONE);
+                        model.brickClicked.setState(BrickState.NONE,12);
                     }
                     model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[1], 0, colorpicker.getValue());
                     model.brickClicked.setState(BrickState.SELECTCANMOVE);
@@ -891,13 +890,13 @@ public class Controller implements Initializable {
          * On vient de faire le drop.
          *
          * */
-        subScene.setOnMousePressed(new EventHandler<MouseEvent>() {
+        anchorPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (model.brickClicked != null) {
                     if (model.brickClicked.getState().equals(BrickState.SELECTCANMOVE)) {
-                        model.brickClicked.setState(BrickState.SELECT);
-                    } else {
+                        model.brickClicked.setState(BrickState.SELECT,6);
+                    }else{
                         model.brickClicked.setState(BrickState.SELECTCANMOVE);
                     }
                 }
@@ -907,7 +906,9 @@ public class Controller implements Initializable {
         subScene.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if (model.brickClicked != null) model.brickClicked.setState(BrickState.SELECT);
+                if (model.brickClicked != null) {
+                    if(!model.brickClicked.getState().equals(BrickState.SELECT)) model.brickClicked.setState(BrickState.SELECT,7);
+                }
             }
         });
 
@@ -924,7 +925,9 @@ public class Controller implements Initializable {
                     /*
                      * * La brique cesse de suivre la souris
                      */
-                    if (model.brickClicked != null) model.brickClicked.setState(BrickState.SELECT);
+                    if (model.brickClicked != null){
+                        model.brickClicked.setState(BrickState.SELECT,8);
+                    }
                 }
                 if (model.brickClicked != null) {
                     switch (keyEvent.getCode()) {
@@ -935,19 +938,26 @@ public class Controller implements Initializable {
                             model.brickClicked.down();
                             break;
                         case LEFT:
+                        case Q:    
                             model.brickClicked.leftX();
                             break;
+                        case D:    
                         case RIGHT:
                             model.brickClicked.rightX();
                             break;
+                        case Z:    
                         case UP:
                             model.brickClicked.rightZ();
                             break;
+                        case S:    
                         case DOWN:
                             model.brickClicked.leftZ();
                             break;
-                        case S:
+                        case R:
                             model.brickClicked.rotate();
+                            break;
+                        case G:
+                            model.brickClicked.remove();
                             break;
                     }
                 }
@@ -1267,7 +1277,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Mise à jour de l'image qui représente la <a href="#@link">{@link Brick}</a>
+     * Mise à jour de l'image qui représente la {@link Brick}
      */
     private void clearBreakSelection() {
         brickSelection.setFitHeight(1);
@@ -1278,7 +1288,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Mise à jour de <a href="#@link">{@link ListView}</a>
+     * Mise à jour de {@link ListView}
      * <p>
      * En fonction de la recherche.
      *
@@ -1293,7 +1303,7 @@ public class Controller implements Initializable {
     /**
      * Retourne une liste (souvent plus petite)
      * <p>
-     * composé <a href="#@link">{@link ImageStorage}</a> satisfaisant aux critères de recherche
+     * composé {@link ImageStorage} satisfaisant aux critères de recherche
      *
      * @param searchWords   Critère de recherche
      * @param listOfStrings La liste entière
@@ -1308,18 +1318,18 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Retourne vrai si la <a href="#@link">{@link Color}</a> est présente dans le contentcolors.
+     * Retourne vrai si la {@link Color} est présente dans le contentcolors.
      *
      * @param c la couleur
      * @return un boolean
      */
     public boolean colorInContentColors(Color c) {
-        Fast.log("Couleur présente dans le content color");
+        //Fast.log("Couleur présente dans le content color");
         return numberOfColorPickerWith(c) > 0;
     }
 
     public boolean hasDuplicate(Color c) {
-        Fast.log("doublon trouvé dans le content color!");
+        //Fast.log("doublon trouvé dans le content color!");
         return numberOfColorPickerWith(c) > 1;
     }
 
@@ -1337,7 +1347,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Ajoute la <a href="#@link">{@link Color}</a> aux contentcolors.
+     * Ajoute la {@link Color} aux contentcolors.
      *
      * @param c la couleur
      */
@@ -1348,7 +1358,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Supprime la <a href="#@link">{@link Color}</a> aux contentcolors.
+     * Supprime la {@link Color} aux contentcolors.
      *
      * @param c la couleur
      */

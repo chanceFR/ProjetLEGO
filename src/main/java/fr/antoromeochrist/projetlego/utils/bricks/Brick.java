@@ -130,7 +130,7 @@ public class Brick extends ArrayList<MinBrick> {
     * Etat de la brique
     *
     * */
-    private BrickState BrickState;
+    private BrickState brickState;
 
 
     /**
@@ -148,6 +148,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
     public Brick(Dim dim, double x, double z, double y, Color c) {
+        this.brickState = BrickState.NONE;
         this.isHide = false;
         this.id = UUID.randomUUID().toString();
         this.dim = dim;
@@ -196,9 +197,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
         });
 
-        Brick b = this;
-
-
+        Brick instance = this;
         /*
          *
          * Les composantes de la briques si elles sont cliqué on peut mettre la bordure.
@@ -225,15 +224,19 @@ public class Brick extends ArrayList<MinBrick> {
              * Permet de d'afficher les bordures
              *
              **/
-            minBrick.setOnMousePressed(mouseEvent -> {
-                Controller.model.brickClicked.setState(BrickState.NONE);
-                Controller.model.brickClicked = this;
-                if (BrickState.equals(BrickState.SELECT)) {
-                    setState(BrickState.SELECTCANMOVE);
-                } else if (BrickState.equals(BrickState.SELECTCANMOVE)) {
-                    setState(BrickState.SELECT);
-                } else {
-                    setState(BrickState.SELECTCANMOVE);
+            minBrick.setOnMouseClicked(mouseEvent -> {
+                if (Controller.model.brickClicked != null) {
+                    if (!Controller.model.brickClicked.equals(this)) { //conflit avec l'event subScene.mouseClick sinon
+                        if (brickState.equals(brickState.SELECT)) {
+                            setState(brickState.SELECTCANMOVE);
+                        } else if (brickState.equals(brickState.SELECTCANMOVE)) {
+                            setState(brickState.SELECT, 2);
+                        } else {
+                            setState(brickState.SELECTCANMOVE);
+                        }
+                        Controller.model.brickClicked.setState(brickState.NONE, 13);
+                        Controller.model.brickClicked = this;
+                    }
                 }
             });
             minBrick.cyl();
@@ -346,18 +349,23 @@ public class Brick extends ArrayList<MinBrick> {
                 Fast.log("Il reste au moins 1 brick dans la même étape après la suppresion");
                 //on prend le dernier de l'étape
                 Controller.model.brickClicked = stepWhere.getItems().get(stepWhere.getItems().size() - 1);
-                this.setState(BrickState.NONE);
-                Controller.model.brickClicked.setState(BrickState.SELECT);
+                Fast.log("---");
+                Controller.model.brickClicked.setState(brickState.SELECT,9);
             } else { //Cas: il n'y a plus de brique dans l'étape actuelle après la suppresion
                         /*
                         Il faut trouver une autre brique d'une autre étape si il y en a
                          */
                 Fast.log("Il n'y a plus de brique dans l'étape actuelle après la suppresion");
                 if (Controller.me.steps.getItems().size() > 1) {
-                    Fast.log("Autre étape trouvé : recherche de brique.");
-                    //on prend la dernière étape.
+                    Fast.log("Recherche dans les autres étapes...");
+                    //on prend la dernière étape qui n'est pas égale à stepWhere
                     int indexLS = Controller.me.steps.getItems().size() - 1;
                     ListView<Brick> lastStep = (ListView<Brick>) Controller.me.steps.getItems().get(indexLS);
+                    while(lastStep.equals(stepWhere) && indexLS > 0){
+                        indexLS--;
+                        lastStep = (ListView<Brick>) Controller.me.steps.getItems().get(indexLS);
+                    }
+
                     //Cas limite:
                     //Si l'étape restante est l'étape 1, il faut vérfier qu'elle n'est pas vide
                     //rappel la seul étape qui a le droit d'être vide c'est l'étape 1
@@ -366,21 +374,19 @@ public class Brick extends ArrayList<MinBrick> {
                         if (lastStep.getItems().size() > 0) {
                             //on prend le dernier élément.
                             Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
-                            this.setState(BrickState.NONE);
-                            Controller.model.brickClicked.setState(BrickState.SELECT);
+                            Controller.model.brickClicked.setState(brickState.SELECT,3);
                         }
                     } else { //on sait que forcement l'étape n'est pas vide, sinon elle existerait plus
                         //on prend le dernier élément.
                         Fast.log("On a trouvé une étape");
                         if (lastStep.getItems().size() > 0) {
                             Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
-                            this.setState(BrickState.NONE);
-                            Controller.model.brickClicked.setState(BrickState.SELECT);
+                            Controller.model.brickClicked.setState(brickState.SELECT,4);
                         } else {
                             Controller.model.brickClicked = null;//il y a plus de brique sur le plateau
                         }
                     }
-                } else {
+                } else { //on est dans l'étape 1 et il reste aucune brique dedans
                     Controller.model.brickClicked = null;
                 }
             }
@@ -396,6 +402,11 @@ public class Brick extends ArrayList<MinBrick> {
                 if (Controller.me.steps.getItems().indexOf(stepWhere) > 0) {
                     Controller.me.steps.getItems().remove(stepWhere);
                 }
+                //pour que les briques ce remettre dans la dernière étape qui existe
+                Controller.me.currentStep= (ListView) Controller.me.steps.getItems().get(Controller.me.steps.getItems().size()-1);
+            }else{
+                //On ajuste la taille
+                stepWhere.setPrefHeight(stepWhere.getItems().size() * 50 + 5);
             }
             this.clear();
         }
@@ -472,7 +483,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void up() {
         this.translate(0, -1, 0);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -480,7 +491,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void down() {
         this.translate(0, 1, 0);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -488,7 +499,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftX() {
         this.translate(-1, 0, 0);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -496,7 +507,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightX() {
         this.translate(1, 0, 0);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -504,7 +515,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void leftZ() {
         this.translate(0, 0, -1);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -512,7 +523,7 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void rightZ() {
         this.translate(0, 0, 1);
-        setState(BrickState.SELECTCANMOVE);
+        setState(brickState.SELECTCANMOVE);
     }
 
     /**
@@ -571,13 +582,13 @@ public class Brick extends ArrayList<MinBrick> {
         return z;
     }
 
+
     /**
      * Mettre à jour les bordures en fonction de l'état de la brique
-     * @param BrickState état
+     * @param brickState état
      */
-    public void setState(BrickState BrickState) {
-        this.BrickState = BrickState;
-        switch(this.BrickState){
+    public void setState(BrickState brickState) {
+        switch(brickState){
             case SELECT:
                 setBorderColor(Color.web("#7CFC00"));
                 break;
@@ -588,6 +599,30 @@ public class Brick extends ArrayList<MinBrick> {
                 removeBorder();
                 break;
         }
+        BrickState old = this.brickState;
+        this.brickState =brickState;
+        Fast.log(old+" --> "+this.brickState);
+    }
+
+    /**
+     * Mettre à jour les bordures en fonction de l'état de la brique
+     * @param brickState état
+     */
+    public void setState(BrickState brickState,int i) {
+        switch(brickState){
+            case SELECT:
+                setBorderColor(Color.web("#7CFC00"));
+                break;
+            case SELECTCANMOVE:
+                setBorderColor(Color.web("#42C0FB"));
+                break;
+            default:
+                removeBorder();
+                break;
+        }
+        BrickState old = this.brickState;
+        this.brickState =brickState;
+        Fast.log(old+" --> "+this.brickState +"| debug"+i);
     }
 
     /**
@@ -874,7 +909,7 @@ public class Brick extends ArrayList<MinBrick> {
             this.removeBorder();
             this.dim.rotate();
             this.create(true);
-            this.setState(BrickState.SELECT);
+            this.setState(brickState.SELECT,1);
         }
     }
 
@@ -888,6 +923,6 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public BrickState getState() {
-        return BrickState;
+        return brickState;
     }
 }
