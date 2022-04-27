@@ -162,7 +162,6 @@ public class Controller implements Initializable {
      */
     public static final float rot = 11.25f;
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //init//
