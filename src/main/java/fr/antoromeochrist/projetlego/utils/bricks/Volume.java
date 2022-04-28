@@ -28,27 +28,8 @@ public class Volume extends ArrayList<P3D> {
      */
     public static boolean volumeIntersection(Brick b, Set<Brick> bricks) {
         for (Brick brick : bricks) {
-            if (!brick.getID().equals(b.getID())) {
+            if (!brick.equals(b)) {
                 if (volumeIntersection(brick.getVolume(), b.getVolume())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Le volume de la brick rentre t'elle en collision avec l'ensemble de brique ?
-     *
-     * @param v
-     * @param bricks d'ou provient le volume, faut quelle soit pas comparé
-     * @param remove
-     * @return
-     */
-    public static boolean volumeIntersection(Volume v, Set<Brick> bricks, Brick remove) {
-        for (Brick brick : bricks) {
-            if (!brick.equals(remove)) {
-                if (volumeIntersection(brick.getVolume(), v)) {
                     return true;
                 }
             }

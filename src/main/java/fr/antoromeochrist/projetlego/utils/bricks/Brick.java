@@ -90,10 +90,6 @@ public class Brick extends ArrayList<MinBrick> {
      */
     private Dim dim;
     /**
-     * Coordonnées de la première {@link MinBrick}
-     */
-    private double x, y, z;
-    /**
      * {@link Volume} totale de la brique.
      * <p>
      * Il contient tous les {@link P3D} qu'occupe la brique dans l'espace.
@@ -101,10 +97,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @see fr.antoromeochrist.projetlego.utils.bricks.Dim
      */
     private Volume volume;
-    /**
-     * Important pour identifier deux briques de même dimension et de même couleur
-     */
-    private String id;
+
     /**
      * Contient les bordures de la briques si elle est selectionné
      */
@@ -150,20 +143,18 @@ public class Brick extends ArrayList<MinBrick> {
     public Brick(Dim dim, double x, double z, double y, Color c) {
         this.state = State.NONE;
         this.isHide = false;
-        this.id = UUID.randomUUID().toString();
         this.dim = dim;
-        this.x = x;
-        this.y = y;
-        this.z = z;
         this.rect = new Rectangle(0, 0, 10, 10);
         this.rect.setStroke(Color.BLACK);
-        this.border = new ArrayList<>();
-        this.create(false);
-        this.setColor(c);
-        this.hidestatus = new ImageView();
+        this.border = new ArrayList<>();//contiendra les bordures
+        this.hidestatus = new ImageView(); //image oeil/oeil barré
         this.hidestatus.setFitHeight(12);
         this.hidestatus.setFitWidth(12);
-        this.setViewStatusHide(false);
+        this.setViewStatusHide(false); //mettre l'image oeil (non barré)
+        this.volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+        this.createFromNothing(true);
+        this.setColor(c, 1);
+        this.move(getX(), getY(), getZ()); //on bouge la brique si collison
         /*
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
@@ -231,13 +222,13 @@ public class Brick extends ArrayList<MinBrick> {
                             setState(State.FOLLOW_THE_MOUSE);
                             Fast.log("La brique sélectionné est déplacable par la souris");
                         } else {
-                            setState(State.SHOW_IS_SELECT);
+                            setState(State.SHOW_IS_SELECT, 134);
                             Fast.log("La brique sélectionné ne bouge pas.");
                         }
                     } else {
                         Brick old = Controller.model.brickClicked;
-                        old.setState(State.NONE,555);
-                        if(old.isHide){
+                        old.setState(State.NONE, 555);
+                        if (old.isHide) {
                             /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
                               elle doit garder la bordure #808080
                             */
@@ -256,44 +247,27 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Permet de recreer graphiquement une brique
      *
-     * @param recreate si on l'avait déjà créé et qu'on l'a recréé (en appliquand une rotation)
+     * @param fromNothing si on l'avait déjà créé ou non
      */
-    private void create(boolean recreate) {
+    private void createFromNothing(boolean fromNothing) {
         isDelete = false;
-        int i1 = 0;
-        volume = Volume.createAllVolume(new P3D(this.x, this.y, this.z), this.dim);
-        while (Volume.volumeIntersection(this, Controller.model.bricks.keySet())) {
-            i1++;
-            volume = Volume.createAllVolume(new P3D(this.x, this.y - i1, this.z), this.dim);
-        }
         for (int i = 0; i < volume.size(); i++) {
-            if (recreate) {
-                MinBrick minBrick = this.get(i);
-                minBrick.setWidth(1);
-                minBrick.setHeight(1);
-                minBrick.setDepth(1);
-                minBrick.setTranslateX(volume.get(i).getX());
-                minBrick.setTranslateY(volume.get(i).getY());
-                minBrick.setTranslateZ(volume.get(i).getZ());
-                minBrick.cyl();
+            MinBrick minBrick = null;
+            if (fromNothing) {
+                minBrick = new MinBrick();
                 this.add(minBrick);
-            } else {
-                MinBrick minBrick = new MinBrick();
-                minBrick.setWidth(1);
-                minBrick.setHeight(1);
-                minBrick.setDepth(1);
-                minBrick.setTranslateX(volume.get(i).getX());
-                minBrick.setTranslateY(volume.get(i).getY());
-                minBrick.setTranslateZ(volume.get(i).getZ());
-                minBrick.cyl();
-                this.add(minBrick);
-            }
-        }
-        if (!recreate) {
-            for (MinBrick minBrick : this) {
                 Controller.me.group.getChildren().add(minBrick);
                 Controller.me.group.getChildren().add(minBrick.getCylinder());
+            } else {
+                minBrick = this.get(i);
             }
+            minBrick.setWidth(1);
+            minBrick.setHeight(1);
+            minBrick.setDepth(1);
+            minBrick.setTranslateX(volume.get(i).getX());
+            minBrick.setTranslateY(volume.get(i).getY());
+            minBrick.setTranslateZ(volume.get(i).getZ());
+            minBrick.cyl();
         }
     }
 
@@ -317,7 +291,7 @@ public class Brick extends ArrayList<MinBrick> {
                 minBrick.cyl();
             }
             removeBorder();
-            setState(this.state,5); //avoir à nouveau les bordures correspondant à son état
+            setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
         }
     }
 
@@ -426,23 +400,16 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @param color la couleur
      */
-    public void setColor(Color color) {
+    public void setColor(Color color, int i) {
         brickHaveColorInDictionnary(color);
         rect.setFill(color);
+        Fast.log("setColor param is null ? " + (color == null));
         for (MinBrick b : this) {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
         if (!Controller.me.colorInContentColors(color)) Controller.me.contentColorAddColor(color);
-    }
-
-    /**
-     * {@link String} Identifiant de la brique
-     *
-     * @return id de la brique
-     */
-    public String getID() {
-        return this.id;
+        this.get(0).setMaterial(new PhongMaterial(Color.RED));
     }
 
     /**
@@ -453,7 +420,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void translate(double x, double y, double z) {
-        move(this.x + x, this.y + y, this.z +z);
+        move(getX() + x, getY() + y, getZ() + z);
     }
 
     /**
@@ -464,16 +431,13 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void move(double x, double y, double z) {
-        Volume temp = Volume.createAllVolume(new P3D(x, y, z), this.dim);
-        int increment = 1;
-        while (Volume.volumeIntersection(temp, Controller.model.bricks.keySet(), this)) {
-            temp = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
+        volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+        int increment = 0;
+        while (Volume.volumeIntersection(this, Controller.model.bricks.keySet())) {
+            volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
             increment++;
+            Fast.log("Intersect |increment :" + increment);
         }
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        volume = temp;
         for (int i = 0; i < volume.size(); i++) {
             get(i).setTranslateX(volume.get(i).getX());
             get(i).setTranslateY(volume.get(i).getY());
@@ -482,15 +446,17 @@ public class Brick extends ArrayList<MinBrick> {
         }
         this.updateBorder();
     }
-    public void createClone(){
-        new Brick(this.dim,x,y-1,z,getColor());
+
+    public void createClone() {
+        //Fast.log("Clonage debug:"+(getColor()==null));
+        new Brick(this.dim, getX(), getY(), getZ(), getColor());
     }
 
     /**
      * Translation de -1 sur l'axe y
      */
     public void up() {
-        if(state.equals(State.FOLLOW_KEYPRESS)) this.translate(0, -1, 0);
+        if (state.equals(State.FOLLOW_KEYPRESS)) this.translate(0, -1, 0);
     }
 
     /**
@@ -558,45 +524,44 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     /**
-     * Coordonnées en x
+     * Coordonnées en x de la première brique du volume
      *
      * @return x
      */
     public double getX() {
-        return x;
+        return volume.get(0).getX();
     }
 
     /**
-     * Coordonnées en y
+     * Coordonnées en y de la première brique du volume
      *
      * @return y
      */
     public double getY() {
-        return y;
+        return volume.get(0).getY();
     }
 
     /**
-     * Coordonnées en z
+     * Coordonnées en z de la première brique du volume
      *
      * @return z
      */
     public double getZ() {
-        return z;
+        return volume.get(0).getZ();
     }
 
 
     /**
      * Mettre à jour son état et par la même occasion les bordures en fonction.
      *
-     *
      * @param state état
      */
     public void setState(State state) {
-        if(this.state.equals(state)) return;
+        if (this.state.equals(state)) return;
         State old = this.state;
         this.state = state;
         updateBorder();
-        Fast.log(old+" --> "+this.state);
+        Fast.log(old + " --> " + this.state);
     }
 
     /**
@@ -621,7 +586,7 @@ public class Brick extends ArrayList<MinBrick> {
         }
         State old = this.state;
         this.state = state;
-        if(this.state.equals(State.FOLLOW_THE_MOUSE)) Fast.log(old+" --> "+this.state +"| debug"+i);
+        Fast.log(old + " --> " + this.state + "| debug" + i);
     }
 
     /**
@@ -841,7 +806,7 @@ public class Brick extends ArrayList<MinBrick> {
         }
     }
 
-    public void updateBorder(){
+    public void updateBorder() {
         switch (state) {
             case SHOW_IS_SELECT:
                 setBorderColor(Color.web("#7CFC00"));
@@ -857,6 +822,7 @@ public class Brick extends ArrayList<MinBrick> {
                 break;
         }
     }
+
     /**
      * Supprimer la bordure
      */
@@ -906,7 +872,8 @@ public class Brick extends ArrayList<MinBrick> {
 
     private void brickHaveColorInDictionnary(Color color) {
         if (Controller.model.bricks.containsKey(this)) {
-            Controller.model.bricks.replace(this, color);
+            if (!Controller.model.bricks.get(this).equals(color))
+                Controller.model.bricks.replace(this, color);
         } else {
             Controller.model.bricks.put(this, color);
         }
@@ -916,16 +883,18 @@ public class Brick extends ArrayList<MinBrick> {
      * Permet d'appliquer une rotation de 90 degrée sur une brique
      */
     public void rotate() {
-        if (dim.getDepth() == 1 && dim.getWidth() == 1) { //ex 1x1x2
+        if (dim.getDepth() == dim.getWidth()) { //ex 1x1x2 or 2x2x3 or....
             return;
         }
         Dim newDim = new Dim(this.dim.getWidth(), this.dim.getDepth(), this.dim.getHeight());
         newDim.rotate();
-        if (newDim.getWidth() != this.dim.getWidth() || newDim.getDepth() != this.dim.getWidth()) {
+        if (newDim.getWidth() != this.dim.getWidth() || newDim.getDepth() != this.dim.getDepth()) {
             this.removeBorder();
             this.dim.rotate();
-            this.create(true);
+            this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), this.dim);
+            this.createFromNothing(false);
         }
+        this.updateBorder();
     }
 
     private boolean isIn(int i, int[] interval) {
@@ -936,6 +905,7 @@ public class Brick extends ArrayList<MinBrick> {
         }
         return false;
     }
+
     public State getState() {
         return state;
     }
