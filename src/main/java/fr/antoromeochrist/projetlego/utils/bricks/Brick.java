@@ -50,7 +50,7 @@ import java.util.ArrayList;
 */
 
 /**
- * La classe Brick permet de créér des briques en fonction de leur dimension.
+ * La classe Brick permet de créer des briques en fonction de leur dimension.
  * <p>
  * Elle permet de changer leur couleur dans le dictionnaire du modèle.
  * <p>
@@ -64,24 +64,22 @@ import java.util.ArrayList;
  */
 public class Brick extends ArrayList<MinBrick> {
 
-    /*
-     *
-     * Les attributs d'une brique
-     *
-     * */
-
     /**
-     * La dimension d'une brique.
+     * {@link Dim}.
      * <p>
-     * Notation: largeur x profondeur x hauteur
+     * Elle permet de régir la dimension de la brique et donc,
      * <p>
-     * Règle: quand hauteur = 1 (on le note pas)
+     * de générer le {@link Volume} dont elle aura besoin.
+     *
+     * Notation : largeur x profondeur x hauteur
      * <p>
-     * Exemples:
+     * Règle : quand hauteur = 1 (On ne le note pas)
+     * <p>
+     * Exemples :
      * <p>
      * - 1X2
      * <p>
-     * Exemples 2:
+     * Exemples 2 :
      * <p>
      * - 2x1x2
      */
@@ -89,14 +87,17 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * {@link Volume} totale de la brique.
      * <p>
-     * Il contient tous les {@link P3D} qu'occupe la brique dans l'espace.
+     * Il contient tous les {@link P3D} que va occuper le volume de la brique dans l'espace.
      *
      * @see fr.antoromeochrist.projetlego.utils.bricks.Dim
      */
     private Volume volume;
 
     /**
-     * Contient les bordures de la briques si elle est selectionné
+     * Contient les bordures de la brique
+     * <p>
+     * La couleur des bordures change en fonction d'etat de la brique.
+     *
      */
     private final ArrayList<Cylinder> border;
 
@@ -157,7 +158,7 @@ public class Brick extends ArrayList<MinBrick> {
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
          * */
-        this.hidestatus.setOnMouseClicked(mouseEvent -> hide(!isHide()));
+        this.hidestatus.setOnMouseClicked(mouseEvent -> hide(isNotHide()));
         this.trash = new ImageView();
         try {
             this.trash.setImage(new ImagePath("trash.png"));
@@ -577,12 +578,11 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     /**
-     * La brique est t'elle caché ?
+     * La brique est t'elle pas caché ?
      *
-     * @return booléen
      */
-    public boolean isHide() {
-        return isHide;
+    public boolean isNotHide() {
+        return !isHide;
     }
 
     private Cylinder createCylBorder(P3D p, double height) {

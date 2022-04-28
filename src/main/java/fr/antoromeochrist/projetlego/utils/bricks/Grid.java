@@ -2,8 +2,6 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -15,9 +13,9 @@ import java.util.ArrayList;
 public class Grid extends ArrayList<MinBrick> {
 
     /**
-     * coordonnées dans la grille en fonction de là ou est la souris sont stocké dedans
+     * coordonnées dans la grille en fonction de là où est la souris sont stocké dedans
      */
-    private double[] coors;
+    private final double[] coors;
 
     /**
      * Générer une grille
@@ -64,21 +62,13 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setTranslateY(0);
                 b.setTranslateZ(z);
                 b.setOpacity(0);
-                b.setOnMouseEntered(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
-                    }
-                });
-                b.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent mouseEvent) {
-                        if(Controller.model.brickClicked != null){
-                            if (Controller.model.brickClicked.getState().equals(State.SHOW_IS_SELECT)) {
-                                Controller.model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
-                            } else {
-                                Controller.model.brickClicked.setState(State.SHOW_IS_SELECT);
-                            }
+                b.setOnMouseEntered(mouseEvent -> setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ()));
+                b.setOnMouseClicked(mouseEvent -> {
+                    if (Controller.model.brickClicked != null) {
+                        if (Controller.model.brickClicked.getState().equals(State.SHOW_IS_SELECT)) {
+                            Controller.model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
+                        } else {
+                            Controller.model.brickClicked.setState(State.SHOW_IS_SELECT);
                         }
                     }
                 });

@@ -129,7 +129,7 @@ public class Controller implements Initializable {
 
     /**
      * Cette variable permet de stocker l'étape actuelle pour ainsi
-     * insérer chaque nouvelle briques que l'on pose dedans.
+     * insérer chaque nouvelle brique que l'on pose dedans.
      * <p>
      * Cette variable peut pointer vers une autre {@link ListView} si jamais
      * on clique le bouton sur le bouton "addStep"
@@ -784,8 +784,6 @@ public class Controller implements Initializable {
                  * dans le content colors(à droite de l'écran)
                  *
                  * */
-                //Fast.checkSize(1, model.bricks);
-                //Fast.checkSize(2, model.getBrickWithColor(oldColor));
                 if (model.getBrickWithColor(oldColor) == null) {
                     ////////Fast.log("Suppression de l'ancienne couleur");
                     contentColorsRemoveColor(oldColor);
@@ -881,7 +879,7 @@ public class Controller implements Initializable {
             }
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
-                    case H -> model.brickClicked.hide(!model.brickClicked.isHide());
+                    case H -> model.brickClicked.hide(model.brickClicked.isNotHide());
                     case T -> model.brickClicked.createClone();
                     case W -> {
                         model.brickClicked.up();
@@ -936,7 +934,7 @@ public class Controller implements Initializable {
          * */
         hide.setOnMousePressed(e -> {
             if (model.brickClicked != null) {
-                model.brickClicked.hide(!model.brickClicked.isHide());
+                model.brickClicked.hide(model.brickClicked.isNotHide());
             }
 
             try {

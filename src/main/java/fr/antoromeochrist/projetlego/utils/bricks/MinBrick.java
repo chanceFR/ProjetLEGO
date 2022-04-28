@@ -4,18 +4,18 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 
 /**
- * Une Minbrick est une box avec un cylindre qui
+ * Une {@link MinBrick} est une box avec un cylindre qui,
  * <p>
- * bouge en même temps(grâce à la métholde cyl() ).
+ * bouge en même temps(grâce à la méthode cyl()).
  * <p>
- * NB: Une liste de MinBricks forme une Brick.
+ * NB : Une liste de MinBricks forme une {@link Brick}.
  */
 public class MinBrick extends Box {
 
     /**
      * attributs
      */
-    private Cylinder cylinder;
+    private final Cylinder cylinder;
 
     /**
      * Constructeur
@@ -38,8 +38,6 @@ public class MinBrick extends Box {
 
     /**
      * Avoir accès à la liste des cylindres
-     *
-     * @return la liste
      */
     public Cylinder getCylinder() {
         return cylinder;

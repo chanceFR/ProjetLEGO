@@ -1,8 +1,8 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
 /**
- * Cette classe permet de stoquer 2 variables.
- * Elle simplifit la gestion des mise à jours des étapes dans "steps".
+ * Cette classe permet de stoker 2 variables.
+ * Elle simplifie la gestion des mise à jour des étapes dans "steps".
  * <p>
  * Un booleén pour savoir si l'étape est caché
  * <p>
@@ -19,13 +19,6 @@ public class Step {
     private String text;
 
     /**
-     * Constructeur
-     */
-    public Step() {
-        isHide = false;
-    }
-
-    /**
      * Constructeur avec une String
      */
     public Step(String text) {
@@ -36,7 +29,6 @@ public class Step {
     /**
      * Mettre à jour le texte
      *
-     * @param text
      */
     public void setText(String text) {
         this.text = text;
@@ -63,7 +55,6 @@ public class Step {
     /**
      * Permet de caché ou non l'étape
      *
-     * @param hide
      */
     public void hide(boolean hide) {
         isHide = hide;

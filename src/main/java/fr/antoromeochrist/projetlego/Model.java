@@ -31,7 +31,7 @@ public class Model {
     public Model() {
         bricks = new HashMap<>();
         dropInProgress = false;
-        instruction = new ArrayList<Step>();
+        instruction = new ArrayList<>();
         imageStorages = new ArrayList<>();
         try {
             imageStorages.add(new ImageStorage("1x1", new ImagePath("1x1.png")));
