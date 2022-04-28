@@ -6,8 +6,6 @@ import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -30,7 +28,7 @@ import java.util.stream.Collectors;
 public class Controller implements Initializable {
 
     /**
-     * Permet l'accès aux variables du modèle depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}.
+     * Permet l'accès aux variables du modèle depuis des classes externes. Exemple: {@link Brick}.
      * sans que ces classes externes aient à appeler le contrôleur dans le constructeur car ces classes externes auront besoin de ses variables.
      *
      * <p>
@@ -41,7 +39,7 @@ public class Controller implements Initializable {
     public static Model model;
 
     /**
-     * Permet l'accès aux variables du contrôleur(this) depuis des classes externes. Exemple: <a href="#{@link}">{@link Brick}.
+     * Permet l'accès aux variables du contrôleur(this) depuis des classes externes. Exemple: {@link Brick}.
      * sans que ces classes externes aient à appeler le contrôleur dans le constructeur car ces classes externes auront besoin de ses variables.
      * <p>
      * Exemple:
@@ -133,7 +131,7 @@ public class Controller implements Initializable {
      * Cette variable permet de stocker l'étape actuelle pour ainsi
      * insérer chaque nouvelle briques que l'on pose dedans.
      * <p>
-     * Cette variable peut pointer vers une autre <a href="#{@link}">{@link ListView} si jamais
+     * Cette variable peut pointer vers une autre {@link ListView} si jamais
      * on clique le bouton sur le bouton "addStep"
      *
      * @see fr.antoromeochrist.projetlego.utils.bricks.Step
@@ -142,7 +140,7 @@ public class Controller implements Initializable {
 
 
     /**
-     * La grille permet de faire bouger une <a href="#{@link}">{@link Brick} lors du drag and drop.
+     * La grille permet de faire bouger une {@link Brick} lors du drag and drop.
      * <p>
      * La grille ne permet pas la superposition des briques puisqu'elle
      * fonctionne avec l'évènement suivant: la souris entre dans l'une des cases de la grille,
@@ -179,13 +177,10 @@ public class Controller implements Initializable {
          * On change la variable currentStep par une nouvelle étape comme ça quand on pose
          * une nouvelle brique elle ira dans la nouvelle étape.
          **/
-        addStep.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                steps.getItems().add(new ListView());
-                currentStep = (ListView) steps.getItems().get(steps.getItems().size() - 1);
-                addStep.setTextFill(Color.web("#ffffff"));
-            }
+        addStep.setOnMousePressed(mouseEvent -> {
+            steps.getItems().add(new ListView());
+            currentStep = (ListView) steps.getItems().get(steps.getItems().size() - 1);
+            addStep.setTextFill(Color.web("#ffffff"));
         });
         /*
          * Menu de droite - gestion des étapes
@@ -194,12 +189,7 @@ public class Controller implements Initializable {
          * Juste pour remettre la couleur normal du texte du bouton "+ addstep"
          * quand le click est fini.
          **/
-        addStep.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                addStep.setTextFill(Color.web("#808080"));
-            }
-        });
+        addStep.setOnMouseReleased(mouseEvent -> addStep.setTextFill(Color.web("#808080")));
 
         /*
          * Création de la grille
@@ -368,10 +358,11 @@ public class Controller implements Initializable {
 
                     TextField field = new TextField();
                     field.setPrefWidth(200);
-                    field.setStyle("-fx-background-color: #121418;\n" +
-                            "    -fx-text-inner-color: #808080;\n" +
-                            "    -fx-font-size: 12px;\n" +
-                            "    -fx-border-radius: 1px;");
+                    field.setStyle("""
+                            -fx-background-color: #121418;
+                                -fx-text-inner-color: #808080;
+                                -fx-font-size: 12px;
+                                -fx-border-radius: 1px;""");
                     int i = steps.getItems().indexOf(lv);
 
                     /*
@@ -433,28 +424,25 @@ public class Controller implements Initializable {
                      * doivent se caché et inversement.
                      *
                      * */
-                    view.setOnMousePressed(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent mouseEvent) {
-                            if (current.isHide()) {
-                                current.hide(false);
-                                try {
-                                    view.setImage(new ImagePath("view.png"));
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                current.hide(true);
-                                try {
-                                    view.setImage(new ImagePath("noview.png"));
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
+                    view.setOnMousePressed(mouseEvent -> {
+                        if (current.isHide()) {
+                            current.hide(false);
+                            try {
+                                view.setImage(new ImagePath("view.png"));
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
                             }
-                            //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
-                            for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
-                            mouseEvent.consume();//anti bug graphique
+                        } else {
+                            current.hide(true);
+                            try {
+                                view.setImage(new ImagePath("noview.png"));
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
+                        for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
+                        mouseEvent.consume();//anti bug graphique
                     });
 
                     /*
@@ -491,18 +479,14 @@ public class Controller implements Initializable {
                          * Evement si on veut caché une brique
                          *
                          * */
-                        trash.setOnMousePressed(new EventHandler<MouseEvent>() {
-                            @Override
-                            public void handle(MouseEvent mouseEvent) {
-                                for (Object o : lv.getItems()) {
-                                    if (o instanceof Brick) {
-                                        Brick b = (Brick) o;
-                                        b.remove();
-                                    }
+                        trash.setOnMousePressed(mouseEvent -> {
+                            for (Object o : lv.getItems()) {
+                                if (o instanceof Brick b) {
+                                    b.remove();
                                 }
-                                steps.getItems().remove(lv);
-                                mouseEvent.consume();//anti bug graphique
                             }
+                            steps.getItems().remove(lv);
+                            mouseEvent.consume();//anti bug graphique
                         });
                     }
 
@@ -558,15 +542,12 @@ public class Controller implements Initializable {
                                 /*
                                  Si on clique sur une brique depuis le menu des étapes ça la sélectionne
                                  */
-                                hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
-                                    @Override
-                                    public void handle(MouseEvent mouseEvent) {
-                                        //////Fast.log("Vous avez sélectionné une brique depuis le menu des étapes.");
-                                        if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 12);
-                                        brk.setState(State.SHOW_IS_SELECT, 13);
-                                        model.brickClicked = brk;
-                                        mouseEvent.consume();//anti bug graphique
-                                    }
+                                hbx1.setOnMousePressed(mouseEvent -> {
+                                    //////Fast.log("Vous avez sélectionné une brique depuis le menu des étapes.");
+                                    if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 12);
+                                    brk.setState(State.SHOW_IS_SELECT, 13);
+                                    model.brickClicked = brk;
+                                    mouseEvent.consume();//anti bug graphique
                                 });
                                 setGraphic(hbx1);
                                 lv.setPrefHeight(lv.getItems().size() * 50 + 5);
@@ -651,7 +632,7 @@ public class Controller implements Initializable {
          *
          *
          * */
-        listView.setCellFactory(listView -> new ListCell<ImageStorage>() {
+        listView.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(ImageStorage imSto, boolean empty) {
                 super.updateItem(imSto, empty);
@@ -695,21 +676,18 @@ public class Controller implements Initializable {
                      * Lancement du drag
                      *
                      * */
-                    hbx1.setOnMousePressed(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent e) {
-                            model.dropInProgress = true;
-                            model.dropSelectionData = imSto;
-                            imageOfBrickSelectedInSearchMenu.setFitHeight(50);
-                            imageOfBrickSelectedInSearchMenu.setFitWidth(50);
-                            imageOfBrickSelectedInSearchMenu.setImage(iv.getImage());
-                            imageOfBrickSelectedInSearchMenu.setOpacity(100);
-                            imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
-                            imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
-                            imageOfBrickSelectedInSearchMenu.setLayoutX(iv.getLayoutX());
-                            imageOfBrickSelectedInSearchMenu.setLayoutY(iv.getLayoutY());
-                            e.consume();//anti bug graphique
-                        }
+                    hbx1.setOnMousePressed(e -> {
+                        model.dropInProgress = true;
+                        model.dropSelectionData = imSto;
+                        imageOfBrickSelectedInSearchMenu.setFitHeight(50);
+                        imageOfBrickSelectedInSearchMenu.setFitWidth(50);
+                        imageOfBrickSelectedInSearchMenu.setImage(iv.getImage());
+                        imageOfBrickSelectedInSearchMenu.setOpacity(100);
+                        imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                        imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
+                        imageOfBrickSelectedInSearchMenu.setLayoutX(iv.getLayoutX());
+                        imageOfBrickSelectedInSearchMenu.setLayoutY(iv.getLayoutY());
+                        e.consume();//anti bug graphique
                     });
                 }
             }
@@ -739,33 +717,30 @@ public class Controller implements Initializable {
                     setGraphic(null);
                 } else {
                     cp.setPrefSize(10, 10);
-                    cp.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent actionEvent) {
-                            if (cp.getOldValue().equals(cp.getValue())) {
-                                ////////Fast.log("meme couleur mec !");
-                                return;
-                            }
-                            /*
-                             * Toutes les briques qui ont comme couleur (oldColor)
-                             * vont avoir leur couleur mis à jour en (newColor)
-                             *
-                             * */
-
-                            for (Map.Entry<Brick, Color> entry : model.bricks.entrySet()) {
-                                if (entry.getValue().equals(cp.getOldValue())) {
-                                    entry.getKey().setColor(cp.getValue());
-                                }
-                            }
-                            ////////Fast.log("je met à jour les briques avec la nouvelle couleur.");
-                            /*
-                             * Suppresion de doublon si il en trouve
-                             * */
-                            if (hasDuplicate(cp.getValue())) {
-                                contentColorsRemoveColor(cp.getValue());
-                            }
-                            //Fast.checkSize(3, contentColors.getItems());
+                    cp.setOnAction(actionEvent -> {
+                        if (cp.getOldValue().equals(cp.getValue())) {
+                            ////////Fast.log("meme couleur mec !");
+                            return;
                         }
+                        /*
+                         * Toutes les briques qui ont comme couleur (oldColor)
+                         * vont avoir leur couleur mis à jour en (newColor)
+                         *
+                         * */
+
+                        for (Map.Entry<Brick, Color> entry : model.bricks.entrySet()) {
+                            if (entry.getValue().equals(cp.getOldValue())) {
+                                entry.getKey().setColor(cp.getValue());
+                            }
+                        }
+                        ////////Fast.log("je met à jour les briques avec la nouvelle couleur.");
+                        /*
+                         * Suppresion de doublon si il en trouve
+                         * */
+                        if (hasDuplicate(cp.getValue())) {
+                            contentColorsRemoveColor(cp.getValue());
+                        }
+                        //Fast.checkSize(3, contentColors.getItems());
                     });
                     setGraphic(cp);
                 }
@@ -780,43 +755,40 @@ public class Controller implements Initializable {
          *
          * */
 
-        colorpicker.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        colorpicker.setOnAction(event -> {
+            /*
+             * Si vous aviez déjà sélectionner une brique
+             *
+             * */
+            if (model.brickClicked != null) {
+                Color oldColor = model.brickClicked.getColor();
+                if (oldColor.equals(colorpicker.getValue())) { //pas de changement de couleur
+                    ////////Fast.log("meme couleur");
+                    return;
+                }
                 /*
-                 * Si vous aviez déjà sélectionner une brique
+                 * La brique prendra la nouvelle couleur du colorpicker(à gauche du menu)/
+                 *
+                 */
+                /*
+                 * On ajoute la nouvelle couleur si elle est pas dans contentColors
+                 */
+                if (colorInContentColors(colorpicker.getValue())) {
+                    ////////Fast.log("Couleur non présente on l'ajoute");
+                    contentColorAddColor(colorpicker.getValue());
+                }
+                model.brickClicked.setColor(colorpicker.getValue());
+                /*
+                 *
+                 * On supprime les couleurs qui ne sont plus utilisé par les briques
+                 * dans le content colors(à droite de l'écran)
                  *
                  * */
-                if (model.brickClicked != null) {
-                    Color oldColor = model.brickClicked.getColor();
-                    if (oldColor.equals(colorpicker.getValue())) { //pas de changement de couleur
-                        ////////Fast.log("meme couleur");
-                        return;
-                    }
-                    /*
-                     * La brique prendra la nouvelle couleur du colorpicker(à gauche du menu)/
-                     *
-                     */
-                    /*
-                     * On ajoute la nouvelle couleur si elle est pas dans contentColors
-                     */
-                    if (!colorInContentColors(colorpicker.getValue())) {
-                        ////////Fast.log("Couleur non présente on l'ajoute");
-                        contentColorAddColor(colorpicker.getValue());
-                    }
-                    model.brickClicked.setColor(colorpicker.getValue());
-                    /*
-                     *
-                     * On supprime les couleurs qui ne sont plus utilisé par les briques
-                     * dans le content colors(à droite de l'écran)
-                     *
-                     * */
-                    //Fast.checkSize(1, model.bricks);
-                    //Fast.checkSize(2, model.getBrickWithColor(oldColor));
-                    if (model.getBrickWithColor(oldColor) == null) {
-                        ////////Fast.log("Suppression de l'ancienne couleur");
-                        contentColorsRemoveColor(oldColor);
-                    }
+                //Fast.checkSize(1, model.bricks);
+                //Fast.checkSize(2, model.getBrickWithColor(oldColor));
+                if (model.getBrickWithColor(oldColor) == null) {
+                    ////////Fast.log("Suppression de l'ancienne couleur");
+                    contentColorsRemoveColor(oldColor);
                 }
             }
         });
@@ -830,22 +802,16 @@ public class Controller implements Initializable {
          * Le drag continue temps qu'il y a pas de drop ou qu'on a pas appuiyé sur échap.
          *
          * */
-        listView.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.dropInProgress) {
-                    imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
-                    imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
-                }
+        listView.setOnMouseMoved(e -> {
+            if (model.dropInProgress) {
+                imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
             }
         });
-        anchorPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.dropInProgress) {
-                    imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
-                    imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
-                }
+        anchorPane.setOnMouseMoved(e -> {
+            if (model.dropInProgress) {
+                imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
+                imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
             }
         });
 
@@ -854,27 +820,24 @@ public class Controller implements Initializable {
          * Si la souris rentre dans la subscene --> drop
          *
          * */
-        subScene.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
-                /*
-                 * Si le drop vient de commencé
-                 *
-                 * On supprime l'image qui bougeait et on insère la brique dans la grille
-                 *
-                 * */
-                if (model.dropInProgress) {
-                    clearBreakSelection();
-                    if (model.brickClicked != null) {
-                        //On déselectionne l'ancienne brique si il y en avait une
-                        model.brickClicked.setState(State.NONE, 14);
-                    }
-                    //On met la brique qui provient du drop comme brick selectionné
-                    model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[2], 0, colorpicker.getValue());
-                    model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
-                    model.dropInProgress = false;
+        subScene.setOnMouseEntered(mouseEvent -> {
+            searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
+            /*
+             * Si le drop vient de commencé
+             *
+             * On supprime l'image qui bougeait et on insère la brique dans la grille
+             *
+             * */
+            if (model.dropInProgress) {
+                clearBreakSelection();
+                if (model.brickClicked != null) {
+                    //On déselectionne l'ancienne brique si il y en avait une
+                    model.brickClicked.setState(State.NONE, 14);
                 }
+                //On met la brique qui provient du drop comme brick selectionné
+                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[2], 0, colorpicker.getValue());
+                model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
+                model.dropInProgress = false;
             }
         });
         /*
@@ -883,27 +846,21 @@ public class Controller implements Initializable {
          * Si il y a pas eu de drop: l'image sélectionné bouge temps qu'on ne rentre pas dans la subscene
          *
          * */
-        subScene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.brickClicked != null) {
-                    if (model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE)) {
-                        model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    }
+        subScene.setOnMouseMoved(e -> {
+            if (model.brickClicked != null) {
+                if (model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE)) {
+                    model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
                 }
             }
         });
 
         //Si on quitte la fenètre, la brique  set met en select !
-        subScene.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (model.brickClicked != null) {
-                    if (!model.brickClicked.getState().equals(State.SHOW_IS_SELECT))
-                        model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
-                }
-                searchBar.setDisable(false);
+        subScene.setOnMouseExited(mouseEvent -> {
+            if (model.brickClicked != null) {
+                if (!model.brickClicked.getState().equals(State.SHOW_IS_SELECT))
+                    model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
             }
+            searchBar.setDisable(false);
         });
 
 
@@ -912,74 +869,50 @@ public class Controller implements Initializable {
          * On vient de faire le drop.
          *
          * */
-        anchorPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                //evites que du texte se tapes quand on bouge la brique avec les touches
-                if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                    /*
-                     * * La brique cesse de suivre la souris
-                     */
-                    if (model.brickClicked != null) {
-                        model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
-                    }
-                }
+        anchorPane.setOnKeyReleased(keyEvent -> {
+            //evites que du texte se tapes quand on bouge la brique avec les touches
+            if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                /*
+                 * * La brique cesse de suivre la souris
+                 */
                 if (model.brickClicked != null) {
-                    switch (keyEvent.getCode()) {
-                        case H:
-                            if (model.brickClicked.isHide()) model.brickClicked.hide(false);
-                            else model.brickClicked.hide(true);
-
-                            break;
-                        case T:
-                            model.brickClicked.createClone();
-
-                            break;
-                        case W:
-
-                            model.brickClicked.up();
-                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-
-                            break;
-                        case X:
-
-                            model.brickClicked.down();
-                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                            break;
-                        case LEFT:
-                        case Q:
-                            model.brickClicked.leftX();
-                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                            break;
-                        case D:
-                        case RIGHT:
-                            model.brickClicked.rightX();
-                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                            break;
-                        case Z:
-                        case UP:
-                            model.brickClicked.rightZ();
-                            model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-
-                            break;
-                        case S:
-                        case DOWN:
-                                model.brickClicked.leftZ();
-                                model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-
-                            break;
-                        case R:
-                                model.brickClicked.rotate();
-
-                            break;
-                        case G:
-                                model.brickClicked.remove();
-                            break;
-                    }
+                    model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
                 }
-
-
             }
+            if (model.brickClicked != null) {
+                switch (keyEvent.getCode()) {
+                    case H -> model.brickClicked.hide(!model.brickClicked.isHide());
+                    case T -> model.brickClicked.createClone();
+                    case W -> {
+                        model.brickClicked.up();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case X -> {
+                        model.brickClicked.down();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case LEFT, Q -> {
+                        model.brickClicked.leftX();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case D, RIGHT -> {
+                        model.brickClicked.rightX();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case Z, UP -> {
+                        model.brickClicked.rightZ();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case S, DOWN -> {
+                        model.brickClicked.leftZ();
+                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
+                    }
+                    case R -> model.brickClicked.rotate();
+                    case G -> model.brickClicked.remove();
+                }
+            }
+
+
         });
         /*
          *
@@ -1001,295 +934,219 @@ public class Controller implements Initializable {
          *
          *
          * */
-        hide.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.brickClicked != null) {
-                    if (model.brickClicked.isHide()) {
-                        model.brickClicked.hide(false);
-                    } else {
-                        model.brickClicked.hide(true);
-                    }
-                }
+        hide.setOnMousePressed(e -> {
+            if (model.brickClicked != null) {
+                model.brickClicked.hide(!model.brickClicked.isHide());
+            }
 
-                try {
-                    hideicon.setImage(new ImagePath("hidehover.jpg"));
-                    hidetext.setFill(Color.web("#42C0FB"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+            try {
+                hideicon.setImage(new ImagePath("hidehover.jpg"));
+                hidetext.setFill(Color.web("#42C0FB"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        hide.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    hideicon.setImage(new ImagePath("hide.jpg"));
-                    hidetext.setFill(Color.web("#edeeef"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
-
+        hide.setOnMouseReleased(e -> {
+            try {
+                hideicon.setImage(new ImagePath("hide.jpg"));
+                hidetext.setFill(Color.web("#edeeef"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
+
         });
 
-        clonee.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                if (model.brickClicked != null) {
-                    model.brickClicked.createClone();
-                }
-                try {
-                    cloneeicon.setImage(new ImagePath("clonehover.jpg"));
-                    cloneetext.setFill(Color.web("#42C0FB"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        clonee.setOnMousePressed(e -> {
+            if (model.brickClicked != null) {
+                model.brickClicked.createClone();
+            }
+            try {
+                cloneeicon.setImage(new ImagePath("clonehover.jpg"));
+                cloneetext.setFill(Color.web("#42C0FB"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        clonee.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    cloneeicon.setImage(new ImagePath("clone.jpg"));
-                    cloneetext.setFill(Color.web("#edeeef"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        clonee.setOnMouseReleased(e -> {
+            try {
+                cloneeicon.setImage(new ImagePath("clone.jpg"));
+                cloneetext.setFill(Color.web("#edeeef"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        plus.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.zoom(2.5);
-                try {
-                    plus.setImage(new ImagePath("plusHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        plus.setOnMousePressed(e -> {
+            camera.zoom(2.5);
+            try {
+                plus.setImage(new ImagePath("plusHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        minus.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.dezoom(2.5);
-                try {
-                    minus.setImage(new ImagePath("minusHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        minus.setOnMousePressed(e -> {
+            camera.dezoom(2.5);
+            try {
+                minus.setImage(new ImagePath("minusHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        plus.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    plus.setImage(new ImagePath("plus.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        plus.setOnMouseReleased(e -> {
+            try {
+                plus.setImage(new ImagePath("plus.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        minus.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    minus.setImage(new ImagePath("minus.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        minus.setOnMouseReleased(e -> {
+            try {
+                minus.setImage(new ImagePath("minus.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        rleft.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    rleft.setImage(new ImagePath("rleft.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rleft.setOnMouseReleased(e -> {
+            try {
+                rleft.setImage(new ImagePath("rleft.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
 
-        rright.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    rright.setImage(new ImagePath("rright.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rright.setOnMouseReleased(e -> {
+            try {
+                rright.setImage(new ImagePath("rright.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
 
-        rtop.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    rtop.setImage(new ImagePath("rtop.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rtop.setOnMouseReleased(e -> {
+            try {
+                rtop.setImage(new ImagePath("rtop.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
 
-        rbottom.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    rbottom.setImage(new ImagePath("rbottom.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rbottom.setOnMouseReleased(e -> {
+            try {
+                rbottom.setImage(new ImagePath("rbottom.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        rleft.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.setAngleX(camera.getAngleX() - rot);
-                camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
-                try {
-                    rleft.setImage(new ImagePath("rleftHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rleft.setOnMousePressed(e -> {
+            camera.setAngleX(camera.getAngleX() - rot);
+            camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
+            try {
+                rleft.setImage(new ImagePath("rleftHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        rright.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.setAngleX(camera.getAngleX() + rot);
-                camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
-                try {
-                    rright.setImage(new ImagePath("rrightHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rright.setOnMousePressed(e -> {
+            camera.setAngleX(camera.getAngleX() + rot);
+            camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
+            try {
+                rright.setImage(new ImagePath("rrightHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        rtop.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.setAngleY(camera.getAngleY() + rot);
-                camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
-                try {
-                    rtop.setImage(new ImagePath("rtopHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rtop.setOnMousePressed(e -> {
+            camera.setAngleY(camera.getAngleY() + rot);
+            camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
+            try {
+                rtop.setImage(new ImagePath("rtopHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        rbottom.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.setAngleY(camera.getAngleY() - rot);
-                camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
-                try {
-                    rbottom.setImage(new ImagePath("rbottomHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        rbottom.setOnMousePressed(e -> {
+            camera.setAngleY(camera.getAngleY() - rot);
+            camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
+            try {
+                rbottom.setImage(new ImagePath("rbottomHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        left.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    left.setImage(new ImagePath("left.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        left.setOnMouseReleased(e -> {
+            try {
+                left.setImage(new ImagePath("left.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
 
-        right.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    right.setImage(new ImagePath("right.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        right.setOnMouseReleased(e -> {
+            try {
+                right.setImage(new ImagePath("right.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        top.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    top.setImage(new ImagePath("top.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        top.setOnMouseReleased(e -> {
+            try {
+                top.setImage(new ImagePath("top.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        bottom.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                try {
-                    bottom.setImage(new ImagePath("bottom.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        bottom.setOnMouseReleased(e -> {
+            try {
+                bottom.setImage(new ImagePath("bottom.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        left.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.left();
-                try {
-                    left.setImage(new ImagePath("leftHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        left.setOnMousePressed(e -> {
+            camera.left();
+            try {
+                left.setImage(new ImagePath("leftHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        right.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.right();
-                try {
-                    right.setImage(new ImagePath("rightHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        right.setOnMousePressed(e -> {
+            camera.right();
+            try {
+                right.setImage(new ImagePath("rightHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
 
-        top.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.up();
-                try {
-                    top.setImage(new ImagePath("topHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        top.setOnMousePressed(e -> {
+            camera.up();
+            try {
+                top.setImage(new ImagePath("topHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
-        bottom.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                camera.down();
-                try {
-                    bottom.setImage(new ImagePath("bottomHover.png"));
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        bottom.setOnMousePressed(e -> {
+            camera.down();
+            try {
+                bottom.setImage(new ImagePath("bottomHover.png"));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
         subScene.setFill(Color.web("#181a1e"));
@@ -1308,19 +1165,6 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Mise à jour de {@link ListView}
-     * <p>
-     * En fonction de la recherche.
-     *
-     * @param event évenement
-     */
-    @FXML
-    private void search(ActionEvent event) {
-        listView.getItems().clear();
-        listView.getItems().addAll(searchList(searchBar.getText(), model.imageStorages));
-    }
-
-    /**
      * Retourne une liste (souvent plus petite)
      * <p>
      * composé {@link ImageStorage} satisfaisant aux critères de recherche
@@ -1331,10 +1175,8 @@ public class Controller implements Initializable {
      */
     private List<ImageStorage> searchList(String searchWords, List<ImageStorage> listOfStrings) {
         List<String> searchWordsArray = Arrays.asList(searchWords.trim().split(" "));
-        return listOfStrings.stream().filter(input -> {
-            return searchWordsArray.stream().allMatch(word ->
-                    input.getText().toLowerCase().contains(word.toLowerCase()));
-        }).collect(Collectors.toList());
+        return listOfStrings.stream().filter(input -> searchWordsArray.stream().allMatch(word ->
+                input.getText().toLowerCase().contains(word.toLowerCase()))).collect(Collectors.toList());
     }
 
     /**
@@ -1344,7 +1186,6 @@ public class Controller implements Initializable {
      * @return un boolean
      */
     public boolean colorInContentColors(Color c) {
-        ////////Fast.log("Couleur présente dans le content color");
         return numberOfColorPickerWith(c) > 0;
     }
 
@@ -1356,8 +1197,7 @@ public class Controller implements Initializable {
     public int numberOfColorPickerWith(Color c) {
         int i = 0;
         for (Object o : contentColors.getItems()) {
-            if (o instanceof ColorPick) {
-                ColorPick color = (ColorPick) o;
+            if (o instanceof ColorPick color) {
                 if (color.getValue().equals(c)) {
                     i++;
                 }

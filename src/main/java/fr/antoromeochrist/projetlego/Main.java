@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 /*
  *
  *
@@ -22,7 +24,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Brick Designer");
-        primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("view.fxml"))));
+        primaryStage.setScene(new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getResource("view.fxml")))));
         primaryStage.show();
         primaryStage.setMinWidth(1062);
         primaryStage.setMinHeight(710);

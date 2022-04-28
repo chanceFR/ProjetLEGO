@@ -387,7 +387,6 @@ public class Brick extends ArrayList<MinBrick> {
             b.cyl();
         }
         if (!Controller.me.colorInContentColors(color)) Controller.me.contentColorAddColor(color);
-        this.get(0).setMaterial(new PhongMaterial(Color.RED));
     }
 
     /**
