@@ -4,10 +4,8 @@ import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
-import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -16,7 +14,6 @@ import javafx.scene.transform.Rotate;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 /*
                                  ,...,      .....
@@ -88,7 +85,7 @@ public class Brick extends ArrayList<MinBrick> {
      * <p>
      * - 2x1x2
      */
-    private Dim dim;
+    private final Dim dim;
     /**
      * {@link Volume} totale de la brique.
      * <p>
@@ -101,14 +98,15 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Contient les bordures de la briques si elle est selectionné
      */
-    private ArrayList<Cylinder> border;
+    private final ArrayList<Cylinder> border;
 
     /**
      * Les {@link ImageView} qui seront utilisé et mis à jour dans steps
      *
      * @see fr.antoromeochrist.projetlego.Model
      */
-    private ImageView hidestatus, trash;
+    private final ImageView hidestatus;
+    private final ImageView trash;
 
     /**
      * Le {@link Rectangle} qui sera utilisé
@@ -117,7 +115,7 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @see fr.antoromeochrist.projetlego.Model
      */
-    private Rectangle rect;
+    private final Rectangle rect;
     private boolean isHide, isDelete;
 
     /**
@@ -153,22 +151,13 @@ public class Brick extends ArrayList<MinBrick> {
         this.setViewStatusHide(false); //mettre l'image oeil (non barré)
         this.volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
         this.createFromNothing(true);
-        this.setColor(c, 1);
+        this.setColor(c);
         this.move(getX(), getY(), getZ()); //on bouge la brique si collison
         /*
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
          * */
-        this.hidestatus.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (isHide()) {
-                    hide(false);
-                } else {
-                    hide(true);
-                }
-            }
-        });
+        this.hidestatus.setOnMouseClicked(mouseEvent -> hide(!isHide()));
         this.trash = new ImageView();
         try {
             this.trash.setImage(new ImagePath("trash.png"));
@@ -181,14 +170,8 @@ public class Brick extends ArrayList<MinBrick> {
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse supprimé la brique
          * */
-        this.trash.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                remove();
-            }
-        });
+        this.trash.setOnMouseClicked(mouseEvent -> remove());
 
-        Brick instance = this;
         /*
          *
          * Les composantes de la briques si elles sont cliqué on peut mettre la bordure.
@@ -204,12 +187,7 @@ public class Brick extends ArrayList<MinBrick> {
              * Permet la SuperPosition des briques
              *
              **/
-            minBrick.setOnMouseEntered(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    Controller.grid.setCoors(minBrick);
-                }
-            });
+            minBrick.setOnMouseEntered(mouseEvent -> Controller.grid.setCoors(minBrick));
             /*
              * On vient de cliquer sur la brique
              * Permet de d'afficher les bordures
@@ -219,10 +197,10 @@ public class Brick extends ArrayList<MinBrick> {
                 if (Controller.model.brickClicked != null) {//si c'est déjà la brique sélectionne
                     if (Controller.model.brickClicked.equals(this)) {
                         if (!getState().equals(State.FOLLOW_THE_MOUSE)) {
-                            setState(State.FOLLOW_THE_MOUSE);
+                            this.setState(State.FOLLOW_THE_MOUSE);
                             Fast.log("La brique sélectionné est déplacable par la souris");
                         } else {
-                            setState(State.SHOW_IS_SELECT, 134);
+                            this.setState(State.SHOW_IS_SELECT, 134);
                             Fast.log("La brique sélectionné ne bouge pas.");
                         }
                     } else {
@@ -252,7 +230,7 @@ public class Brick extends ArrayList<MinBrick> {
     private void createFromNothing(boolean fromNothing) {
         isDelete = false;
         for (int i = 0; i < volume.size(); i++) {
-            MinBrick minBrick = null;
+            MinBrick minBrick;
             if (fromNothing) {
                 minBrick = new MinBrick();
                 this.add(minBrick);
@@ -400,7 +378,7 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @param color la couleur
      */
-    public void setColor(Color color, int i) {
+    public void setColor(Color color) {
         brickHaveColorInDictionnary(color);
         rect.setFill(color);
         Fast.log("setColor param is null ? " + (color == null));
@@ -448,8 +426,9 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void createClone() {
-        //Fast.log("Clonage debug:"+(getColor()==null));
-        new Brick(this.dim, getX(), getY(), getZ(), getColor());
+        this.setState(State.NONE);
+        Controller.model.brickClicked = new Brick(this.dim, getX(), getZ(), getY() - 1, getColor());
+        Controller.model.brickClicked.setState(State.SHOW_IS_SELECT);
     }
 
     /**
@@ -516,8 +495,6 @@ public class Brick extends ArrayList<MinBrick> {
 
     /**
      * Affichage de la brique depuis la console
-     *
-     * @return
      */
     public String toString() {
         return "[" + getColor() + "|" + dim + "|" + volume + "]";
@@ -571,18 +548,10 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void setState(State state, int i) {
         switch (state) {
-            case SHOW_IS_SELECT:
-                setBorderColor(Color.web("#7CFC00"));
-                break;
-            case FOLLOW_THE_MOUSE:
-                setBorderColor(Color.web("#42C0FB"));
-                break;
-            case FOLLOW_KEYPRESS:
-                setBorderColor(Color.web("#DA70D6"));
-                break;
-            default:
-                removeBorder();
-                break;
+            case SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
+            case FOLLOW_THE_MOUSE -> setBorderColor(Color.web("#42C0FB"));
+            case FOLLOW_KEYPRESS -> setBorderColor(Color.web("#DA70D6"));
+            default -> removeBorder();
         }
         State old = this.state;
         this.state = state;
@@ -617,13 +586,13 @@ public class Brick extends ArrayList<MinBrick> {
         return isHide;
     }
 
-    private Cylinder createCylBorder(P3D p, double height, double radius) {
+    private Cylinder createCylBorder(P3D p, double height) {
         Cylinder c = new Cylinder();
         c.setTranslateX(p.getX());
         c.setTranslateY(p.getY());
         c.setTranslateZ(p.getZ());
         c.setHeight(height);
-        c.setRadius(radius);
+        c.setRadius(0.01);
         border.add(c);
         return c;
     }
@@ -644,130 +613,130 @@ public class Brick extends ArrayList<MinBrick> {
         rotateZ.setPivotY(0);
         rotateZ.setAxis(Rotate.Z_AXIS);
         if (volume.size() > 1 && dim.getHeight() == 1) {
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + this.getDim().getDepth()), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, 0, 0.5), this.dim.getHeight(), 0.01);
+            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createCylBorder(volume.get(volume.size() - 1).add(0.5, 0, 0.5), this.dim.getHeight());
         } else if (dim.getWidth() == 1 && dim.getDepth() == 1 && dim.getHeight() == 4) {
-            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 1.5, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, -1.5, 0.5), this.dim.getHeight(), 0.01);
+            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 1.5, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createCylBorder(volume.get(volume.size() - 1).add(0.5, -1.5, 0.5), this.dim.getHeight());
         } else if (dim.getWidth() == 1 && dim.getDepth() == 1 && dim.getHeight() == 2) {
-            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight(), 0.01);
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, -0.5, 0.5), this.dim.getHeight(), 0.01);
+            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getHeight());
+            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createCylBorder(volume.get(volume.size() - 1).add(0.5, -0.5, 0.5), this.dim.getHeight());
         } else {
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), 1, 0.01);
-            createCylBorder(volume.get(0).add(-0.5 + 1, 0, -0.5), 1, 0.01);
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + 1), 1, 0.01);
-            createCylBorder(volume.get(0).add(0.5, 0, 0.5), 1, 0.01);
+            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), 1);
+            createCylBorder(volume.get(0).add(-0.5 + 1, 0, -0.5), 1);
+            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + 1), 1);
+            createCylBorder(volume.get(0).add(0.5, 0, 0.5), 1);
         }
 
 
         if (dim.getDepth() == 2 && dim.getWidth() == 2 && dim.getHeight() == 1) {
-            createCylBorder(volume.get(0).add(0.5, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(0).add(0.5, 0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(volume.size() - 1).add(-0.5, -0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(0).add(0.5, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(0).add(0.5, 0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(volume.size() - 1).add(-0.5, -0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
 
         } else if (dim.getHeight() == 1) {
             if (dim.getWidth() == 1) {
-                createCylBorder(volume.get(0).add(0, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(0).add(-1 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(0, -0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(0, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(0, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(-1 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(0, -0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(0, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
 
             } else if (dim.getWidth() == 2) {
-                createCylBorder(volume.get(0).add(0.5, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(0).add(-1.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-0.5, -0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(0.5, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(-1.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-0.5, -0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
             } else if (dim.getWidth() == 4) {
-                createCylBorder(volume.get(0).add(1.5, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(0).add(-2.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-1.5, -0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(1.5, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(-2.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-1.5, -0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
             } else {
-                createCylBorder(volume.get(0).add(1, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(0).add(-2 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-1, -0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-                createCylBorder(volume.get(volume.size() - 1).add(-1, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(1, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(0).add(-2 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-1, -0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+                createCylBorder(volume.get(volume.size() - 1).add(-1, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
             }
         } else {
-            createCylBorder(volume.get(0).add(0, -0.5, -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(0).add(-1 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), -0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(volume.size() - 1).add(0, 0.5 - this.dim.getHeight(), 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
-            createCylBorder(volume.get(volume.size() - 1).add(0, 0.5, 0.5), this.dim.getWidth(), 0.01).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(0).add(0, -0.5, -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(0).add(-1 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), -0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(volume.size() - 1).add(0, 0.5 - this.dim.getHeight(), 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
+            createCylBorder(volume.get(volume.size() - 1).add(0, 0.5, 0.5), this.dim.getWidth()).getTransforms().add(rotateZ);
         }
 
 
         if (dim.getDepth() == 2 && dim.getWidth() == 2 && dim.getHeight() == 1) { //2x2
-            createCylBorder(volume.get(0).add(-0.5, -0.5, 0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-            createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+            createCylBorder(volume.get(0).add(-0.5, -0.5, 0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+            createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+            createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -0.5), this.dim.getDepth()).getTransforms().add(rotateX);
         } else if (dim.getHeight() == 1) {
             if (dim.getWidth() == 1) {
                 if (dim.getDepth() == 2) { //1x2
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -0.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -0.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -0.5), this.dim.getDepth()).getTransforms().add(rotateX);
 
                 } else if (dim.getDepth() == 3) { //1x3
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -1), this.dim.getDepth()).getTransforms().add(rotateX);
                 } else if (dim.getDepth() == 4) { //1x4
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
                 } else { //1x1
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth()).getTransforms().add(rotateX);
                 }
             } else if (dim.getWidth() == 2) {
                 if (dim.getDepth() == 3) { //2x3
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -1), this.dim.getDepth()).getTransforms().add(rotateX);
                 } else { //2x4
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-1.5, 0.5, -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
                 }
             } else if (dim.getWidth() == 3) {
                 if (dim.getDepth() == 3) {  //3x3
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-2.5, 0.5, -1), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-2.5, 0.5, -1), this.dim.getDepth()).getTransforms().add(rotateX);
                 } else { //3x4
-                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                    createCylBorder(volume.get(volume.size() - 1).add(-2.5, 0.5, -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                    createCylBorder(volume.get(volume.size() - 1).add(-2.5, 0.5, -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
                 }
             } else { //4x4
-                createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(volume.size() - 1).add(-3.5, 0.5, -1.5), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                createCylBorder(volume.get(0).add(-0.5, -0.5, 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(volume.size() - 1).add(-3.5, 0.5, -1.5), this.dim.getDepth()).getTransforms().add(rotateX);
             }
         } else {
             if (dim.getWidth() == 1 && dim.getDepth() == 1) { //1x1x?
-                createCylBorder(volume.get(0).add(-0.5, -0.5, 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
-                createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth(), 0.01).getTransforms().add(rotateX);
+                createCylBorder(volume.get(0).add(-0.5, -0.5, 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), -0.5 + this.getDim().getHeight(), 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(volume.size() - 1).add(0.5, 0.5 - this.dim.getHeight(), 0), this.dim.getDepth()).getTransforms().add(rotateX);
+                createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth()).getTransforms().add(rotateX);
             }
         }
         if (isIn(dim.getWidth(), new int[]{2, 3, 4}) && dim.getDepth() == 1) {
@@ -808,18 +777,10 @@ public class Brick extends ArrayList<MinBrick> {
 
     public void updateBorder() {
         switch (state) {
-            case SHOW_IS_SELECT:
-                setBorderColor(Color.web("#7CFC00"));
-                break;
-            case FOLLOW_THE_MOUSE:
-                setBorderColor(Color.web("#42C0FB"));
-                break;
-            case FOLLOW_KEYPRESS:
-                setBorderColor(Color.web("#DA70D6"));
-                break;
-            default:
-                removeBorder();
-                break;
+            case SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
+            case FOLLOW_THE_MOUSE -> setBorderColor(Color.web("#42C0FB"));
+            case FOLLOW_KEYPRESS -> setBorderColor(Color.web("#DA70D6"));
+            default -> removeBorder();
         }
     }
 
@@ -836,7 +797,6 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Obtenir l'image qui est utilisé pour montrer si la brique est caché ou non depuis "steps"
      *
-     * @return
      * @see fr.antoromeochrist.projetlego.Controller
      */
     public ImageView getHidestatus() {
@@ -862,7 +822,6 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Obtenir l'image qui est utilisé pour pouvoir supprimer la brique dans "steps"
      *
-     * @return
      * @see fr.antoromeochrist.projetlego.Controller
      */
     public ImageView getTrash() {
@@ -898,8 +857,8 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     private boolean isIn(int i, int[] interval) {
-        for (int p = 0; p < interval.length; p++) {
-            if (interval[p] == i) {
+        for (int j : interval) {
+            if (j == i) {
                 return true;
             }
         }

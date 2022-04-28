@@ -6,7 +6,6 @@ import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -755,7 +754,7 @@ public class Controller implements Initializable {
 
                             for (Map.Entry<Brick, Color> entry : model.bricks.entrySet()) {
                                 if (entry.getValue().equals(cp.getOldValue())) {
-                                    entry.getKey().setColor(cp.getValue(),2);
+                                    entry.getKey().setColor(cp.getValue());
                                 }
                             }
                             ////////Fast.log("je met à jour les briques avec la nouvelle couleur.");
@@ -805,7 +804,7 @@ public class Controller implements Initializable {
                         ////////Fast.log("Couleur non présente on l'ajoute");
                         contentColorAddColor(colorpicker.getValue());
                     }
-                    model.brickClicked.setColor(colorpicker.getValue(),3);
+                    model.brickClicked.setColor(colorpicker.getValue());
                     /*
                      *
                      * On supprime les couleurs qui ne sont plus utilisé par les briques

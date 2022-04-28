@@ -58,15 +58,13 @@ public class Dim {
     /**
      * attributs
      */
-    private int width, height, depth;
+    private int width, depth;
+    private final int height;
 
     /**
      * Constructeur sans préciser la hauteur
      * <p>
      * Hauteur à 1 par défaut
-     *
-     * @param width
-     * @param depth
      */
     public Dim(int width, int depth) {
         this.width = width;
@@ -76,22 +74,16 @@ public class Dim {
 
     /**
      * Constructeur complet pour générer une dimension
-     *
-     * @param width
-     * @param depth
-     * @param height
      */
     public Dim(int width, int depth, int height) {
         this.width = width;
         this.depth = depth;
         this.height = height;
+        this.isReverse = false;
     }
 
     /**
      * Retourne un objet dimension à partir d'un texte
-     *
-     * @param text
-     * @return objet de type dimension
      */
     public static Dim getDimWithText(String text) {
         String[] s = text.replace(" ", "").split("x");
@@ -104,8 +96,6 @@ public class Dim {
 
     /**
      * Avoir la largeur
-     *
-     * @return width
      */
     public int getWidth() {
         return width;
@@ -113,8 +103,6 @@ public class Dim {
 
     /**
      * Avoir la hauteur
-     *
-     * @return height
      */
     public int getHeight() {
         return height;
@@ -122,34 +110,39 @@ public class Dim {
 
     /**
      * Avoir la profondeur
-     *
-     * @return depth
      */
     public int getDepth() {
         return depth;
     }
 
     /**
-     * Permet de retourner une dimension
-     * Utile: pour permettre de rotate une brick
+     * Permet de reverse l'affichage de la dimension
      */
-    public void rotate(){
-        int oldDepth=this.depth;
-        this.depth=this.width;
-        this.width=oldDepth;
+    private boolean isReverse;
+
+
+    public void rotate() {
+        int oldDepth = this.depth;
+        this.depth = this.width;
+        this.width = oldDepth;
+        this.isReverse = !this.isReverse;
     }
+
     /**
      * Affichage de la dimension
-     *
-     * @return
      */
     public String toString() {
-        String s = "" + width;
-        s += "x" + depth;
+        String s;
+        if (isReverse) {
+            s = "" + depth;
+            s += "x" + width;
+        } else {
+            s = "" + width;
+            s += "x" + depth;
+        }
         if (height != 1) {
             s += "x" + height;
         }
         return s;
     }
-
 }
