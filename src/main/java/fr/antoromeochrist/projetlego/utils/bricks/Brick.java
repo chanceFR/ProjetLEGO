@@ -288,12 +288,6 @@ public class Brick extends ArrayList<MinBrick> {
             Controller.me.group.getChildren().removeAll(border);
             //suppression des cylindes
             for (MinBrick minBrick : this) Controller.me.group.getChildren().remove(minBrick.getCylinder());
-            //suppresion dans le content color si il reste plus de brick de sa couleur
-            Color beforeDel = getColor();
-            if (Controller.model.getBrickWithColor(beforeDel) == null) {
-                //Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
-                Controller.me.contentColorsRemoveColor(beforeDel);
-            }
             //on conserve l'étape ou était la brique
             ListView<Brick> stepWhere = Controller.me.getStepWhereIsBrick(this);
             //suppresion de la brique dans l'étape
@@ -354,9 +348,13 @@ public class Brick extends ArrayList<MinBrick> {
                     Controller.model.brickClicked = null;
                 }
             }
-
-
+            //suppresion dans le content color si il reste plus de brick de sa couleur
+            Color beforeDel = getColor();
             Controller.model.bricks.remove(this);
+            if (Controller.model.getBrickWithColor(beforeDel) == null) {
+                //Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
+                Controller.me.contentColorsRemoveColor(beforeDel);
+            }
             /*
              * On supprime l'étape d'ou vient la dernière brique.
              * L'étape n'a donc plus de bricque.
