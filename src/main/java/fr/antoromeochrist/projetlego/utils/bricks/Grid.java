@@ -63,16 +63,6 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setTranslateZ(z);
                 b.setOpacity(0);
                 b.setOnMouseEntered(mouseEvent -> setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ()));
-                b.setOnMouseClicked(mouseEvent -> {
-                    if (Controller.model.brickClicked != null) {
-                        if (Controller.model.brickClicked.getState().equals(State.SHOW_IS_SELECT)) {
-                            Controller.model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
-                        } else {
-                            Controller.model.brickClicked.setState(State.SHOW_IS_SELECT);
-                        }
-                    }
-                });
-
                 Controller.me.group.getChildren().add(b);
             }
         }

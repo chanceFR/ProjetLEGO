@@ -6,6 +6,7 @@ import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -70,7 +71,7 @@ public class Brick extends ArrayList<MinBrick> {
      * Elle permet de régir la dimension de la brique et donc,
      * <p>
      * de générer le {@link Volume} dont elle aura besoin.
-     *
+     * <p>
      * Notation : largeur x profondeur x hauteur
      * <p>
      * Règle : quand hauteur = 1 (On ne le note pas)
@@ -97,7 +98,6 @@ public class Brick extends ArrayList<MinBrick> {
      * Contient les bordures de la brique
      * <p>
      * La couleur des bordures change en fonction d'etat de la brique.
-     *
      */
     private final ArrayList<Cylinder> border;
 
@@ -194,15 +194,14 @@ public class Brick extends ArrayList<MinBrick> {
              * Permet de d'afficher les bordures
              *
              **/
-            minBrick.setOnMouseClicked(mouseEvent -> {
-                if (Controller.model.brickClicked != null) {//si c'est déjà la brique sélectionne
+            minBrick.setOnMouseClicked(e -> {
+                if (Controller.model.brickClicked == null) return;
+                if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
                     if (Controller.model.brickClicked.equals(this)) {
-                        if (!getState().equals(State.FOLLOW_THE_MOUSE)) {
-                            this.setState(State.FOLLOW_THE_MOUSE);
-                            Fast.log("La brique sélectionné est déplacable par la souris");
-                        } else {
+                        if (!getState().equals(State.SHOW_IS_SELECT)) {
                             this.setState(State.SHOW_IS_SELECT, 134);
-                            Fast.log("La brique sélectionné ne bouge pas.");
+                        } else {
+                            this.setState(State.FOLLOW_THE_MOUSE);
                         }
                     } else {
                         Brick old = Controller.model.brickClicked;
@@ -214,9 +213,12 @@ public class Brick extends ArrayList<MinBrick> {
                             old.setBorderColor(Color.web("#808080"));
                         }
                         Controller.model.brickClicked = this;
-                        this.setState(State.FOLLOW_THE_MOUSE, 4);
+                        this.setState(State.SHOW_IS_SELECT, 4);
                     }
+                } else if (e.getButton().equals(MouseButton.SECONDARY)) {
+                    this.rotate();
                 }
+
             });
             minBrick.cyl();
         }
@@ -579,7 +581,6 @@ public class Brick extends ArrayList<MinBrick> {
 
     /**
      * La brique est t'elle pas caché ?
-     *
      */
     public boolean isNotHide() {
         return !isHide;

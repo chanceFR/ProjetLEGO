@@ -6,6 +6,7 @@ import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -773,7 +774,7 @@ public class Controller implements Initializable {
                 /*
                  * On ajoute la nouvelle couleur si elle est pas dans contentColors
                  */
-                if (colorInContentColors(colorpicker.getValue())) {
+                if (!colorInContentColors(colorpicker.getValue())) {
                     ////////Fast.log("Couleur non présente on l'ajoute");
                     contentColorAddColor(colorpicker.getValue());
                 }
@@ -859,6 +860,13 @@ public class Controller implements Initializable {
                     model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
             }
             searchBar.setDisable(false);
+        });
+
+        /*
+         Ajout du zoom quand on utilise la molette
+         */
+        subScene.setOnScroll(scrollEvent -> {
+            camera.zoom(scrollEvent.getDeltaY()/10);
         });
 
 

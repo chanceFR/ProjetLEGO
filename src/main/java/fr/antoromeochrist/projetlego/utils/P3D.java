@@ -5,7 +5,7 @@ import javafx.geometry.Point3D;
 /**
  * Cette classe est un Point3d
  * <p>
- * Cette classe sert juste à modifié la méthode toString
+ * Cette classe sert juste à modifier la méthode toString
  */
 public class P3D extends Point3D {
     public P3D(double v, double v1, double v2) {
@@ -39,10 +39,6 @@ public class P3D extends Point3D {
     /**
      * Ajouter un point avec des coordonnées
      *
-     * @param a
-     * @param b
-     * @param c
-     * @return
      */
     public P3D add(double a, double b, double c) {
         return new P3D(this.getX() + a, this.getY() + b, this.getZ() + c);

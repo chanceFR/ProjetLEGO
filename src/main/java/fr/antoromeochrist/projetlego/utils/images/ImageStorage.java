@@ -11,13 +11,11 @@ public class ImageStorage {
     /**
      *  attributs
      */
-    private String text;
-    private ImagePath image;
+    private final String text;
+    private final ImagePath image;
 
     /**
      * Constructeur avec les deux attributs
-     * @param text
-     * @param image
      */
 
     public ImageStorage(String text, ImagePath image){
@@ -44,8 +42,6 @@ public class ImageStorage {
     /**
      * Permet de récupérer l'image en fonction du texte
      *
-     * @param list
-     * @param text
      * @return image
      */
     public static Image getImage(ArrayList<ImageStorage> list, String text){

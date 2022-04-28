@@ -1,12 +1,10 @@
 package fr.antoromeochrist.projetlego.utils;
 
-import javafx.event.EventHandler;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 /**
- * Cette classe c'est comme l'objet ColorPicker.
+ * Cette classe, c'est comme l'objet ColorPicker.
  * Elle sert à stocker l'ancienne couleur !
  */
 public class ColorPick extends ColorPicker {
@@ -21,12 +19,7 @@ public class ColorPick extends ColorPicker {
      */
     public ColorPick() {
         ColorPicker c = this;
-        this.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                oldColor = c.getValue();
-            }
-        });
+        this.setOnMouseClicked(mouseEvent -> oldColor = c.getValue());
     }
 
     /**
