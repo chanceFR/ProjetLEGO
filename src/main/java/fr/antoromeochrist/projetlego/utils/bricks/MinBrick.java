@@ -1,5 +1,6 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
+import fr.antoromeochrist.projetlego.pieces.Brick;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 

@@ -1,29 +1,34 @@
 package fr.antoromeochrist.projetlego;
 
+import fr.antoromeochrist.projetlego.pieces.Brick;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
+import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
-import fr.antoromeochrist.projetlego.utils.ColorPick;
-import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import javafx.event.EventHandler;
+import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
@@ -774,7 +779,7 @@ public class Controller implements Initializable {
                 /*
                  * On ajoute la nouvelle couleur si elle est pas dans contentColors
                  */
-                if (!colorInContentColors(colorpicker.getValue())) {
+                if (notColorInContentColors(colorpicker.getValue())) {
                     ////////Fast.log("Couleur non présente on l'ajoute");
                     contentColorAddColor(colorpicker.getValue());
                 }
@@ -791,7 +796,29 @@ public class Controller implements Initializable {
                 }
             }
         });
+        /*
 
+            Prévisualisation de couleur sans avoir confirmé !
+
+         */
+
+        colorpicker.valueProperty().addListener((o, oldVal, newVal) -> {
+            for (MinBrick b : model.brickClicked) {
+                b.setMaterial(new PhongMaterial(newVal));
+                b.getCylinder().setMaterial(new PhongMaterial(newVal));
+            }
+
+        });
+
+        /*
+         * Si la couleur de prévisualisation a pas été confirmé dans le setOnAction de colorpicker
+         * Il faut la retirer
+         * */
+        colorpicker.setOnHidden(event -> {
+            if (!model.brickClicked.getColor().equals(colorpicker.getValue()))
+                for (MinBrick b : model.brickClicked)
+                    b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+        });
 
         /*
          * Menu de gauche - listview
@@ -865,9 +892,7 @@ public class Controller implements Initializable {
         /*
          Ajout du zoom quand on utilise la molette
          */
-        subScene.setOnScroll(scrollEvent -> {
-            camera.zoom(scrollEvent.getDeltaY()/10);
-        });
+        subScene.setOnScroll(scrollEvent -> camera.zoom(scrollEvent.getDeltaY() / 10));
 
 
         /*
@@ -887,6 +912,7 @@ public class Controller implements Initializable {
             }
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
+                    case P -> model.brickClicked.setPlate(model.brickClicked.isPlate());
                     case H -> model.brickClicked.hide(model.brickClicked.isNotHide());
                     case T -> model.brickClicked.createClone();
                     case W -> {
@@ -1191,8 +1217,8 @@ public class Controller implements Initializable {
      * @param c la couleur
      * @return un boolean
      */
-    public boolean colorInContentColors(Color c) {
-        return numberOfColorPickerWith(c) > 0;
+    public boolean notColorInContentColors(Color c) {
+        return numberOfColorPickerWith(c) <= 0;
     }
 
     public boolean hasDuplicate(Color c) {

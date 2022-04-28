@@ -1,6 +1,6 @@
 package fr.antoromeochrist.projetlego;
 
-import fr.antoromeochrist.projetlego.utils.bricks.Brick;
+import fr.antoromeochrist.projetlego.pieces.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;

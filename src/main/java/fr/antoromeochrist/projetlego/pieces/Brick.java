@@ -1,7 +1,11 @@
-package fr.antoromeochrist.projetlego.utils.bricks;
+package fr.antoromeochrist.projetlego.pieces;
 
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.P3D;
+import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.bricks.MinBrick;
+import fr.antoromeochrist.projetlego.utils.bricks.State;
+import fr.antoromeochrist.projetlego.utils.bricks.Volume;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.scene.control.ListView;
@@ -117,13 +121,20 @@ public class Brick extends ArrayList<MinBrick> {
      * @see fr.antoromeochrist.projetlego.Model
      */
     private final Rectangle rect;
-    private boolean isHide, isDelete;
+    /**
+     * informations sur la brique
+     */
+    private boolean hide, delete, plate;
 
     /**
      * Etat de la brique
      */
     private State state;
 
+
+    public Brick(Dim dim,double x,double y ,double z,Color c){
+        this(dim,x,y,z,c,false);
+    }
 
     /**
      * Constructeur pour construire une brique
@@ -137,11 +148,14 @@ public class Brick extends ArrayList<MinBrick> {
      * @param y   coordonnée
      *            <p>
      * @param c   {@link Color}
+     *
+     * @param plate est t'elle plate ?
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
-    public Brick(Dim dim, double x, double z, double y, Color c) {
+    public Brick(Dim dim, double x, double z, double y, Color c,boolean plate) {
         this.state = State.NONE;
-        this.isHide = false;
+        this.hide = false;
+        this.plate = plate;
         this.dim = dim;
         this.rect = new Rectangle(0, 0, 10, 10);
         this.rect.setStroke(Color.BLACK);
@@ -206,7 +220,7 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = Controller.model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.isHide) {
+                        if (old.hide) {
                             /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
                               elle doit garder la bordure #808080
                             */
@@ -231,7 +245,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param fromNothing si on l'avait déjà créé ou non
      */
     private void createFromNothing(boolean fromNothing) {
-        isDelete = false;
+        delete = false;
         for (int i = 0; i < volume.size(); i++) {
             MinBrick minBrick;
             if (fromNothing) {
@@ -258,7 +272,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param b booléen
      */
     public void hide(boolean b) {
-        this.isHide = b;
+        this.hide = b;
         setViewStatusHide(b);
         if (b) {
             for (MinBrick minBrick : this) {
@@ -280,8 +294,8 @@ public class Brick extends ArrayList<MinBrick> {
      * Suppression de la brique
      */
     public void remove() {
-        if (!isDelete) { //evite des bugs si on clique deux fois sur le bouton corbeille(à cause de lag)
-            isDelete = true;
+        if (!delete) { //evite des bugs si on clique deux fois sur le bouton corbeille(à cause de lag)
+            delete = true;
             /*suppression des briques*/
             Controller.me.group.getChildren().removeAll(this);
             //suppresion des bordures
@@ -387,7 +401,7 @@ public class Brick extends ArrayList<MinBrick> {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
-        if (!Controller.me.colorInContentColors(color)) Controller.me.contentColorAddColor(color);
+        if (Controller.me.notColorInContentColors(color)) Controller.me.contentColorAddColor(color);
     }
 
     /**
@@ -581,7 +595,7 @@ public class Brick extends ArrayList<MinBrick> {
      * La brique est t'elle pas caché ?
      */
     public boolean isNotHide() {
-        return !isHide;
+        return !hide;
     }
 
     private Cylinder createCylBorder(P3D p, double height) {
@@ -737,13 +751,13 @@ public class Brick extends ArrayList<MinBrick> {
                 createCylBorder(volume.get(volume.size() - 1).add(-0.5, 0.5, 0), this.dim.getDepth()).getTransforms().add(rotateX);
             }
         }
-        if (isIn(dim.getWidth(), new int[]{2, 3, 4}) && dim.getDepth() == 1) {
+        if (isIn(dim.getWidth(), new double[]{2, 3, 4}) && dim.getDepth() == 1) {
             border.get(8).setTranslateZ(border.get(8).getTranslateZ() - 1.5);
             border.get(9).setTranslateZ(border.get(9).getTranslateZ() - 1.5);
             border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 1.5);
             border.get(11).setTranslateZ(border.get(11).getTranslateZ() + 1.5);
         }
-        if (isIn(dim.getWidth(), new int[]{3, 4}) && dim.getDepth() == 2) {
+        if (isIn(dim.getWidth(), new double[]{3, 4}) && dim.getDepth() == 2) {
             border.get(8).setTranslateZ(border.get(8).getTranslateZ() - 1);
             border.get(9).setTranslateZ(border.get(9).getTranslateZ() - 1);
             border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 1);
@@ -768,7 +782,7 @@ public class Brick extends ArrayList<MinBrick> {
         for (Cylinder bord : border) {
             bord.setMaterial(new PhongMaterial(c));
         }
-        if (!isDelete) {
+        if (!delete) {
             Controller.me.group.getChildren().addAll(border);
         }
     }
@@ -854,8 +868,8 @@ public class Brick extends ArrayList<MinBrick> {
         this.updateBorder();
     }
 
-    private boolean isIn(int i, int[] interval) {
-        for (int j : interval) {
+    private boolean isIn(double i, double[] interval) {
+        for (double j : interval) {
             if (j == i) {
                 return true;
             }
@@ -865,5 +879,19 @@ public class Brick extends ArrayList<MinBrick> {
 
     public State getState() {
         return state;
+    }
+
+    public void setPlate(boolean plate) {
+        this.plate = plate;
+        if (plate) {
+            this.dim.setHeight(this.dim.getHeight() * 0.5);
+        } else {
+            this.dim.setHeight(this.dim.getHeight() * 2);
+        }
+        createFromNothing(false);//on met à jour l'apparence de la brique
+    }
+
+    public boolean isPlate() {
+        return plate;
     }
 }

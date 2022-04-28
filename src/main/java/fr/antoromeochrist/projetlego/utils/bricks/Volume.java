@@ -1,5 +1,6 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
+import fr.antoromeochrist.projetlego.pieces.Brick;
 import fr.antoromeochrist.projetlego.utils.P3D;
 
 import java.util.ArrayList;

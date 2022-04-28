@@ -31,6 +31,8 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 
 */
 
+import fr.antoromeochrist.projetlego.pieces.Brick;
+
 /**
  * L'objet dimension a trois attributs.
  *
@@ -51,15 +53,15 @@ package fr.antoromeochrist.projetlego.utils.bricks;
  * <p><
  * dont aura besoin une brique lors de sa création/déplacement.
  *
- * @see fr.antoromeochrist.projetlego.utils.bricks.Brick
+ * @see Brick
  */
 public class Dim {
 
     /**
      * attributs
      */
-    private int width, depth;
-    private final int height;
+    private double width, depth;
+    private double height;
 
     /**
      * Constructeur sans préciser la hauteur
@@ -75,7 +77,7 @@ public class Dim {
     /**
      * Constructeur complet pour générer une dimension
      */
-    public Dim(int width, int depth, int height) {
+    public Dim(double width, double depth, double height) {
         this.width = width;
         this.depth = depth;
         this.height = height;
@@ -97,21 +99,21 @@ public class Dim {
     /**
      * Avoir la largeur
      */
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
     /**
      * Avoir la hauteur
      */
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
     /**
      * Avoir la profondeur
      */
-    public int getDepth() {
+    public double getDepth() {
         return depth;
     }
 
@@ -122,7 +124,7 @@ public class Dim {
 
 
     public void rotate() {
-        int oldDepth = this.depth;
+        double oldDepth = this.depth;
         this.depth = this.width;
         this.width = oldDepth;
         this.isReverse = !this.isReverse;
@@ -144,5 +146,9 @@ public class Dim {
             s += "x" + height;
         }
         return s;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 }
