@@ -40,29 +40,38 @@ public class Grid extends ArrayList<MinBrick> {
             for (int z = -depth; z < depth; z++) {
                 P3D start = new P3D(x, 0, z);
                 if (z % 2 == 0) {
-                    Cylinder c1 = createCyl(start.add(0, 0.5, 0.5), 1, 0.01);
+                    Cylinder c1 = createCyl(start.add(0, 0, 0.5), 1, 0.01);
                     c1.getTransforms().add(rotateZ);
                     c1.setMaterial(new PhongMaterial(c));
                     Controller.me.group.getChildren().add(c1);
                 }
                 if (x % 2 == 0) {
-                    Cylinder c2 = createCyl(start.add(-0.5, 0.5, 0), 1, 0.01);
+                    Cylinder c2 = createCyl(start.add(-0.5, 0, 0), 1, 0.01);
                     c2.getTransforms().add(rotateX);
                     c2.setMaterial(new PhongMaterial(c));
                     Controller.me.group.getChildren().add(c2);
                 }
-                Cylinder c4 = createCyl(start.add(0, 0.5, 0), 0.01, 0.30);
+                Cylinder c4 = createCyl(start.add(0, 0, 0), 0.01, 0.30);
                 c4.setMaterial(new PhongMaterial(c));
                 Controller.me.group.getChildren().add(c4);
                 Box b = new Box();
                 b.setHeight(0.01);
                 b.setWidth(1);
                 b.setDepth(1);
+                //b.setMaterial(new PhongMaterial(Color.RED));
                 b.setTranslateX(x);
                 b.setTranslateY(0);
                 b.setTranslateZ(z);
                 b.setOpacity(0);
-                b.setOnMouseEntered(mouseEvent -> setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ()));
+                b.setOnMouseEntered(mouseEvent -> {
+                    if (Controller.model.brickClicked != null) {
+                        if(Controller.model.brickClicked.isPlate()){
+                            setCoors(b.getTranslateX(), b.getTranslateY()-0.25, b.getTranslateZ());
+                        }else{
+                            setCoors(b.getTranslateX(), b.getTranslateY() - 0.5, b.getTranslateZ());
+                        }
+                    }
+                });
                 Controller.me.group.getChildren().add(b);
             }
         }
@@ -74,7 +83,7 @@ public class Grid extends ArrayList<MinBrick> {
      * @param b la box
      */
     public void setCoors(Box b) {
-        setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
+        if(!Controller.model.brickClicked.equals(b)) setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
     }
 
     /**

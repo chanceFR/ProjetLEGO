@@ -122,7 +122,6 @@ public class Dim {
      */
     private boolean isReverse;
 
-
     public void rotate() {
         double oldDepth = this.depth;
         this.depth = this.width;
@@ -146,9 +145,5 @@ public class Dim {
             s += "x" + height;
         }
         return s;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
     }
 }

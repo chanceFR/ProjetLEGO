@@ -8,9 +8,11 @@ import fr.antoromeochrist.projetlego.utils.bricks.State;
 import fr.antoromeochrist.projetlego.utils.bricks.Volume;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
@@ -55,17 +57,36 @@ import java.util.ArrayList;
 */
 
 /**
- * La classe Brick permet de créer des briques en fonction de leur dimension.
+ * La classe Brick permet de créer des briques en fonction de leur {@link Dim}.
  * <p>
- * Elle permet de changer leur couleur dans le dictionnaire du modèle.
+ * Une brique est une liste de {@link MinBrick} généré par la méthode createFromNothing,
  * <p>
- * De déplacer la brique avec la gestion des collisions.
+ * à partir du {@link Volume} qui lui-même est généré en fonction de la dimension.
  * <p>
- * De la supprimer.
+ * Remarque: une brique de dimension 1x1 revient à faire une minbrick.
  * <p>
- * De la cacher.
+ * Action possible sur la brique:
+ * <p>
+ * - Changement de couleur dans le dictionnaire du {@link fr.antoromeochrist.projetlego.Model}.
+ * <p>
+ * - Déplacement la brique avec la gestion des collisions.
+ * <p>
+ * - On peut cacher la brique et la rétablir.
+ * <p>
+ * - On peut la rendre plate (brique de 0.5 en hauteur, les briques dans ce cas précis,
+ * <p>
+ * ressemble à des plaques). Et lui rétablir sa hauteur de base sinon.
+ * <p>
+ * - On peut gérér son {@link State}, si elle peut bouger(en fonction de la souris,
+ * ou alors qu'avec les flèches du clavier(et Z Q S D) ou bien non.
+ * <p>
+ * Ses bordures changent en fonction).
+ * <p>
+ * - On peut la cloner
+ * <p>
+ * - On peut la supprimer
  *
- * @see fr.antoromeochrist.projetlego.utils.bricks.MinBrick
+ * @see fr.antoromeochrist.projetlego.utils.bricks.Grid
  */
 public class Brick extends ArrayList<MinBrick> {
 
@@ -131,28 +152,35 @@ public class Brick extends ArrayList<MinBrick> {
      */
     private State state;
 
-
-    public Brick(Dim dim,double x,double y ,double z,Color c){
-        this(dim,x,y,z,c,false);
+    /**
+     * Surcharge du constructeur
+     *
+     * @param dim dimension
+     * @param x   coordonnée
+     * @param y   coordonnée
+     * @param z   coordonnée
+     * @param c   couleur
+     */
+    public Brick(Dim dim, double x, double y, double z, Color c) {
+        this(dim, x, y, z, c, false);
     }
 
     /**
      * Constructeur pour construire une brique
      *
-     * @param dim {@link Dim} de la brique
-     *            <p>
-     * @param x   coordonnée
-     *            <p>
-     * @param z   coordonnée
-     *            <p>
-     * @param y   coordonnée
-     *            <p>
-     * @param c   {@link Color}
-     *
+     * @param dim   {@link Dim} de la brique
+     *              <p>
+     * @param x     coordonnée
+     *              <p>
+     * @param z     coordonnée
+     *              <p>
+     * @param y     coordonnée
+     *              <p>
+     * @param c     {@link Color}
      * @param plate est t'elle plate ?
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
-    public Brick(Dim dim, double x, double z, double y, Color c,boolean plate) {
+    public Brick(Dim dim, double x, double z, double y, Color c, boolean plate) {
         this.state = State.NONE;
         this.hide = false;
         this.plate = plate;
@@ -202,38 +230,73 @@ public class Brick extends ArrayList<MinBrick> {
              * Permet la SuperPosition des briques
              *
              **/
-            minBrick.setOnMouseEntered(mouseEvent -> Controller.grid.setCoors(minBrick));
+            minBrick.setOnMouseEntered(mouseEvent -> {
+                if (!Controller.model.brickClicked.equals(this)) {
+                    if (isPlate())
+                        if (Controller.model.brickClicked.isPlate()) {// Les deux sont plates
+                            Fast.log("cas 1");
+                            Controller.grid.setCoors(minBrick.getTranslateX(), minBrick.getTranslateY()-0.5, minBrick.getTranslateZ());
+                        } else { //brickClicked est pas plate et l'autre est plate
+                            Fast.log("cas 2");
+                            Controller.grid.setCoors(minBrick.getTranslateX(), minBrick.getTranslateY(), minBrick.getTranslateZ()); //brickclicked est pas plate et le bloc touché est plate
+                        }
+                    else if (Controller.model.brickClicked.isPlate()) { //brickClicked est plate mais pas l'autre
+                        Fast.log("cas 3");
+                        Controller.grid.setCoors(minBrick.getTranslateX(), minBrick.getTranslateY() - 0.75, minBrick.getTranslateZ());
+                    } else {
+                        Fast.log("cas 4");
+                        Controller.grid.setCoors(minBrick); //les 2 sont pas plates
+                    }
+                }
+            });
             /*
              * On vient de cliquer sur la brique
              * Permet de d'afficher les bordures
              *
              **/
             minBrick.setOnMouseClicked(e -> {
-                if (Controller.model.brickClicked == null) return;
                 if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
                     if (Controller.model.brickClicked.equals(this)) {
-                        if (!getState().equals(State.SHOW_IS_SELECT)) {
+                        if (!getState().equals(State.SHOW_IS_SELECT))
                             this.setState(State.SHOW_IS_SELECT, 134);
-                        } else {
+                        else
                             this.setState(State.FOLLOW_THE_MOUSE);
-                        }
                     } else {
                         Brick old = Controller.model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.hide) {
+                        if (old.hide)
                             /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
                               elle doit garder la bordure #808080
                             */
                             old.setBorderColor(Color.web("#808080"));
-                        }
                         Controller.model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
-                } else if (e.getButton().equals(MouseButton.SECONDARY)) {
+                } else if (e.getButton().equals(MouseButton.SECONDARY))
                     this.rotate();
-                }
-
             });
+            minBrick.getCylinder().setOnMouseClicked(e -> {
+                if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
+                    if (Controller.model.brickClicked.equals(this)) {
+                        if (!getState().equals(State.SHOW_IS_SELECT))
+                            this.setState(State.SHOW_IS_SELECT, 134);
+                        else
+                            this.setState(State.FOLLOW_THE_MOUSE);
+                    } else {
+                        Brick old = Controller.model.brickClicked;
+                        old.setState(State.NONE, 555);
+                        if (old.hide)
+                            /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
+                              elle doit garder la bordure #808080
+                            */
+                            old.setBorderColor(Color.web("#808080"));
+                        Controller.model.brickClicked = this;
+                        this.setState(State.SHOW_IS_SELECT, 4);
+                    }
+                } else if (e.getButton().equals(MouseButton.SECONDARY))
+                    this.rotate();
+            });
+
             minBrick.cyl();
         }
         Controller.me.currentStep.getItems().add(this);
@@ -257,12 +320,19 @@ public class Brick extends ArrayList<MinBrick> {
                 minBrick = this.get(i);
             }
             minBrick.setWidth(1);
-            minBrick.setHeight(1);
             minBrick.setDepth(1);
             minBrick.setTranslateX(volume.get(i).getX());
-            minBrick.setTranslateY(volume.get(i).getY());
             minBrick.setTranslateZ(volume.get(i).getZ());
+            minBrick.setTranslateY(volume.get(i).getY());
+            if (plate) minBrick.setHeight(0.5);
+            else{
+                minBrick.setHeight(1);
+            }
+
+            minBrick.setTranslateY(volume.get(i).getY());
             minBrick.cyl();
+
+
         }
     }
 
@@ -354,13 +424,12 @@ public class Brick extends ArrayList<MinBrick> {
                         if (lastStep.getItems().size() > 0) {
                             Controller.model.brickClicked = lastStep.getItems().get(lastStep.getItems().size() - 1);
                             Controller.model.brickClicked.setState(State.SHOW_IS_SELECT, 8);
-                        } else {
+                        } else
                             Controller.model.brickClicked = null;//il y a plus de brique sur le plateau
-                        }
+
                     }
-                } else { //on est dans l'étape 1 et il reste aucune brique dedans
+                } else  //on est dans l'étape 1 et il reste aucune brique dedans
                     Controller.model.brickClicked = null;
-                }
             }
             //suppresion dans le content color si il reste plus de brick de sa couleur
             Color beforeDel = getColor();
@@ -380,10 +449,9 @@ public class Brick extends ArrayList<MinBrick> {
                 }
                 //pour que les briques ce remettre dans la dernière étape qui existe
                 Controller.me.currentStep = (ListView) Controller.me.steps.getItems().get(Controller.me.steps.getItems().size() - 1);
-            } else {
+            } else
                 //On ajuste la taille
                 stepWhere.setPrefHeight(stepWhere.getItems().size() * 50 + 5);
-            }
             this.clear();
         }
     }
@@ -423,17 +491,24 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void move(double x, double y, double z) {
-        volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+        if (plate)
+            volume = Volume.createAllVolume(new P3D(x, y, z), new Dim(this.dim.getWidth(), this.dim.getDepth(), 1));
+        else volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
         int increment = 0;
         while (Volume.volumeIntersection(this, Controller.model.bricks.keySet())) {
             volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
             increment++;
-            Fast.log("Intersect |increment :" + increment);
         }
         for (int i = 0; i < volume.size(); i++) {
             get(i).setTranslateX(volume.get(i).getX());
-            get(i).setTranslateY(volume.get(i).getY());
             get(i).setTranslateZ(volume.get(i).getZ());
+            if (plate) {
+                get(i).setHeight(0.5);
+                get(i).setTranslateY(volume.get(i).getY());
+            } else {
+                get(i).setHeight(1);
+                get(i).setTranslateY(volume.get(i).getY());
+            }
             get(i).cyl();
         }
         this.updateBorder();
@@ -598,6 +673,18 @@ public class Brick extends ArrayList<MinBrick> {
         return !hide;
     }
 
+    private Cylinder createFirstCylBorder(P3D p, double height) {
+        Cylinder c = new Cylinder();
+        c.setTranslateX(p.getX());
+        c.setTranslateY(p.getY());
+        c.setTranslateZ(p.getZ());
+        if (plate) c.setHeight(height * 0.5);
+        else c.setHeight(height);
+        c.setRadius(0.01);
+        border.add(c);
+        return c;
+    }
+
     private Cylinder createCylBorder(P3D p, double height) {
         Cylinder c = new Cylinder();
         c.setTranslateX(p.getX());
@@ -625,25 +712,25 @@ public class Brick extends ArrayList<MinBrick> {
         rotateZ.setPivotY(0);
         rotateZ.setAxis(Rotate.Z_AXIS);
         if (volume.size() > 1 && dim.getHeight() == 1) {
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, 0, 0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 0, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 0, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createFirstCylBorder(volume.get(volume.size() - 1).add(0.5, 0, 0.5), this.dim.getHeight());
         } else if (dim.getWidth() == 1 && dim.getDepth() == 1 && dim.getHeight() == 4) {
-            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 1.5, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5, 1.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, -1.5, 0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 1.5, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 1.5, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 1.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createFirstCylBorder(volume.get(volume.size() - 1).add(0.5, -1.5, 0.5), this.dim.getHeight());
         } else if (dim.getWidth() == 1 && dim.getDepth() == 1 && dim.getHeight() == 2) {
-            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getHeight());
-            createCylBorder(volume.get(0).add(-0.5, 0.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
-            createCylBorder(volume.get(volume.size() - 1).add(0.5, -0.5, 0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 0.5, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5 + this.getDim().getWidth(), 0.5, -0.5), this.dim.getHeight());
+            createFirstCylBorder(volume.get(0).add(-0.5, 0.5, -0.5 + this.getDim().getDepth()), this.dim.getHeight());
+            createFirstCylBorder(volume.get(volume.size() - 1).add(0.5, -0.5, 0.5), this.dim.getHeight());
         } else {
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5), 1);
-            createCylBorder(volume.get(0).add(-0.5 + 1, 0, -0.5), 1);
-            createCylBorder(volume.get(0).add(-0.5, 0, -0.5 + 1), 1);
-            createCylBorder(volume.get(0).add(0.5, 0, 0.5), 1);
+            createFirstCylBorder(volume.get(0).add(-0.5, 0, -0.5), 1);
+            createFirstCylBorder(volume.get(0).add(-0.5 + 1, 0, -0.5), 1);
+            createFirstCylBorder(volume.get(0).add(-0.5, 0, -0.5 + 1), 1);
+            createFirstCylBorder(volume.get(0).add(0.5, 0, 0.5), 1);
         }
 
 
@@ -769,6 +856,52 @@ public class Brick extends ArrayList<MinBrick> {
             border.get(10).setTranslateZ(border.get(10).getTranslateZ() + 0.5);
             border.get(11).setTranslateZ(border.get(11).getTranslateZ() + 0.5);
         }
+        Brick b = this;
+        for (Cylinder c : border) {
+            c.setOnMouseClicked(e -> {
+                if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
+                    if (Controller.model.brickClicked.equals(b)) {
+                        if (!getState().equals(State.SHOW_IS_SELECT))
+                            b.setState(State.SHOW_IS_SELECT, 134);
+                        else
+                            b.setState(State.FOLLOW_THE_MOUSE);
+                    } else {
+                        Brick old = Controller.model.brickClicked;
+                        old.setState(State.NONE, 555);
+                        if (old.hide)
+                        /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
+                          elle doit garder la bordure #808080
+                        */
+                            old.setBorderColor(Color.web("#808080"));
+                        Controller.model.brickClicked = b;
+                        b.setState(State.SHOW_IS_SELECT, 4);
+                    }
+                } else if (e.getButton().equals(MouseButton.SECONDARY))
+                    b.rotate();
+            });
+        }
+        if (isPlate()) {
+            //for(int i = 0; i <4;i++){
+               //  Cylinder c =Controller.model.brickClicked.border.get(i);
+                //c.setTranslateY(Controller.model.brickClicked.border.get(i).getTranslateY());//-0.5
+            //}
+            Cylinder c4 =Controller.model.brickClicked.border.get(4);
+            c4.setTranslateY(Controller.model.brickClicked.border.get(4).getTranslateY()+0.25);//-0.25
+            Cylinder c5 =Controller.model.brickClicked.border.get(5);
+            c5.setTranslateY(Controller.model.brickClicked.border.get(5).getTranslateY()-0.25); //-0.75
+            Cylinder c6 =Controller.model.brickClicked.border.get(6);
+            c6.setTranslateY(Controller.model.brickClicked.border.get(6).getTranslateY()+0.25);//-0.25
+            Cylinder c7 =Controller.model.brickClicked.border.get(7);
+            c7.setTranslateY(Controller.model.brickClicked.border.get(7).getTranslateY()-0.25);//-0.75
+            Cylinder c8 =Controller.model.brickClicked.border.get(8);
+            c8.setTranslateY(Controller.model.brickClicked.border.get(8).getTranslateY()+0.25); //-0.25
+            Cylinder c9 =Controller.model.brickClicked.border.get(9);
+            c9.setTranslateY(Controller.model.brickClicked.border.get(9).getTranslateY()-0.75);//-1.25
+            Cylinder c10 =Controller.model.brickClicked.border.get(10);
+            c10.setTranslateY(Controller.model.brickClicked.border.get(10).getTranslateY()+0.75);//0.25
+            Cylinder c11 =Controller.model.brickClicked.border.get(11);
+            c11.setTranslateY(Controller.model.brickClicked.border.get(11).getTranslateY()-0.25);//-0.75
+        }
     }
 
     /**
@@ -840,14 +973,16 @@ public class Brick extends ArrayList<MinBrick> {
         return trash;
     }
 
-
+    /**
+     * Fonction pour que la brique soit toujours dans le dictionnaire !
+     *
+     * @param color couleur
+     */
     private void brickHaveColorInDictionnary(Color color) {
-        if (Controller.model.bricks.containsKey(this)) {
-            if (!Controller.model.bricks.get(this).equals(color))
-                Controller.model.bricks.replace(this, color);
-        } else {
+        if (Controller.model.bricks.containsKey(this) && !Controller.model.bricks.get(this).equals(color))
+            Controller.model.bricks.replace(this, color);
+        else
             Controller.model.bricks.put(this, color);
-        }
     }
 
     /**
@@ -868,29 +1003,43 @@ public class Brick extends ArrayList<MinBrick> {
         this.updateBorder();
     }
 
+    /**
+     * Fonction auxiliaire pour simplifier des conditions
+     *
+     * @param i        élément à compar
+     * @param interval comparaison avec les autres
+     * @return vrai si l'élément est dans l'intervalle, non sinon.
+     */
     private boolean isIn(double i, double[] interval) {
-        for (double j : interval) {
-            if (j == i) {
-                return true;
-            }
-        }
+        for (double j : interval) if (j == i) return true;
         return false;
     }
 
+    /**
+     * Obtenir l'état de la brique
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * Rentre plate ou rétablir la hauteur d'une birque
+     *
+     * @param plate votre décision
+     */
     public void setPlate(boolean plate) {
         this.plate = plate;
-        if (plate) {
-            this.dim.setHeight(this.dim.getHeight() * 0.5);
-        } else {
-            this.dim.setHeight(this.dim.getHeight() * 2);
-        }
-        createFromNothing(false);//on met à jour l'apparence de la brique
+        if (plate)
+            this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), new Dim(this.dim.getWidth(), dim.getDepth(), 1));
+        else
+            this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), this.dim);
+        createFromNothing(false);
+        updateBorder();
     }
 
+    /**
+     * @return est-ce que la brique est plate ?
+     */
     public boolean isPlate() {
         return plate;
     }
