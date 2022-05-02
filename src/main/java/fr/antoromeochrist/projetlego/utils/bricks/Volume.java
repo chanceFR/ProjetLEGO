@@ -1,6 +1,5 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
-import fr.antoromeochrist.projetlego.pieces.Brick;
 import fr.antoromeochrist.projetlego.utils.P3D;
 
 import java.util.ArrayList;
@@ -69,7 +68,14 @@ public class Volume extends ArrayList<P3D> {
         return v;
     }
 
-
+    /**
+     *
+     * @param v le volume en question
+     * @return avoir le milieu du volume
+     */
+    public static P3D getMiddleCoor(Volume v){
+        return new P3D(v.get(v.size()-1).getX()/2,v.get(v.size()-1).getY()/2,v.get(v.size()-1).getZ()/2);
+    }
     /**
      * Affichage du volume
      *

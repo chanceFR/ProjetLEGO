@@ -1,13 +1,14 @@
 package fr.antoromeochrist.projetlego;
 
-import fr.antoromeochrist.projetlego.pieces.Brick;
+import fr.antoromeochrist.projetlego.pieces.Figurine;
+import fr.antoromeochrist.projetlego.utils.bricks.Brick;
+import fr.antoromeochrist.projetlego.pieces.Piece;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
 import fr.antoromeochrist.projetlego.utils.DurationAngle;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -430,6 +431,7 @@ public class Controller implements Initializable {
                      *
                      * */
                     view.setOnMousePressed(mouseEvent -> {
+
                         if (current.isHide()) {
                             current.hide(false);
                             try {
@@ -446,7 +448,12 @@ public class Controller implements Initializable {
                             }
                         }
                         //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
-                        for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
+                        for (Object obj : lv.getItems())
+                            if (obj instanceof Piece) {
+                                Piece p = (Piece) model.brickClicked;
+                                p.hideThePiece(p.thePieceIsNotHide());
+                            } else
+                                ((Brick) obj).hide(model.brickClicked.isNotHide());
                         mouseEvent.consume();//anti bug graphique
                     });
 
@@ -456,9 +463,12 @@ public class Controller implements Initializable {
                     Oeil normal et oeil barré
                      */
 
-                    for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
-
-
+                    for (Object obj : lv.getItems())
+                        if (obj instanceof Piece) {
+                            Piece p = (Piece) model.brickClicked;
+                            p.hideThePiece(p.thePieceIsNotHide());
+                        } else
+                            ((Brick) obj).hide(model.brickClicked.isNotHide());
                     /*
                      * Menu de droite - gestion des étapes
                      *
@@ -845,7 +855,11 @@ public class Controller implements Initializable {
          * */
         subScene.setOnMouseMoved(e -> {
             if (model.brickClicked != null && model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE))
-                model.brickClicked.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+                if (model.brickClicked instanceof Piece) {
+                    ((Piece) model.brickClicked).moveThePiece(grid);
+                } else {
+                    model.brickClicked.moveWhereIsMouseIn(grid);
+                }
         });
 
         //Si on quitte la fenètre, la brique  set met en select !
@@ -876,35 +890,74 @@ public class Controller implements Initializable {
             }
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
+                    case Y -> new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
                     case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate());
-                    case H -> model.brickClicked.hide(model.brickClicked.isNotHide());
-                    case T -> model.brickClicked.createClone();
+                    case H -> {
+                        if (model.brickClicked instanceof Piece p) {
+                            p.hideThePiece(p.thePieceIsNotHide());
+                        } else
+                            model.brickClicked.hide(model.brickClicked.isNotHide());
+                    }
+                    case T -> {
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).cloneThePiece();
+                        else
+                            model.brickClicked.createClone();
+                    }
                     case W -> {
-                        model.brickClicked.up();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).upThePiece();
+                        else
+                            model.brickClicked.up();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case X -> {
-                        model.brickClicked.down();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).downThePiece();
+                        else
+                            model.brickClicked.down();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case LEFT, Q -> {
-                        model.brickClicked.leftX();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).leftXThePiece();
+                        else
+                            model.brickClicked.leftX();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case D, RIGHT -> {
-                        model.brickClicked.rightX();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).rightXThePiece();
+                        else
+                            model.brickClicked.rightX();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case Z, UP -> {
-                        model.brickClicked.rightZ();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).rightZThePiece();
+                        else
+                            model.brickClicked.rightZ();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case S, DOWN -> {
-                        model.brickClicked.leftZ();
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).leftZThePiece();
+                        else
+                            model.brickClicked.leftZ();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
-                    case R -> model.brickClicked.rotate();
-                    case G -> model.brickClicked.remove();
+                    case R -> {
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).rotateThePiece();
+                        else
+                            model.brickClicked.rotate();
+                    }
+                    case G -> {
+                        if (model.brickClicked instanceof Piece)
+                            ((Piece) model.brickClicked).removeThePiece();
+                        else
+                            model.brickClicked.remove();
+                    }
                 }
             }
 
@@ -931,7 +984,11 @@ public class Controller implements Initializable {
          *
          * */
         hide.setOnMousePressed(e -> {
-            if (model.brickClicked != null) model.brickClicked.hide(model.brickClicked.isNotHide());
+            if (model.brickClicked != null)
+                if (model.brickClicked instanceof Piece p) {
+                    p.hideThePiece(p.thePieceIsNotHide());
+                } else
+                    model.brickClicked.hide(model.brickClicked.isNotHide());
             try {
                 hideicon.setImage(new ImagePath("hidehover.jpg"));
                 hidetext.setFill(Color.web("#42C0FB"));
@@ -1211,7 +1268,7 @@ public class Controller implements Initializable {
         ColorPicker rem = null;
         for (Object o : contentColors.getItems())
             if (o instanceof ColorPick cp && cp.getValue().equals(c))
-                rem=cp;
+                rem = cp;
         contentColors.getItems().remove(rem);
     }
 

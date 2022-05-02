@@ -78,15 +78,6 @@ public class Grid extends ArrayList<MinBrick> {
     }
 
     /**
-     * Mettre les coordonnes de la box dans coors
-     *
-     * @param b la box
-     */
-    public void setCoors(Box b) {
-        if(!Controller.model.brickClicked.equals(b)) setCoors(b.getTranslateX(), b.getTranslateY(), b.getTranslateZ());
-    }
-
-    /**
      * Mettre les coordonnées dans coors
      *
      * @param x coordonné

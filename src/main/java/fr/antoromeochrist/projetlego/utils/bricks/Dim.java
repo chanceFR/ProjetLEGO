@@ -31,8 +31,6 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 
 */
 
-import fr.antoromeochrist.projetlego.pieces.Brick;
-
 /**
  * L'objet dimension a trois attributs.
  *
