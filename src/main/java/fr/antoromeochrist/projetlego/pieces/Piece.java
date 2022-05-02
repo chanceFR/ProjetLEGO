@@ -4,10 +4,10 @@ import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.bricks.Grid;
+import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
-
 import java.util.ArrayList;
 
 public abstract class Piece extends Brick {
@@ -70,14 +70,14 @@ public abstract class Piece extends Brick {
         updateNodesLocation();
     }
 
-    //a reparer
-    public void rotateThePiece() {
-        Rotate rotateY = new Rotate();
-        rotateY.setAngle(90);
-        rotateY.setPivotX(0);
-        rotateY.setPivotY(0);
-        rotateY.setAxis(Rotate.Y_AXIS);
-        for (Node n : nodes) n.getTransforms().add(rotateY);
+    public Rotate addRotate(Point3D axis, double angle){
+        Rotate rotate= new Rotate();
+        rotate.setAngle(angle);
+        rotate.setPivotX(volume.get(0).getX());
+        rotate.setPivotY(volume.get(0).getY());
+        rotate.setPivotZ(volume.get(0).getZ());
+        rotate.setAxis(axis);
+        return rotate;
     }
 
     public void hideThePiece(boolean b) {

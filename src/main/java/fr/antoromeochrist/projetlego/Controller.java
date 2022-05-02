@@ -400,9 +400,7 @@ public class Controller implements Initializable {
 
                     //field prendra forcément la valeur contenue dans current lors de sa création.
                     field.setText(current.getText());
-                    field.textProperty().addListener((observable, oldValue, newValue) -> {
-                        current.setText(newValue);
-                    });
+                    field.textProperty().addListener((observable, oldValue, newValue) -> current.setText(newValue));
 
                     /*
                      * Menu de droite - gestion des étapes
@@ -855,8 +853,8 @@ public class Controller implements Initializable {
          * */
         subScene.setOnMouseMoved(e -> {
             if (model.brickClicked != null && model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE))
-                if (model.brickClicked instanceof Piece) {
-                    ((Piece) model.brickClicked).moveThePiece(grid);
+                if (model.brickClicked instanceof Piece p) {
+                    p.moveThePiece(grid);
                 } else {
                     model.brickClicked.moveWhereIsMouseIn(grid);
                 }
@@ -882,79 +880,80 @@ public class Controller implements Initializable {
          * */
         anchorPane.setOnKeyReleased(keyEvent -> {
             //evites que du texte se tapes quand on bouge la brique avec les touches
-            if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE))
                 /*
                  * * La brique cesse de suivre la souris
                  */
                 if (model.brickClicked != null) model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
-            }
+
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
                     case Y -> new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate());
+                    case P -> {
+                        if (!(model.brickClicked instanceof Piece))
+                            model.brickClicked.setPlate(!model.brickClicked.isPlate());
+                    }
                     case H -> {
-                        if (model.brickClicked instanceof Piece p) {
+                        if (model.brickClicked instanceof Piece p)
                             p.hideThePiece(p.thePieceIsNotHide());
-                        } else
+                        else
                             model.brickClicked.hide(model.brickClicked.isNotHide());
                     }
                     case T -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).cloneThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.cloneThePiece();
                         else
                             model.brickClicked.createClone();
                     }
                     case W -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).upThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.upThePiece();
                         else
                             model.brickClicked.up();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case X -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).downThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.downThePiece();
                         else
                             model.brickClicked.down();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case LEFT, Q -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).leftXThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.leftXThePiece();
                         else
                             model.brickClicked.leftX();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case D, RIGHT -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).rightXThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.rightXThePiece();
                         else
                             model.brickClicked.rightX();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case Z, UP -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).rightZThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.rightZThePiece();
                         else
                             model.brickClicked.rightZ();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case S, DOWN -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).leftZThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.leftZThePiece();
                         else
                             model.brickClicked.leftZ();
                         model.brickClicked.setState(State.FOLLOW_KEYPRESS);
                     }
                     case R -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).rotateThePiece();
-                        else
+                        if (!(model.brickClicked instanceof Piece))
                             model.brickClicked.rotate();
                     }
                     case G -> {
-                        if (model.brickClicked instanceof Piece)
-                            ((Piece) model.brickClicked).removeThePiece();
+                        if (model.brickClicked instanceof Piece p)
+                            p.removeThePiece();
                         else
                             model.brickClicked.remove();
                     }
@@ -1008,7 +1007,11 @@ public class Controller implements Initializable {
         });
 
         clonee.setOnMousePressed(e -> {
-            if (model.brickClicked != null) model.brickClicked.createClone();
+            if (model.brickClicked != null)
+                if (model.brickClicked instanceof Piece p)
+                    p.cloneThePiece();
+                else
+                    model.brickClicked.createClone();
             try {
                 cloneeicon.setImage(new ImagePath("clonehover.jpg"));
                 cloneetext.setFill(Color.web("#42C0FB"));

@@ -6,10 +6,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class Figurine extends Piece {
 
+    private final Sphere leftShoulder;
+    private final Sphere rightShoulder;
+    private final Cylinder leftArmTop;
+    private final Cylinder rightArmTop;
     private final Box bodyMiddle;
     private final Box bodyLeft;
     private final Box bodyRight;
@@ -48,6 +53,27 @@ public class Figurine extends Piece {
         rotateZ3.setPivotX(0);
         rotateZ3.setPivotY(0);
         rotateZ3.setAxis(Rotate.Z_AXIS);
+
+        leftShoulder = new Sphere();
+        leftShoulder.setRadius(0.2825);
+        leftShoulder.setMaterial(new PhongMaterial(Color.RED));
+
+        rightShoulder = new Sphere();
+        rightShoulder.setRadius(0.2825);
+        rightShoulder.setMaterial(new PhongMaterial(Color.GREEN));
+
+
+        leftArmTop = new Cylinder();
+        leftArmTop.setHeight(0.7);
+        leftArmTop.setRadius(0.24);
+        leftArmTop.setMaterial(new PhongMaterial(Color.RED));
+        leftArmTop.getTransforms().add(rotateZ2);
+
+        rightArmTop = new Cylinder();
+        rightArmTop.setHeight(0.7);
+        rightArmTop.setRadius(0.24);
+        rightArmTop.setMaterial(new PhongMaterial(Color.GREEN));
+        rightArmTop.getTransforms().add(rotateZ3);
 
         bodyMiddle = new Box();
         bodyMiddle.setHeight(2);
@@ -129,6 +155,10 @@ public class Figurine extends Piece {
         rightFoot.setDepth(1);
         rightFoot.setMaterial(new PhongMaterial(Color.RED));
 
+        nodes.add(leftShoulder);
+        nodes.add(rightShoulder);
+        nodes.add(leftArmTop);
+        nodes.add(rightArmTop);
         nodes.add(bodyMiddle);
         nodes.add(bodyLeft);
         nodes.add(bodyRight);
@@ -147,6 +177,23 @@ public class Figurine extends Piece {
     }
     @Override
     public void updateNodesLocation() {
+
+        leftShoulder.setTranslateX(volume.get(volume.size() - 1).getX()-2.40);
+        leftShoulder.setTranslateY(volume.get(volume.size() - 1).getY()-3);
+        leftShoulder.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
+        rightShoulder.setTranslateX(volume.get(volume.size() - 1).getX()-0.60);
+        rightShoulder.setTranslateY(volume.get(volume.size() - 1).getY()-3);
+        rightShoulder.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
+        leftArmTop.setTranslateX(volume.get(volume.size() - 1).getX()-2.5);
+        leftArmTop.setTranslateY(volume.get(volume.size() - 1).getY()-2.75);
+        leftArmTop.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
+        rightArmTop.setTranslateX(volume.get(volume.size() - 1).getX()-0.5);
+        rightArmTop.setTranslateY(volume.get(volume.size() - 1).getY()-2.75);
+        rightArmTop.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
 
         bodyMiddle.setTranslateX(volume.get(volume.size() - 1).getX()-1.5);
         bodyMiddle.setTranslateY(volume.get(volume.size() - 1).getY()-2.5);
@@ -209,6 +256,6 @@ public class Figurine extends Piece {
 
     @Override
     public void cloneThePiece() {
-
+        new Figurine(getX(),getY(),getZ());
     }
 }
