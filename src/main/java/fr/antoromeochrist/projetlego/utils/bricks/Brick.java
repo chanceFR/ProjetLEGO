@@ -144,12 +144,20 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * informations sur la brique
      */
-    protected boolean hide, delete, plate;
+    protected boolean hide, delete, plate,cylindric;
 
     /**
      * Etat de la brique
      */
     protected State state;
+
+    /**
+     * Permet de rendre cylindrique
+     */
+    private Cylinder cylinder;
+
+
+
 
     /**
      * Surcharge du constructeur
@@ -172,6 +180,7 @@ public class Brick extends ArrayList<MinBrick> {
     public Brick(Dim dim, double x, double y, double z, Color c, boolean b) {
         this.state = State.NONE;
         this.hide = false;
+        this.cylindric = false;
         this.plate = b;
         this.dim = dim;
         this.rect = new Rectangle(0, 0, 10, 10);
@@ -1063,4 +1072,32 @@ public class Brick extends ArrayList<MinBrick> {
     public boolean isDelete() {
         return delete;
     }
+
+    public boolean isCylindric() {
+        return cylindric;
+    }
+
+    public void becomeCylindric(boolean b){
+        cylindric=b;
+        if(cylindric) {
+            for(MinBrick mb: this) mb.setOpacity(0);
+            if(cylinder == null) {
+                cylinder = new Cylinder();
+                cylinder.setRadius(this.dim.getWidth()/2);
+                cylinder.setHeight(this.dim.getHeight());
+                me.group.getChildren().add(cylinder);
+            }
+            cylinder.setMaterial(new PhongMaterial(getColor()));
+            cylinder.setOpacity(100);
+            cylinder.setTranslateX(getX()+0.5);
+            cylinder.setTranslateY(getY());
+            cylinder.setTranslateZ(getZ()+0.5);
+
+        }else{
+            for(MinBrick mb: this) mb.setOpacity(100);
+            cylinder.setOpacity(0);
+        }
+    }
+
+
 }

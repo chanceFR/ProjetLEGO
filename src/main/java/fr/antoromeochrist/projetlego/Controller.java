@@ -957,6 +957,11 @@ public class Controller implements Initializable {
                         else
                             model.brickClicked.remove();
                     }
+                    case K -> {
+                        if(model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
+                                model.brickClicked.becomeCylindric(!model.brickClicked.isCylindric());
+                    }
+
                 }
             }
 
