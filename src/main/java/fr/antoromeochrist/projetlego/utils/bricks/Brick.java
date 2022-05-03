@@ -86,6 +86,8 @@ import static fr.antoromeochrist.projetlego.Controller.model;
  * <p>
  * - On peut la rendre cylindrique (si la brique est carré avec width=depth)
  * <p>
+ * - On peut la rendre lisse
+ * <p>
  * - On peut la supprimer
  *
  * @see fr.antoromeochrist.projetlego.utils.bricks.Grid
@@ -147,7 +149,7 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * informations sur la brique
      */
-    protected boolean hide, delete, plate, cylindric;
+    protected boolean hide, delete, plate, cylindrical, smooth;
 
     /**
      * Etat de la brique
@@ -181,7 +183,8 @@ public class Brick extends ArrayList<MinBrick> {
     public Brick(Dim dim, double x, double y, double z, Color c, boolean b) {
         this.state = State.NONE;
         this.hide = false;
-        this.cylindric = false;
+        this.cylindrical = false;
+        this.smooth = false;
         this.plate = b;
         this.dim = dim;
         this.rect = new Rectangle(0, 0, 10, 10);
@@ -339,7 +342,7 @@ public class Brick extends ArrayList<MinBrick> {
         this.hide = b;
         setViewStatusHide(b);
         if (b) {
-            if (!isCylindric()) {
+            if (isNotCylindrical()) {
                 for (MinBrick minBrick : this) {
                     minBrick.setOpacity(0);
                     minBrick.cyl();
@@ -348,7 +351,7 @@ public class Brick extends ArrayList<MinBrick> {
                 updateBrickCylinder();
             }
         } else {
-            if (!isCylindric()) {
+            if (isNotCylindrical()) {
                 for (MinBrick minBrick : this) {
                     minBrick.setOpacity(100);
                     minBrick.cyl();
@@ -470,7 +473,8 @@ public class Brick extends ArrayList<MinBrick> {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
-        if (isCylindric()) updateBrickCylinder();
+        if (cylindrical) updateBrickCylinder();
+        if (smooth) updateSmooth();
         if (me.notColorInContentColors(color)) me.contentColorAddColor(color);
     }
 
@@ -512,7 +516,8 @@ public class Brick extends ArrayList<MinBrick> {
             get(i).setTranslateY(volume.get(i).getY());
             get(i).cyl();
         }
-        if (isCylindric()) updateBrickCylinder();
+        if (cylindrical) updateBrickCylinder();
+        if (smooth) updateSmooth();
         this.updateBorder();
     }
 
@@ -526,7 +531,8 @@ public class Brick extends ArrayList<MinBrick> {
         model.brickClicked = new Brick(this.dim, this.getX(), this.getY(), this.getZ(), this.getColor());
         model.brickClicked.setState(State.SHOW_IS_SELECT);
         model.brickClicked.setPlate(this.plate);
-        model.brickClicked.setCylindric(this.cylindric);
+        model.brickClicked.setCylindrical(this.cylindrical);
+        model.brickClicked.setSmooth(this.smooth);
     }
 
     /**
@@ -1064,8 +1070,10 @@ public class Brick extends ArrayList<MinBrick> {
             this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), this.dim);
         createFromNothing(false);
         updateBorder();
-        if (isCylindric())
+        if (cylindrical)
             updateBrickCylinder();
+        if (smooth)
+            updateSmooth();
     }
 
     /**
@@ -1082,8 +1090,8 @@ public class Brick extends ArrayList<MinBrick> {
         return delete;
     }
 
-    public boolean isCylindric() {
-        return cylindric;
+    public boolean isNotCylindrical() {
+        return !cylindrical;
     }
 
     private void updateBrickCylinder() {
@@ -1127,9 +1135,9 @@ public class Brick extends ArrayList<MinBrick> {
         }
     }
 
-    public void setCylindric(boolean b) {
-        cylindric = b;
-        if (cylindric) {
+    public void setCylindrical(boolean b) {
+        cylindrical = b;
+        if (cylindrical) {
             for (MinBrick mb : this) {
                 mb.setCylindric(true);
                 mb.setOpacity(0);
@@ -1162,6 +1170,22 @@ public class Brick extends ArrayList<MinBrick> {
             }
             if (cylinder != null) cylinder.setOpacity(0);
         }
+    }
+
+    public void setSmooth(boolean b) {
+        smooth = b;
+        updateSmooth();
+    }
+
+    public boolean isSmooth() {
+        return smooth;
+    }
+
+    public void updateSmooth() {
+        if (smooth) for (MinBrick mb : this) mb.getCylinder().setOpacity(0);
+        else if (cylindrical) updateBrickCylinder();
+        else
+            for (MinBrick mb : this) mb.getCylinder().setOpacity(100);
     }
 
 }
