@@ -1072,6 +1072,8 @@ public class Brick extends ArrayList<MinBrick> {
         updateBorder();
         if (cylindrical)
             updateBrickCylinder();
+        else
+            for(MinBrick mb: this) mb.getCylinder().setOpacity(100);
         if (smooth)
             updateSmooth();
     }
@@ -1170,6 +1172,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
             if (cylinder != null) cylinder.setOpacity(0);
         }
+        updateSmooth();
     }
 
     public void setSmooth(boolean b) {

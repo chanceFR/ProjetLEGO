@@ -1,7 +1,6 @@
 package fr.antoromeochrist.projetlego;
 
 import fr.antoromeochrist.projetlego.pieces.Figurine;
-import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.pieces.Piece;
 import fr.antoromeochrist.projetlego.utils.CameraUtils;
 import fr.antoromeochrist.projetlego.utils.ColorPick;
