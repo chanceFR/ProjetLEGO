@@ -5,11 +5,20 @@ import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class Figurine extends Piece {
+
+    private final Sphere leftEyes;
+    private final Sphere rightEyes;
+    //private final Rectangle
+
+    private final Sphere headTop;
+    private final Cylinder head;
+    private final Cylinder neck;
 
     private final Cylinder leftHand1;
 
@@ -114,6 +123,28 @@ public class Figurine extends Piece {
         Rotate rotateZ_12 = addRotate(Rotate.Z_AXIS, -13);
 
         Rotate rotateX90 = addRotate(Rotate.X_AXIS, -75);
+
+        leftEyes = new Sphere();
+        leftEyes.setRadius(0.05);
+        leftEyes.setMaterial(new PhongMaterial(Color.BLACK));
+
+        rightEyes = new Sphere();
+        rightEyes.setRadius(0.05);
+        rightEyes.setMaterial(new PhongMaterial(Color.BLACK));
+
+        headTop = new Sphere();
+        headTop.setRadius(0.505);
+        headTop.setMaterial(new PhongMaterial(Color.YELLOW));
+
+        head = new Cylinder();
+        head.setRadius(0.5);
+        head.setHeight(0.70);
+        head.setMaterial(new PhongMaterial(Color.YELLOW));
+
+        neck = new Cylinder();
+        neck.setHeight(1);
+        neck.setRadius(0.15);
+        neck.setMaterial(new PhongMaterial(Color.YELLOW));
 
         leftHand1 = new Cylinder();
         leftHand1.setHeight(0.4);
@@ -443,6 +474,11 @@ public class Figurine extends Piece {
         rightFoot.setDepth(1);
         rightFoot.setMaterial(new PhongMaterial(Color.RED));
 
+        nodes.add(leftEyes);
+        nodes.add(rightEyes);
+        nodes.add(headTop);
+        nodes.add(head);
+        nodes.add(neck);
         nodes.add(leftHand1);
         nodes.add(leftHand2);
         nodes.add(leftHand3);
@@ -514,6 +550,28 @@ public class Figurine extends Piece {
     public void updateNodesLocation() {
 
         double ecart = 2.35;
+
+        leftEyes.setTranslateX(volume.get(volume.size() - 1).getX() - 1.65);
+        leftEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.35);
+        leftEyes.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.44);
+
+        rightEyes.setTranslateX(volume.get(volume.size() - 1).getX() - 1.35);
+        rightEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.35);
+        rightEyes.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.44);
+
+
+        headTop.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+        headTop.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
+        headTop.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
+        head.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+        head.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
+        head.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
+        neck.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+        neck.setTranslateY(volume.get(volume.size() - 1).getY() - 4);
+        neck.setTranslateZ(volume.get(volume.size() - 1).getZ());
+
 
         leftShoulder.setTranslateX(volume.get(volume.size() - 1).getX() - 2.40);
         leftShoulder.setTranslateY(volume.get(volume.size() - 1).getY() - 3);
