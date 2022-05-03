@@ -1,6 +1,5 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
-import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.pieces.Piece;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
@@ -471,7 +470,7 @@ public class Brick extends ArrayList<MinBrick> {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
-        if (isCylindric()) cylinder.setMaterial(new PhongMaterial(color));
+        if (isCylindric()) updateBrickCylinder();
         if (me.notColorInContentColors(color)) me.contentColorAddColor(color);
     }
 
@@ -1091,6 +1090,7 @@ public class Brick extends ArrayList<MinBrick> {
         if (!hide) {
             for (MinBrick mb : this) mb.getCylinder().setOpacity(100);
             cylinder.setOpacity(100);
+            cylinder.setMaterial(new PhongMaterial(getColor()));
             if (plate) cylinder.setHeight(0.5);
             else cylinder.setHeight(this.dim.getHeight());
             switch ((int) this.dim.getWidth()) {
@@ -1140,8 +1140,6 @@ public class Brick extends ArrayList<MinBrick> {
                 cylinder.setHeight(this.dim.getHeight());
                 me.group.getChildren().add(cylinder);
             }
-            cylinder.setMaterial(new PhongMaterial(getColor()));
-            cylinder.setOpacity(100);
             updateBrickCylinder();
         } else {
             for (MinBrick mb : this) {

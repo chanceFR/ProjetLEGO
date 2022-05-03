@@ -73,9 +73,9 @@ public abstract class Piece extends Brick {
     public Rotate addRotate(Point3D axis, double angle){
         Rotate rotate= new Rotate();
         rotate.setAngle(angle);
-        rotate.setPivotX(volume.get(0).getX());
-        rotate.setPivotY(volume.get(0).getY());
-        rotate.setPivotZ(volume.get(0).getZ());
+        rotate.setPivotX(0);
+        rotate.setPivotY(0);
+        rotate.setPivotZ(0);
         rotate.setAxis(axis);
         return rotate;
     }

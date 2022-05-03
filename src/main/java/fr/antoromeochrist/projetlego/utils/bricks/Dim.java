@@ -133,14 +133,14 @@ public class Dim {
     public String toString() {
         String s;
         if (isReverse) {
-            s = "" + depth;
-            s += "x" + width;
+            s = "" + (int)depth;
+            s += "x" + (int)width;
         } else {
-            s = "" + width;
-            s += "x" + depth;
+            s = "" + (int)width;
+            s += "x" + (int)depth;
         }
         if (height != 1) {
-            s += "x" + height;
+            s += "x" + (int)height;
         }
         return s;
     }
