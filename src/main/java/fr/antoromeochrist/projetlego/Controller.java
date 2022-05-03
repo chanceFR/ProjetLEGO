@@ -797,7 +797,10 @@ public class Controller implements Initializable {
          * */
         colorpicker.setOnHidden(event -> {
             if (!model.brickClicked.getColor().equals(colorpicker.getValue()))
-                for (MinBrick b : model.brickClicked) b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+                for (MinBrick b : model.brickClicked){
+                    b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+                    b.getCylinder().setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+                }
         });
 
         /*

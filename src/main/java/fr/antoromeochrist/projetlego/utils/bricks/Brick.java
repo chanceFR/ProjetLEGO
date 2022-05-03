@@ -361,6 +361,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
             setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
         }
+        if(smooth)updateSmooth();
     }
 
     /**
