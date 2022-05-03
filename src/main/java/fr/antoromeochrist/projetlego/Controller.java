@@ -884,13 +884,15 @@ public class Controller implements Initializable {
                 /*
                  * * La brique cesse de suivre la souris
                  */
-                if (model.brickClicked != null) model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
+                if (model.dropInProgress)
+                    clearBreakSelection();
+            if (model.brickClicked != null) model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
 
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
                     case Y -> new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
                     case P -> {
-                        if (!(model.brickClicked instanceof Piece))
+                        if (!(model.brickClicked instanceof Piece) && model.brickClicked.getDim().getHeight() == 1)
                             model.brickClicked.setPlate(!model.brickClicked.isPlate());
                     }
                     case H -> {
@@ -958,8 +960,8 @@ public class Controller implements Initializable {
                             model.brickClicked.remove();
                     }
                     case K -> {
-                        if(model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
-                                model.brickClicked.becomeCylindric(!model.brickClicked.isCylindric());
+                        if (model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
+                            model.brickClicked.setCylindric(!model.brickClicked.isCylindric());
                     }
 
                 }

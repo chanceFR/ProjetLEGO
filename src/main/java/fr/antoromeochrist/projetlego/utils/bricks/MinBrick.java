@@ -17,12 +17,18 @@ public class MinBrick extends Box {
      */
     private final Cylinder cylinder;
 
+    private boolean isCylindric;
+
     /**
      * Constructeur
      */
     public MinBrick() {
         cylinder = new Cylinder(0.30, 0.30);
         cyl();
+    }
+
+    public void setCylindric(boolean cylindric) {
+        isCylindric = cylindric;
     }
 
     /**
@@ -33,7 +39,7 @@ public class MinBrick extends Box {
         cylinder.setTranslateY(this.getTranslateY() - 0.5f);
         cylinder.setTranslateZ(this.getTranslateZ());
         cylinder.setMaterial(this.getMaterial());
-        cylinder.setOpacity(this.getOpacity());
+        if(isCylindric) cylinder.setOpacity(100); else cylinder.setOpacity(this.getOpacity());
     }
 
     /**

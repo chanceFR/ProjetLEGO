@@ -58,17 +58,24 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setHeight(0.01);
                 b.setWidth(1);
                 b.setDepth(1);
-                //b.setMaterial(new PhongMaterial(Color.RED));
                 b.setTranslateX(x);
                 b.setTranslateY(0);
                 b.setTranslateZ(z);
                 b.setOpacity(0);
                 b.setOnMouseEntered(mouseEvent -> {
                     if (Controller.model.brickClicked != null) {
-                        if(Controller.model.brickClicked.isPlate()){
-                            setCoors(b.getTranslateX(), b.getTranslateY()-0.25, b.getTranslateZ());
-                        }else{
-                            setCoors(b.getTranslateX(), b.getTranslateY() - 0.5, b.getTranslateZ());
+                        if (Controller.model.brickClicked.isPlate()) {
+                            setCoors(b.getTranslateX(), b.getTranslateY() - 0.25, b.getTranslateZ());
+                        } else {
+                            if (Controller.model.brickClicked.getDim().getHeight() < 2)
+                                setCoors(b.getTranslateX(), b.getTranslateY() - 0.5, b.getTranslateZ());
+                            else {
+                                if (Controller.model.brickClicked.getDim().getHeight() == 2)
+                                    setCoors(b.getTranslateX(), b.getTranslateY() - 1.5, b.getTranslateZ());
+                                else // height=4
+                                    setCoors(b.getTranslateX(), b.getTranslateY() - 3.5, b.getTranslateZ());
+                            }
+
                         }
                     }
                 });
