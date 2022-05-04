@@ -5,18 +5,22 @@ import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
 public class Figurine extends Piece {
 
+
+    private final Cylinder mouth;
+    private final Cylinder mouth2;
+    private final Cylinder mouth3;
+    private final Sphere leftEyesReflect;
+    private final Sphere rightEyesReflect;
     private final Sphere leftEyes;
     private final Sphere rightEyes;
-    //private final Rectangle
 
-    private final Sphere headTop;
+    private final Cylinder headTop;
     private final Cylinder head;
     private final Cylinder neck;
 
@@ -124,17 +128,46 @@ public class Figurine extends Piece {
 
         Rotate rotateX90 = addRotate(Rotate.X_AXIS, -75);
 
+        mouth = new Cylinder();
+        mouth.setHeight(0.18);
+        mouth.setRadius(0.012);
+        mouth.setMaterial(new PhongMaterial(Color.BLACK));
+        mouth.getTransforms().add(rotateZ);
+
+        mouth2 = new Cylinder();
+        mouth2.setHeight(0.07);
+        mouth2.setRadius(0.012);
+        mouth2.setMaterial(new PhongMaterial(Color.BLACK));
+        mouth2.getTransforms().add(rotateZ);
+
+        mouth3 = new Cylinder();
+        mouth3.setHeight(0.07);
+        mouth3.setRadius(0.012);
+        mouth3.setMaterial(new PhongMaterial(Color.BLACK));
+        mouth3.getTransforms().add(rotateZ);
+
+
+        leftEyesReflect = new Sphere();
+        leftEyesReflect.setRadius(0.025);
+        leftEyesReflect.setMaterial(new PhongMaterial(Color.WHITE));
+
+        rightEyesReflect = new Sphere();
+        rightEyesReflect.setRadius(0.025);
+        rightEyesReflect.setMaterial(new PhongMaterial(Color.WHITE));
+
+
         leftEyes = new Sphere();
-        leftEyes.setRadius(0.05);
+        leftEyes.setRadius(0.06);
         leftEyes.setMaterial(new PhongMaterial(Color.BLACK));
 
         rightEyes = new Sphere();
-        rightEyes.setRadius(0.05);
+        rightEyes.setRadius(0.06);
         rightEyes.setMaterial(new PhongMaterial(Color.BLACK));
 
-        headTop = new Sphere();
-        headTop.setRadius(0.505);
+        headTop = new Cylinder();
+        headTop.setRadius(0.2);
         headTop.setMaterial(new PhongMaterial(Color.YELLOW));
+        headTop.setHeight(0.5);
 
         head = new Cylinder();
         head.setRadius(0.5);
@@ -142,7 +175,7 @@ public class Figurine extends Piece {
         head.setMaterial(new PhongMaterial(Color.YELLOW));
 
         neck = new Cylinder();
-        neck.setHeight(1);
+        neck.setHeight(0.5);
         neck.setRadius(0.15);
         neck.setMaterial(new PhongMaterial(Color.YELLOW));
 
@@ -380,14 +413,14 @@ public class Figurine extends Piece {
         rightArmTop.getTransforms().add(rotateZ_12);
 
         leftArmDown = new Cylinder();
-        leftArmDown.setHeight(0.8);
+        leftArmDown.setHeight(0.6);
         leftArmDown.setRadius(0.24);
         leftArmDown.setMaterial(new PhongMaterial(Color.RED));
         leftArmDown.getTransforms().add(rotateZ12);
         leftArmDown.getTransforms().add(rotateX90);
 
         rightArmDown = new Cylinder();
-        rightArmDown.setHeight(0.8);
+        rightArmDown.setHeight(0.6);
         rightArmDown.setRadius(0.24);
         rightArmDown.setMaterial(new PhongMaterial(Color.GREEN));
         rightArmDown.getTransforms().add(rotateZ_12);
@@ -474,6 +507,11 @@ public class Figurine extends Piece {
         rightFoot.setDepth(1);
         rightFoot.setMaterial(new PhongMaterial(Color.RED));
 
+        nodes.add(mouth);
+        nodes.add(mouth2);
+        nodes.add(mouth3);
+        nodes.add(leftEyesReflect);
+        nodes.add(rightEyesReflect);
         nodes.add(leftEyes);
         nodes.add(rightEyes);
         nodes.add(headTop);
@@ -551,12 +589,34 @@ public class Figurine extends Piece {
 
         double ecart = 2.35;
 
+
+        mouth2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.59);
+        mouth2.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
+        mouth2.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.48);
+
+        mouth3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.39);
+        mouth3.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
+        mouth3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.48);
+
+        mouth.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+        mouth.setTranslateY(volume.get(volume.size() - 1).getY() - 3.78);
+        mouth.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.495);
+
+
+        leftEyesReflect.setTranslateX(volume.get(volume.size() - 1).getX() - 1.65);
+        leftEyesReflect.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
+        leftEyesReflect.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.485);
+
+        rightEyesReflect.setTranslateX(volume.get(volume.size() - 1).getX() - 1.35);
+        rightEyesReflect.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
+        rightEyesReflect.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.485);
+
         leftEyes.setTranslateX(volume.get(volume.size() - 1).getX() - 1.65);
-        leftEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.35);
+        leftEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
         leftEyes.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.44);
 
         rightEyes.setTranslateX(volume.get(volume.size() - 1).getX() - 1.35);
-        rightEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.35);
+        rightEyes.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
         rightEyes.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.44);
 
 
@@ -564,12 +624,13 @@ public class Figurine extends Piece {
         headTop.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
         headTop.setTranslateZ(volume.get(volume.size() - 1).getZ());
 
+
         head.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
-        head.setTranslateY(volume.get(volume.size() - 1).getY() - 4.2);
+        head.setTranslateY(volume.get(volume.size() - 1).getY() - 4);
         head.setTranslateZ(volume.get(volume.size() - 1).getZ());
 
         neck.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
-        neck.setTranslateY(volume.get(volume.size() - 1).getY() - 4);
+        neck.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
         neck.setTranslateZ(volume.get(volume.size() - 1).getZ());
 
 
