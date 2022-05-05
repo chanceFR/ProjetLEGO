@@ -4,6 +4,7 @@ import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.bricks.Grid;
+import fr.antoromeochrist.projetlego.utils.bricks.MinBrick;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -22,8 +23,10 @@ public abstract class Piece extends Brick {
     public Piece(Dim dim, double x, double y, double z, Color c, boolean b) {
         super(dim, x, y, z, c, b);
         nodes = new ArrayList<>();
-        this.hide(true);
-        setViewStatusHide(false);
+        for(MinBrick mb: this){
+            mb.setOpacity(0);
+            mb.getCylinder().setOpacity(0);
+        }
     }
 
     public void moveThePiece(double x, double y, double z) {
