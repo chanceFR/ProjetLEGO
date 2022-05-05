@@ -9,6 +9,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
+
 import java.util.ArrayList;
 
 public abstract class Piece extends Brick {
@@ -23,7 +24,7 @@ public abstract class Piece extends Brick {
     public Piece(Dim dim, double x, double y, double z, Color c, boolean b) {
         super(dim, x, y, z, c, b);
         nodes = new ArrayList<>();
-        for(MinBrick mb: this){
+        for (MinBrick mb : this) {
             mb.setOpacity(0);
             mb.getCylinder().setOpacity(0);
         }
@@ -73,8 +74,8 @@ public abstract class Piece extends Brick {
         updateNodesLocation();
     }
 
-    public Rotate addRotate(Point3D axis, double angle){
-        Rotate rotate= new Rotate();
+    public Rotate addRotate(Point3D axis, double angle) {
+        Rotate rotate = new Rotate();
         rotate.setAngle(angle);
         rotate.setPivotX(0);
         rotate.setPivotY(0);
@@ -85,8 +86,13 @@ public abstract class Piece extends Brick {
 
     public void hideThePiece(boolean b) {
         hidePiece = b;
-        if (hidePiece) for (Node node : nodes) node.setOpacity(0);
-        else for (Node node : nodes) node.setOpacity(100);
+        if (hidePiece) {
+            for (Node node : nodes) node.setOpacity(0);
+            this.setBorderColor(Color.web("#808080"));
+        } else {
+            for (Node node : nodes) node.setOpacity(100);
+            updateBorder();
+        }
         setViewStatusHide(b);
     }
 

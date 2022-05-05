@@ -266,11 +266,11 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.hide)
-                            /*Si on clique sur une autre brique et quel'ancienne brique selectionné est invisible
-                              elle doit garder la bordure #808080
-                            */
-                            old.setBorderColor(Color.web("#808080"));
+                        if (old instanceof Piece p)
+                            if (!p.thePieceIsNotHide())
+                                old.setBorderColor(Color.web("#808080"));
+                            else if (old.hide)
+                                old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
@@ -361,7 +361,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
             setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
         }
-        if(smooth)updateSmooth();
+        if (smooth) updateSmooth();
     }
 
     /**
@@ -1074,7 +1074,7 @@ public class Brick extends ArrayList<MinBrick> {
         if (cylindrical)
             updateBrickCylinder();
         else
-            for(MinBrick mb: this) mb.getCylinder().setOpacity(100);
+            for (MinBrick mb : this) mb.getCylinder().setOpacity(100);
         if (smooth)
             updateSmooth();
     }
