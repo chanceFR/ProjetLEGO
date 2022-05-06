@@ -446,8 +446,7 @@ public class Controller implements Initializable {
                         }
                         //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
                         for (Object obj : lv.getItems()) {
-                            try {
-                                if (view.getImage().equals(new ImagePath("noview.png"))) {
+                                if (current.isHide()) {
                                     if (obj instanceof Piece p)
                                         p.hideThePiece(true);
                                     else
@@ -458,9 +457,7 @@ public class Controller implements Initializable {
                                     else
                                         ((Brick) obj).hide(false);
                                 }
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
+
                         }
                         mouseEvent.consume();//anti bug graphique
                     });
