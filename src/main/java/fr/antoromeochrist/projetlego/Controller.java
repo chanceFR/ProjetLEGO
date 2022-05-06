@@ -458,8 +458,6 @@ public class Controller implements Initializable {
                                     else
                                         ((Brick) obj).hide(false);
                                 }
-
-
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
@@ -472,9 +470,6 @@ public class Controller implements Initializable {
                     Les briques seront caché/visible + leurs boutons(view) qui switch entre 2 images.
                     Oeil normal et oeil barré
                      */
-
-                    for (Object obj : lv.getItems())
-                        ((Brick) obj).hide(model.brickClicked.isNotHide());
                     /*
                      * Menu de droite - gestion des étapes
                      *
