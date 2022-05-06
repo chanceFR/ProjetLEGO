@@ -266,11 +266,12 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old instanceof Piece p)
+                        if (old instanceof Piece p) {
                             if (!p.thePieceIsNotHide())
                                 old.setBorderColor(Color.web("#808080"));
-                            else if (old.hide)
-                                old.setBorderColor(Color.web("#808080"));
+                        } else if (old.hide) {
+                            old.setBorderColor(Color.web("#808080"));
+                        }
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
@@ -287,11 +288,12 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old instanceof Piece p)
+                        if (old instanceof Piece p) {
                             if (!p.thePieceIsNotHide())
                                 old.setBorderColor(Color.web("#808080"));
-                            else if (old.hide)
-                                old.setBorderColor(Color.web("#808080"));
+                        } else if (old.hide) {
+                            old.setBorderColor(Color.web("#808080"));
+                        }
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }

@@ -445,12 +445,25 @@ public class Controller implements Initializable {
                             }
                         }
                         //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
-                        for (Object obj : lv.getItems())
-                            if (obj instanceof Piece) {
-                                Piece p = (Piece) model.brickClicked;
-                                p.hideThePiece(p.thePieceIsNotHide());
-                            } else
-                                ((Brick) obj).hide(model.brickClicked.isNotHide());
+                        for (Object obj : lv.getItems()) {
+                            try {
+                                if (view.getImage().equals(new ImagePath("noview.png"))) {
+                                    if (obj instanceof Piece p)
+                                        p.hideThePiece(true);
+                                    else
+                                        ((Brick) obj).hide(true);
+                                } else {
+                                    if (obj instanceof Piece p)
+                                        p.hideThePiece(false);
+                                    else
+                                        ((Brick) obj).hide(false);
+                                }
+
+
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         mouseEvent.consume();//anti bug graphique
                     });
 
