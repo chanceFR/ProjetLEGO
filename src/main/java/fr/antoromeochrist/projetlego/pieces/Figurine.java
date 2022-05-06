@@ -589,7 +589,6 @@ public class Figurine extends Piece {
 
         double ecart = 2.35;
 
-
         mouth2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.59);
         mouth2.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
         mouth2.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.48);

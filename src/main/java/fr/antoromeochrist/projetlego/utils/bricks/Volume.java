@@ -37,7 +37,6 @@ public class Volume extends ArrayList<P3D> {
 
     /**
      * Retourne s'il y a collision ou non entre deux volumes
-     *
      */
     public static boolean volumeIntersection(Volume a, Volume b) {
         for (P3D p1 : a) {
@@ -52,7 +51,6 @@ public class Volume extends ArrayList<P3D> {
 
     /**
      * Générer le volume à partir du point de départ et de la dimension
-     *
      */
     public static Volume createAllVolume(P3D point, Dim dim) {
         Volume v = new Volume();
@@ -68,14 +66,6 @@ public class Volume extends ArrayList<P3D> {
         return v;
     }
 
-    /**
-     *
-     * @param v le volume en question
-     * @return avoir le milieu du volume
-     */
-    public static P3D getMiddleCoor(Volume v){
-        return new P3D(v.get(v.size()-1).getX()/2,v.get(v.size()-1).getY()/2,v.get(v.size()-1).getZ()/2);
-    }
     /**
      * Affichage du volume
      *

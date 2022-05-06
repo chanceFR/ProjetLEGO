@@ -461,11 +461,7 @@ public class Controller implements Initializable {
                      */
 
                     for (Object obj : lv.getItems())
-                        if (obj instanceof Piece) {
-                            Piece p = (Piece) model.brickClicked;
-                            p.hideThePiece(p.thePieceIsNotHide());
-                        } else
-                            ((Brick) obj).hide(model.brickClicked.isNotHide());
+                        ((Brick) obj).hide(model.brickClicked.isNotHide());
                     /*
                      * Menu de droite - gestion des étapes
                      *
