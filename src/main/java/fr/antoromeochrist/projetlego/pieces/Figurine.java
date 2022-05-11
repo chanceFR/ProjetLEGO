@@ -1,6 +1,7 @@
 package fr.antoromeochrist.projetlego.pieces;
 
 import fr.antoromeochrist.projetlego.Controller;
+import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -9,7 +10,7 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
-public class Figurine extends Piece {
+public class Figurine extends Brick {
 
 
     private final Cylinder mouth;
@@ -114,7 +115,7 @@ public class Figurine extends Piece {
     }
 
     public Figurine(double x, double y, double z, boolean b) {
-        super(new Dim(4, 1, 5), x, y, z, Color.GRAY, b);
+        super(new Dim(4, 1, 5), x, y, z, Color.GRAY, b,true);
 
         Rotate rotateZ = addRotate(Rotate.Z_AXIS, 90);
 
@@ -584,7 +585,6 @@ public class Figurine extends Piece {
         Controller.me.group.getChildren().addAll(nodes);
     }
 
-    @Override
     public void updateNodesLocation() {
 
         double ecart = 2.35;
@@ -865,7 +865,6 @@ public class Figurine extends Piece {
 
     }
 
-    @Override
     public void cloneThePiece() {
         new Figurine(getX(), getY(), getZ());
     }

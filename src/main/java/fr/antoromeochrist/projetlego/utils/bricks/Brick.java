@@ -1,9 +1,10 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
-import fr.antoromeochrist.projetlego.pieces.Piece;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.geometry.Point3D;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -161,6 +162,13 @@ public class Brick extends ArrayList<MinBrick> {
      */
     private Cylinder cylinder;
 
+    /**
+     * Permet de savoir si la brique est utilisée pour pouvoir bouger un modele
+     */
+    protected boolean piece;
+
+    protected ArrayList<Node> nodes;
+
 
     /**
      * Surcharge du constructeur
@@ -172,7 +180,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param c   couleur
      */
     public Brick(Dim dim, double x, double y, double z, Color c) {
-        this(dim, x, y, z, c, false);
+        this(dim, x, y, z, c, false,false);
     }
 
     /**
@@ -180,7 +188,7 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
-    public Brick(Dim dim, double x, double y, double z, Color c, boolean b) {
+    public Brick(Dim dim, double x, double y, double z, Color c, boolean b,boolean piece) {
         this.state = State.NONE;
         this.hide = false;
         this.cylindrical = false;
@@ -198,6 +206,8 @@ public class Brick extends ArrayList<MinBrick> {
         this.createFromNothing(true);
         this.setColor(c);
         this.move(getX(), getY(), getZ()); //on bouge la brique si collison
+        this.piece =piece;
+        this.nodes=new ArrayList<>();
         /*
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
@@ -217,6 +227,7 @@ public class Brick extends ArrayList<MinBrick> {
          * */
         this.trash.setOnMouseClicked(mouseEvent -> remove());
 
+        if(piece) for(MinBrick mb: this) mb.setOpacity(0);
         /*
          *
          * Les composantes de la briques si elles sont cliqué on peut mettre la bordure.
@@ -266,17 +277,12 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old instanceof Piece p) {
-                            if (!p.thePieceIsNotHide())
-                                old.setBorderColor(Color.web("#808080"));
-                        } else if (old.hide) {
-                            old.setBorderColor(Color.web("#808080"));
-                        }
+                        if (old.hide) old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
                 } else if (e.getButton().equals(MouseButton.SECONDARY))
-                    if (!(this instanceof Piece)) this.rotate();
+                    if (!(this.isPiece())) this.rotate();
             });
             minBrick.getCylinder().setOnMouseClicked(e -> {
                 if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
@@ -288,17 +294,12 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old instanceof Piece p) {
-                            if (!p.thePieceIsNotHide())
-                                old.setBorderColor(Color.web("#808080"));
-                        } else if (old.hide) {
-                            old.setBorderColor(Color.web("#808080"));
-                        }
+                        if (old.hide) old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
                 } else if (e.getButton().equals(MouseButton.SECONDARY))
-                    if (!(this instanceof Piece)) this.rotate();
+                    if (!(this.isPiece())) this.rotate();
             });
 
             minBrick.cyl();
@@ -342,30 +343,39 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public void hide(boolean b) {
         this.hide = b;
-        setViewStatusHide(b);
-        if (b) {
-            if (isNotCylindrical()) {
-                for (MinBrick minBrick : this) {
-                    minBrick.setOpacity(0);
-                    minBrick.cyl();
-                }
-            } else {
-                updateBrickCylinder();
+        setViewStatusHide(this.hide);
+        if(piece){ //la brique est une pièce
+            if (this.hide) {
+                for (Node n : nodes) n.setOpacity(0);
+                setBorderColor(Color.web("#808080"));//bordure grisse
+            }else {
+                for (Node n : nodes) n.setOpacity(100);
+                updateBorder(); //bordure de l'état de la grille
             }
-            setBorderColor(Color.web("#808080"));
-        } else {
-            if (isNotCylindrical()) {
-                for (MinBrick minBrick : this) {
-                    minBrick.setOpacity(100);
-                    minBrick.cyl();
-                }
-            } else {
-                updateBrickCylinder();
-            }
-            setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
-        }
-        if (smooth) updateSmooth();
+        }else{ //la brique est pas une pièce -> elle peut être lisse/cylindrique/plate
 
+            if (this.hide) { //on cache la brique
+                if (isNotCylindrical()) {  // on rend invisible la brique qui n'est pas cylindrique
+                    for (MinBrick minBrick : this) {
+                        minBrick.setOpacity(0);
+                        minBrick.cyl();
+                    }
+                } else updateBrickCylinder(); //brique cylindrique on appelle une méthode pour gérer
+
+                setBorderColor(Color.web("#808080")); //bordure grise pour qu'on voie
+
+            } else { //on veut rendre visible la brique
+                if (isNotCylindrical()) {
+                    for (MinBrick minBrick : this) { // affichage de la brique
+                        minBrick.setOpacity(100);
+                        minBrick.cyl();
+                    }
+                } else updateBrickCylinder(); //brique cylindrique on appelle une méthode pour gérer
+
+                setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
+            }
+            if (smooth) updateSmooth();
+        }
     }
 
     /**
@@ -381,6 +391,7 @@ public class Brick extends ArrayList<MinBrick> {
             //suppression des cylindes
             for (MinBrick minBrick : this) me.group.getChildren().remove(minBrick.getCylinder());
             me.group.getChildren().remove(cylinder);
+            me.group.getChildren().removeAll(nodes);
             //on conserve l'étape ou était la brique
             ListView<Brick> stepWhere = me.getStepWhereIsBrick(this);
             //suppresion de la brique dans l'étape
@@ -502,27 +513,43 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void move(double x, double y, double z) {
-        if (plate)
-            volume = Volume.createAllVolume(new P3D(x, y, z), new Dim(this.dim.getWidth(), this.dim.getDepth(), 1));
-        else volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
-        int increment = 0;
-        while (Volume.volumeIntersection(this, model.bricks.keySet())) {
-            volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
-            increment++;
-        }
-        for (int i = 0; i < volume.size(); i++) {
-            get(i).setTranslateX(volume.get(i).getX());
-            get(i).setTranslateZ(volume.get(i).getZ());
-            if (plate) {
-                get(i).setHeight(0.5);
-            } else {
-                get(i).setHeight(1);
+        if(!piece){
+            if (plate)
+                volume = Volume.createAllVolume(new P3D(x, y, z), new Dim(this.dim.getWidth(), this.dim.getDepth(), 1));
+            else volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+            int increment = 0;
+            while (Volume.volumeIntersection(this, model.bricks.keySet())) {
+                volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
+                increment++;
             }
-            get(i).setTranslateY(volume.get(i).getY());
-            get(i).cyl();
+            for (int i = 0; i < volume.size(); i++) {
+                get(i).setTranslateX(volume.get(i).getX());
+                get(i).setTranslateZ(volume.get(i).getZ());
+                if (plate) {
+                    get(i).setHeight(0.5);
+                } else {
+                    get(i).setHeight(1);
+                }
+                get(i).setTranslateY(volume.get(i).getY());
+                get(i).cyl();
+            }
+            if (cylindrical) updateBrickCylinder();
+            if (smooth) updateSmooth();
+        }else{
+            volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
+            int increment = 0;
+            while (Volume.volumeIntersection(this, model.bricks.keySet())) {
+                volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
+                increment++;
+            }
+            for (int i = 0; i < volume.size(); i++) {
+                get(i).setTranslateX(volume.get(i).getX());
+                get(i).setTranslateZ(volume.get(i).getZ());
+                get(i).setTranslateY(volume.get(i).getY());
+                get(i).setHeight(1);
+                get(i).cyl();
+            }
         }
-        if (cylindrical) updateBrickCylinder();
-        if (smooth) updateSmooth();
         this.updateBorder();
     }
 
@@ -916,7 +943,7 @@ public class Brick extends ArrayList<MinBrick> {
                         b.setState(State.SHOW_IS_SELECT, 4);
                     }
                 } else if (e.getButton().equals(MouseButton.SECONDARY))
-                    if (!(b instanceof Piece)) b.rotate();
+                    if (!(b.isPiece())) b.rotate();
             });
         }
         if (isPlate()) {
@@ -1068,12 +1095,16 @@ public class Brick extends ArrayList<MinBrick> {
      * @param plate votre décision
      */
     public void setPlate(boolean plate) {
+        if(piece) return;
+
         this.plate = plate;
         if (plate)
             this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), new Dim(this.dim.getWidth(), dim.getDepth(), 1));
         else
             this.volume = Volume.createAllVolume(new P3D(getX(), getY(), getZ()), this.dim);
         createFromNothing(false);
+
+        moveWhereIsMouseIn(grid);
         updateBorder();
         if (cylindrical)
             updateBrickCylinder();
@@ -1100,6 +1131,17 @@ public class Brick extends ArrayList<MinBrick> {
     public boolean isNotCylindrical() {
         return !cylindrical;
     }
+
+    protected Rotate addRotate(Point3D axis, double angle) {
+        Rotate rotate = new Rotate();
+        rotate.setAngle(angle);
+        rotate.setPivotX(0);
+        rotate.setPivotY(0);
+        rotate.setPivotZ(0);
+        rotate.setAxis(axis);
+        return rotate;
+    }
+
 
     private void updateBrickCylinder() {
         if (!hide) {
@@ -1143,6 +1185,7 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void setCylindrical(boolean b) {
+        if(piece) return;
         cylindrical = b;
         if (cylindrical) {
             for (MinBrick mb : this) {
@@ -1156,23 +1199,23 @@ public class Brick extends ArrayList<MinBrick> {
                 me.group.getChildren().add(cylinder);
             }
             updateBrickCylinder();
-        } else {
+        }else{
             for (MinBrick mb : this) {
                 mb.setCylindric(false);
                 mb.setOpacity(100);
             }
             switch ((int) this.dim.getWidth()) {
                 case 3 -> {
-                    this.get(0).getCylinder().setOpacity(100);
-                    this.get(2).getCylinder().setOpacity(100);
-                    this.get(6).getCylinder().setOpacity(100);
-                    this.get(8).getCylinder().setOpacity(100);
+                    if(this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
+                    if(this.get(2).getCylinder() != null) this.get(2).getCylinder().setOpacity(100);
+                    if(this.get(6).getCylinder() != null) this.get(6).getCylinder().setOpacity(100);
+                    if(this.get(8).getCylinder() != null) this.get(8).getCylinder().setOpacity(100);
                 }
                 case 4 -> {
-                    this.get(0).getCylinder().setOpacity(100);
-                    this.get(3).getCylinder().setOpacity(100);
-                    this.get(12).getCylinder().setOpacity(100);
-                    this.get(15).getCylinder().setOpacity(100);
+                    if(this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
+                    if(this.get(3).getCylinder() != null) this.get(3).getCylinder().setOpacity(100);
+                    if(this.get(12).getCylinder() != null) this.get(12).getCylinder().setOpacity(100);
+                    if(this.get(15).getCylinder() != null) this.get(15).getCylinder().setOpacity(100);
                 }
             }
             if (cylinder != null) cylinder.setOpacity(0);
@@ -1181,6 +1224,7 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void setSmooth(boolean b) {
+        if(piece) return;
         smooth = b;
         updateSmooth();
     }
@@ -1196,4 +1240,7 @@ public class Brick extends ArrayList<MinBrick> {
             for (MinBrick mb : this) mb.getCylinder().setOpacity(100);
     }
 
+    public boolean isPiece() {
+        return piece;
+    }
 }

@@ -62,7 +62,7 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setTranslateY(0);
                 b.setTranslateZ(z);
                 b.setOpacity(0);
-                b.setOnMouseEntered(mouseEvent -> {
+                b.setOnMouseEntered(mouseEvent -> { //case de la grille
                     if (Controller.model.brickClicked != null) {
                         if (Controller.model.brickClicked.isPlate()) {
                             setCoors(b.getTranslateX(), b.getTranslateY() - 0.25, b.getTranslateZ());

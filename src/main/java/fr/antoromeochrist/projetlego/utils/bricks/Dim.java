@@ -118,7 +118,7 @@ public class Dim {
     /**
      * Permet de reverse l'affichage de la dimension
      */
-    private boolean isReverse;
+    public boolean isReverse;
 
     public void rotate() {
         double oldDepth = this.depth;
