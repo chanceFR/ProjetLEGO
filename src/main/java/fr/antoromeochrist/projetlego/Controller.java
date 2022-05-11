@@ -698,9 +698,16 @@ public class Controller implements Initializable {
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
                                 P3D first = model.brickClicked.getVolume().get(0);
                                 Color oldColor = model.brickClicked.getColor();
+                                boolean dimRev = model.brickClicked.getDim().isReverse;
+                                boolean plate = model.brickClicked.isPlate();
+                                boolean cylindrical = !model.brickClicked.isNotCylindrical();
+                                boolean smooth = model.brickClicked.isSmooth();
                                 model.brickClicked.remove();
-                                model.brickClicked.removeBorder();
-                                if(model.brickClicked.getDim().isReverse){
+
+                                if(model.brickClicked != null) model.brickClicked.removeBorder();
+
+                                //Si la brique a été rotate
+                                if(dimRev){
                                     Dim dd = Dim.getDimWithText(imSto.getText());
                                     dd.rotate();
                                     model.brickClicked = new Brick(dd, first.getX(), first.getY(), first.getZ(), oldColor);
@@ -708,6 +715,19 @@ public class Controller implements Initializable {
                                     model.brickClicked = new Brick(Dim.getDimWithText(imSto.getText()), first.getX(), first.getY(), first.getZ(), oldColor);
                                 }
 
+                                //La brique doit plus être plate si sa hauteur est supérieur à 1
+                                if(model.brickClicked.getDim().getHeight() == 1)
+                                    model.brickClicked.setPlate(plate);
+                                else
+                                    model.brickClicked.setPlate(false);
+
+                                //La brique doit être carré pour rester cylindrique
+                                if(model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
+                                    model.brickClicked.setCylindrical(cylindrical);
+                                else
+                                    model.brickClicked.setCylindrical(false);
+
+                                model.brickClicked.setSmooth(smooth);
                                 model.brickClicked.setState(State.SHOW_IS_SELECT);
                             }
                         }
@@ -1249,6 +1269,7 @@ public class Controller implements Initializable {
     public void contentColorAddColor(Color c) {
         ColorPick colorPick = new ColorPick();
         colorPick.setValue(c);
+        colorPick.setStyle("-fx-background-color: transparent;");
         contentColors.getItems().add(colorPick);
     }
 

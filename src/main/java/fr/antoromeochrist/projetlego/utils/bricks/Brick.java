@@ -180,7 +180,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param c   couleur
      */
     public Brick(Dim dim, double x, double y, double z, Color c) {
-        this(dim, x, y, z, c, false,false);
+        this(dim, x, y, z, c, false, false);
     }
 
     /**
@@ -188,7 +188,7 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
-    public Brick(Dim dim, double x, double y, double z, Color c, boolean b,boolean piece) {
+    public Brick(Dim dim, double x, double y, double z, Color c, boolean b, boolean piece) {
         this.state = State.NONE;
         this.hide = false;
         this.cylindrical = false;
@@ -206,8 +206,8 @@ public class Brick extends ArrayList<MinBrick> {
         this.createFromNothing(true);
         this.setColor(c);
         this.move(getX(), getY(), getZ()); //on bouge la brique si collison
-        this.piece =piece;
-        this.nodes=new ArrayList<>();
+        this.piece = piece;
+        this.nodes = new ArrayList<>();
         /*
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
@@ -227,7 +227,7 @@ public class Brick extends ArrayList<MinBrick> {
          * */
         this.trash.setOnMouseClicked(mouseEvent -> remove());
 
-        if(piece) for(MinBrick mb: this) mb.setOpacity(0);
+        if (piece) for (MinBrick mb : this) mb.setOpacity(0);
         /*
          *
          * Les composantes de la briques si elles sont cliqué on peut mettre la bordure.
@@ -277,7 +277,6 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.hide) old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
@@ -294,7 +293,6 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.hide) old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = this;
                         this.setState(State.SHOW_IS_SELECT, 4);
                     }
@@ -344,16 +342,12 @@ public class Brick extends ArrayList<MinBrick> {
     public void hide(boolean b) {
         this.hide = b;
         setViewStatusHide(this.hide);
-        if(piece){ //la brique est une pièce
-            if (this.hide) {
+        if (piece) { //la brique est une pièce
+            if (this.hide)
                 for (Node n : nodes) n.setOpacity(0);
-                setBorderColor(Color.web("#808080"));//bordure grisse
-            }else {
+            else
                 for (Node n : nodes) n.setOpacity(100);
-                updateBorder(); //bordure de l'état de la grille
-            }
-        }else{ //la brique est pas une pièce -> elle peut être lisse/cylindrique/plate
-
+        } else { //la brique est pas une pièce -> elle peut être lisse/cylindrique/plate
             if (this.hide) { //on cache la brique
                 if (isNotCylindrical()) {  // on rend invisible la brique qui n'est pas cylindrique
                     for (MinBrick minBrick : this) {
@@ -362,8 +356,6 @@ public class Brick extends ArrayList<MinBrick> {
                     }
                 } else updateBrickCylinder(); //brique cylindrique on appelle une méthode pour gérer
 
-                setBorderColor(Color.web("#808080")); //bordure grise pour qu'on voie
-
             } else { //on veut rendre visible la brique
                 if (isNotCylindrical()) {
                     for (MinBrick minBrick : this) { // affichage de la brique
@@ -371,11 +363,10 @@ public class Brick extends ArrayList<MinBrick> {
                         minBrick.cyl();
                     }
                 } else updateBrickCylinder(); //brique cylindrique on appelle une méthode pour gérer
-
-                setState(this.state, 5); //avoir à nouveau les bordures correspondant à son état
             }
             if (smooth) updateSmooth();
         }
+        updateBorder();
     }
 
     /**
@@ -513,7 +504,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void move(double x, double y, double z) {
-        if(!piece){
+        if (!piece) {
             if (plate)
                 volume = Volume.createAllVolume(new P3D(x, y, z), new Dim(this.dim.getWidth(), this.dim.getDepth(), 1));
             else volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
@@ -535,7 +526,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
             if (cylindrical) updateBrickCylinder();
             if (smooth) updateSmooth();
-        }else{
+        } else {
             volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
             int increment = 0;
             while (Volume.volumeIntersection(this, model.bricks.keySet())) {
@@ -565,6 +556,7 @@ public class Brick extends ArrayList<MinBrick> {
         model.brickClicked.setPlate(this.plate);
         model.brickClicked.setCylindrical(this.cylindrical);
         model.brickClicked.setSmooth(this.smooth);
+        model.brickClicked.hide(this.hide);
     }
 
     /**
@@ -683,14 +675,9 @@ public class Brick extends ArrayList<MinBrick> {
      * @param state état
      */
     public void setState(State state, int i) {
-        switch (state) {
-            case SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
-            case FOLLOW_THE_MOUSE -> setBorderColor(Color.web("#42C0FB"));
-            case FOLLOW_KEYPRESS -> setBorderColor(Color.web("#DA70D6"));
-            default -> removeBorder();
-        }
         State old = this.state;
         this.state = state;
+        updateBorder();
         Fast.log(old + " --> " + this.state + "| debug" + i);
     }
 
@@ -937,8 +924,6 @@ public class Brick extends ArrayList<MinBrick> {
                     } else {
                         Brick old = model.brickClicked;
                         old.setState(State.NONE, 555);
-                        if (old.hide)
-                            old.setBorderColor(Color.web("#808080"));
                         model.brickClicked = b;
                         b.setState(State.SHOW_IS_SELECT, 4);
                     }
@@ -992,7 +977,12 @@ public class Brick extends ArrayList<MinBrick> {
             case SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
             case FOLLOW_THE_MOUSE -> setBorderColor(Color.web("#42C0FB"));
             case FOLLOW_KEYPRESS -> setBorderColor(Color.web("#DA70D6"));
-            default -> removeBorder();
+            default -> {
+                if (hide)
+                    setBorderColor(Color.web("#808080"));
+                else
+                    removeBorder();
+            }
         }
     }
 
@@ -1095,7 +1085,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param plate votre décision
      */
     public void setPlate(boolean plate) {
-        if(piece) return;
+        if (piece) return;
 
         this.plate = plate;
         if (plate)
@@ -1119,13 +1109,6 @@ public class Brick extends ArrayList<MinBrick> {
      */
     public boolean isPlate() {
         return plate;
-    }
-
-    /**
-     * @return est-ce que la brique a déjà été supprimé de la subscène ?
-     */
-    public boolean isDelete() {
-        return delete;
     }
 
     public boolean isNotCylindrical() {
@@ -1185,7 +1168,7 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void setCylindrical(boolean b) {
-        if(piece) return;
+        if (piece) return;
         cylindrical = b;
         if (cylindrical) {
             for (MinBrick mb : this) {
@@ -1199,23 +1182,23 @@ public class Brick extends ArrayList<MinBrick> {
                 me.group.getChildren().add(cylinder);
             }
             updateBrickCylinder();
-        }else{
+        } else {
             for (MinBrick mb : this) {
                 mb.setCylindric(false);
                 mb.setOpacity(100);
             }
             switch ((int) this.dim.getWidth()) {
                 case 3 -> {
-                    if(this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
-                    if(this.get(2).getCylinder() != null) this.get(2).getCylinder().setOpacity(100);
-                    if(this.get(6).getCylinder() != null) this.get(6).getCylinder().setOpacity(100);
-                    if(this.get(8).getCylinder() != null) this.get(8).getCylinder().setOpacity(100);
+                    if (this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
+                    if (this.get(2).getCylinder() != null) this.get(2).getCylinder().setOpacity(100);
+                    if (this.get(6).getCylinder() != null) this.get(6).getCylinder().setOpacity(100);
+                    if (this.get(8).getCylinder() != null) this.get(8).getCylinder().setOpacity(100);
                 }
                 case 4 -> {
-                    if(this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
-                    if(this.get(3).getCylinder() != null) this.get(3).getCylinder().setOpacity(100);
-                    if(this.get(12).getCylinder() != null) this.get(12).getCylinder().setOpacity(100);
-                    if(this.get(15).getCylinder() != null) this.get(15).getCylinder().setOpacity(100);
+                    if (this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
+                    if (this.get(3).getCylinder() != null) this.get(3).getCylinder().setOpacity(100);
+                    if (this.get(12).getCylinder() != null) this.get(12).getCylinder().setOpacity(100);
+                    if (this.get(15).getCylinder() != null) this.get(15).getCylinder().setOpacity(100);
                 }
             }
             if (cylinder != null) cylinder.setOpacity(0);
@@ -1224,7 +1207,7 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void setSmooth(boolean b) {
-        if(piece) return;
+        if (piece) return;
         smooth = b;
         updateSmooth();
     }
