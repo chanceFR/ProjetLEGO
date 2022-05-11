@@ -58,7 +58,7 @@ public class Dim {
     /**
      * attributs
      */
-    private double width, depth;
+    private int width, depth;
     private double height;
 
     /**
@@ -75,7 +75,7 @@ public class Dim {
     /**
      * Constructeur complet pour générer une dimension
      */
-    public Dim(double width, double depth, double height) {
+    public Dim(int width, int depth, double height) {
         this.width = width;
         this.depth = depth;
         this.height = height;
@@ -97,7 +97,7 @@ public class Dim {
     /**
      * Avoir la largeur
      */
-    public double getWidth() {
+    public int getWidth() {
         return width;
     }
 
@@ -111,7 +111,7 @@ public class Dim {
     /**
      * Avoir la profondeur
      */
-    public double getDepth() {
+    public int getDepth() {
         return depth;
     }
 
@@ -121,7 +121,7 @@ public class Dim {
     public boolean isReverse;
 
     public void rotate() {
-        double oldDepth = this.depth;
+        int oldDepth = this.depth;
         this.depth = this.width;
         this.width = oldDepth;
         this.isReverse = !this.isReverse;
@@ -143,5 +143,9 @@ public class Dim {
             s += "x" + (int)height;
         }
         return s;
+    }
+
+    public boolean equals(Dim d){
+        return d.getHeight()==this.height && d.getWidth()==this.width && d.getDepth()==this.depth;
     }
 }

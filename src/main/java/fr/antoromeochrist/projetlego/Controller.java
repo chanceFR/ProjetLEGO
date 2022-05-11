@@ -8,6 +8,7 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -447,12 +448,7 @@ public class Controller implements Initializable {
                         }
                         //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
                         for (Object obj : lv.getItems()) {
-                            if (current.isHide()) {
-                                ((Brick) obj).hide(true);
-                            } else {
-
-                                ((Brick) obj).hide(false);
-                            }
+                            ((Brick) obj).hide(current.isHide());
 
                         }
                         mouseEvent.consume();//anti bug graphique
@@ -695,38 +691,56 @@ public class Controller implements Initializable {
                             imageOfBrickSelectedInSearchMenu.setLayoutX(iv.getLayoutX());
                             imageOfBrickSelectedInSearchMenu.setLayoutY(iv.getLayoutY());
                         } else { //clique droit
+                            if (model.dropInProgress) {
+                                //Si on avait lancé un drop ça l'annule
+                                clearBreakSelection();
+                                model.dropInProgress = false;
+                            }
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
-                                P3D first = model.brickClicked.getVolume().get(0);
-                                Color oldColor = model.brickClicked.getColor();
+                                Dim dd = Dim.getDimWithText(imSto.getText());
                                 boolean dimRev = model.brickClicked.getDim().isReverse;
-                                boolean plate = model.brickClicked.isPlate();
-                                boolean cylindrical = !model.brickClicked.isNotCylindrical();
+
+                                if (dimRev) {
+                                    dd.rotate();
+                                    if (dd.equals(model.brickClicked.getDim())) {
+                                        Fast.log("demon");
+                                        return;
+                                    }
+                                    dd.rotate();
+                                } else {
+                                    if (dd.equals(model.brickClicked.getDim())) {
+                                        Fast.log("demon");
+                                        return;
+                                    }
+                                }
+
+                                P3D first = new P3D(model.brickClicked.getVolume().get(0));
+                                Color oldColor = model.brickClicked.getColor();
+                                //boolean plate = model.brickClicked.isPlate();
+                                boolean cylindrical = model.brickClicked.isCylindrical();
                                 boolean smooth = model.brickClicked.isSmooth();
                                 model.brickClicked.remove();
 
-                                if(model.brickClicked != null) model.brickClicked.removeBorder();
+                                if (model.brickClicked != null) model.brickClicked.removeBorder();
 
                                 //Si la brique a été rotate
-                                if(dimRev){
-                                    Dim dd = Dim.getDimWithText(imSto.getText());
+                                if (dimRev) {
                                     dd.rotate();
                                     model.brickClicked = new Brick(dd, first.getX(), first.getY(), first.getZ(), oldColor);
-                                }else{
+                                } else {
                                     model.brickClicked = new Brick(Dim.getDimWithText(imSto.getText()), first.getX(), first.getY(), first.getZ(), oldColor);
                                 }
 
+                                /*
                                 //La brique doit plus être plate si sa hauteur est supérieur à 1
-                                if(model.brickClicked.getDim().getHeight() == 1)
+                                if (model.brickClicked.getDim().getHeight() == 1)
                                     model.brickClicked.setPlate(plate);
                                 else
-                                    model.brickClicked.setPlate(false);
+                                    model.brickClicked.setPlate(false);*/
 
                                 //La brique doit être carré pour rester cylindrique
-                                if(model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
+                                if (model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
                                     model.brickClicked.setCylindrical(cylindrical);
-                                else
-                                    model.brickClicked.setCylindrical(false);
-
                                 model.brickClicked.setSmooth(smooth);
                                 model.brickClicked.setState(State.SHOW_IS_SELECT);
                             }
@@ -902,8 +916,6 @@ public class Controller implements Initializable {
 
         //Si on quitte la fenètre, la brique  set met en select !
         subScene.setOnMouseExited(mouseEvent -> {
-            if (model.brickClicked != null && !model.brickClicked.getState().equals(State.SHOW_IS_SELECT))
-                model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
             searchBar.setDisable(false);
             listView.setDisable(false);
         });
@@ -927,17 +939,14 @@ public class Controller implements Initializable {
                  */
                 if (model.dropInProgress)
                     clearBreakSelection();
-            if (model.brickClicked != null && !keyEvent.getCode().equals(KeyCode.R))
-                model.brickClicked.setState(State.SHOW_IS_SELECT, 18);
-
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
                     case Y -> model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    case P -> {
+                    /*case P -> {
                         if (!(model.brickClicked.isPiece()) && model.brickClicked.getDim().getHeight() == 1)
                             model.brickClicked.setPlate(!model.brickClicked.isPlate());
-                    }
-                    case H -> model.brickClicked.hide(model.brickClicked.isNotHide());
+                    }*/
+                    case H -> model.brickClicked.hide(!model.brickClicked.isHide());
 
                     case T -> model.brickClicked.createClone();
 
@@ -969,13 +978,8 @@ public class Controller implements Initializable {
                         if (!(model.brickClicked.isPiece()))
                             model.brickClicked.rotate();
                     }
-                    case G -> {
-                        model.brickClicked.remove();
-                    }
-                    case K -> {
-                        if (model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())//carré
-                            model.brickClicked.setCylindrical(model.brickClicked.isNotCylindrical());
-                    }
+                    case G -> model.brickClicked.remove();
+                    case K -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical());
                     case L -> model.brickClicked.setSmooth(!model.brickClicked.isSmooth());
                 }
             }
@@ -1003,7 +1007,7 @@ public class Controller implements Initializable {
          *
          * */
         hide.setOnMousePressed(e -> {
-            if (model.brickClicked != null) model.brickClicked.hide(model.brickClicked.isNotHide());
+            if (model.brickClicked != null) model.brickClicked.hide(!model.brickClicked.isHide());
             try {
                 hideicon.setImage(new ImagePath("hidehover.jpg"));
                 hidetext.setFill(Color.web("#42C0FB"));

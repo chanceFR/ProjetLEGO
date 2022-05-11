@@ -111,12 +111,8 @@ public class Figurine extends Brick {
     private final Box rightFoot;
 
     public Figurine(double x, double y, double z) {
-        this(x, y, z, false);
-    }
-
-    public Figurine(double x, double y, double z, boolean b) {
-        super(new Dim(4, 1, 5), x, y, z, Color.GRAY, b,true);
-
+        super(new Dim(4, 1, 5), x, y, z, Color.GRAY,true);
+        this.setPieceType("Figurine");
         Rotate rotateZ = addRotate(Rotate.Z_AXIS, 90);
 
         Rotate rotateZ7 = addRotate(Rotate.Z_AXIS, 7);
@@ -863,9 +859,5 @@ public class Figurine extends Brick {
         rightFoot.setTranslateY(volume.get(volume.size() - 1).getY() + 0.35);
         rightFoot.setTranslateZ(volume.get(volume.size() - 1).getZ());
 
-    }
-
-    public void cloneThePiece() {
-        new Figurine(getX(), getY(), getZ());
     }
 }
