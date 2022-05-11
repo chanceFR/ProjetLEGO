@@ -871,6 +871,7 @@ public class Controller implements Initializable {
          * */
         subScene.setOnMouseEntered(mouseEvent -> {
             searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
+            listView.setDisable(true); //évites que si on appuie sur des touches ça bouge légèrement les images
             /*
              * Si le drop vient de commencé
              *
@@ -904,6 +905,7 @@ public class Controller implements Initializable {
             if (model.brickClicked != null && !model.brickClicked.getState().equals(State.SHOW_IS_SELECT))
                 model.brickClicked.setState(State.SHOW_IS_SELECT, 17);
             searchBar.setDisable(false);
+            listView.setDisable(false);
         });
 
         /*
