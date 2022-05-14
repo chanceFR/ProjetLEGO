@@ -655,6 +655,7 @@ public class Controller implements Initializable {
 
                     ImageView iv = new ImageView();
                     iv.setImage(imSto.getImage());
+
                     iv.setFitWidth(50);
                     iv.setFitHeight(50);
 
