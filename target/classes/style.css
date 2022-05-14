@@ -1,0 +1,154 @@
+#anchorPane {
+    -fx-background-color: #212328;
+}
+
+#vbox {
+    -fx-border-color: black;
+}
+
+#hbox {
+    -fx-border-color: black;
+}
+
+#searchButton
+{
+-fx-background-color : #121418;
+-fx-graphic: url(loupe.png);
+-fx-font-size: 12px;
+}
+
+#cloneetext
+{
+-fx-background-color : #17191c;
+-fx-font-size: 12px;
+-fx-text-fill: #edeeef;
+
+}
+#hidetext
+{
+-fx-background-color : #17191c;;
+-fx-font-size: 12px;
+-fx-text-fill: #edeeef;
+}
+
+
+#searchBar {
+    -fx-background-color: #121418;
+    -fx-text-inner-color: #808080;
+    -fx-font-size: 12px;
+    -fx-border-radius: 1px;
+}
+
+list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+.list-cell:odd {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:even {
+    -fx-background-color: #121418;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #212121;
+    -fx-text-fill: #808080;
+    -fx-font-size: 12px;
+}
+
+#listView{
+-fx-background-color: #121418;
+-fx-border-color: black;
+}
+#contentColors{
+-fx-background-color: transparent;
+-fx-border-width: 1;
+-fx-border-color: black;
+}
+
+#contentColorsText{
+-fx-text-fill: #edeeef;
+}
+
+#steps{
+-fx-background-color: transparent;
+}
+
+
+.menu-bar, .menu-item, .context-menu{
+    -fx-background-color: #212328;
+}
+
+.label{
+    -fx-text-fill: #edeeef;
+}
+.menu-item:hover {
+    -fx-background-color: #121418;
+}
+
+
+/* The main scrollbar CSS class of ListView */
+#listView .scroll-bar:horizontal ,
+#listView  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+#listView .increment-button ,#listView .decrement-button {
+    -fx-background-color:transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+#listView .scroll-bar:horizontal .track ,
+#listView .scroll-bar:vertical .track{
+     -fx-background-color: transparent;
+	 -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+#listView .scroll-bar:horizontal .thumb,
+#listView .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+}
+
+
+
+/*--*/
+
+
+
+
+
+
+/* The main scrollbar CSS class of ListView */
+#steps .scroll-bar:horizontal ,
+#steps  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+#steps .increment-button ,#listView .decrement-button {
+    -fx-background-color:transparent;
+}
+
+/* The main scrollbar **track** CSS class  */
+#steps .scroll-bar:horizontal .track ,
+#steps .scroll-bar:vertical .track{
+     -fx-background-color: transparent;
+	 -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+#steps .scroll-bar:horizontal .thumb,
+#steps .scroll-bar:vertical .thumb {
+    -fx-background-color:#808080;
+}
+
+
+
