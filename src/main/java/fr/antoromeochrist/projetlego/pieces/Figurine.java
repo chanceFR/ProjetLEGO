@@ -5,6 +5,7 @@ import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -135,7 +136,6 @@ public class Figurine extends Brick {
         Rotate rotateZ_12 = addRotate(Rotate.Z_AXIS, -13);
 
         Rotate rotateX90 = addRotate(Rotate.X_AXIS, -75);
-
         mouth = new Cylinder();
         mouth.setHeight(0.18);
         mouth.setRadius(0.012);
@@ -992,6 +992,10 @@ public class Figurine extends Brick {
                 invisibleHat.setTranslateY(volume.get(volume.size() - 1).getY() - 4.6);
                 invisibleHat.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
             }
+        }
+        double incre=4.25;
+        for(Node n :nodes){
+            n.setTranslateY(n.getTranslateY()+incre);
         }
     }
     public void clearHat(){

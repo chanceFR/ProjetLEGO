@@ -247,7 +247,10 @@ public class Brick extends ArrayList<MinBrick> {
          * */
         this.trash.setOnMouseClicked(mouseEvent -> remove());
 
-        if (piece) for (MinBrick mb : this) mb.setOpacity(0);
+        if (piece) for (MinBrick mb : this){
+            mb.setOpacity(0);
+            mb.getCylinder().setOpacity(0);
+        }
         me.currentStep.getItems().add(this);
         this.move(getX(), getY(), getZ()); //on bouge la brique si collison
     }
