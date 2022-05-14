@@ -35,12 +35,12 @@ public class MinBrick extends Box {
         cyl();
 
         this.setOnMouseEntered(mouseEvent -> {
-            if (!model.brickClicked.equals(brick)) {
+            if (model.brickClicked != null && !model.brickClicked.equals(brick)) {
                 grid.setCoors(this.getTranslateX(), this.getTranslateY(), this.getTranslateZ()); //les 2 sont pas plates
             }
         });
         this.getCylinder().setOnMouseEntered(mouseEvent -> {
-            if (!model.brickClicked.equals(brick)) {
+            if (model.brickClicked != null &&  !model.brickClicked.equals(brick)) {
                 grid.setCoors(this.getTranslateX(), this.getTranslateY(), this.getTranslateZ()); //les 2 sont pas plates
             }
         });
@@ -51,33 +51,13 @@ public class MinBrick extends Box {
          **/
         this.setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                if (model.brickClicked.equals(brick)) {
-                    if (!brick.getState().equals(State.SHOW_IS_SELECT))
-                        this.brick.setState(State.SHOW_IS_SELECT, 134);
-                    else
-                        this.brick.setState(State.FOLLOW_THE_MOUSE);
-                } else {
-                    Brick old = model.brickClicked;
-                    old.setState(State.NONE, 555);
-                    model.brickClicked = brick;
-                    this.brick.setState(State.SHOW_IS_SELECT, 4);
-                }
+               this.brick.manageState();
             } else if (e.getButton().equals(MouseButton.SECONDARY))
                 if (!(this.brick.isPiece())) this.brick.rotate();
         });
         this.getCylinder().setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                if (model.brickClicked.equals(brick)) {
-                    if (!brick.getState().equals(State.SHOW_IS_SELECT))
-                        this.brick.setState(State.SHOW_IS_SELECT, 134);
-                    else
-                        this.brick.setState(State.FOLLOW_THE_MOUSE);
-                } else {
-                    Brick old = model.brickClicked;
-                    old.setState(State.NONE, 555);
-                    model.brickClicked = brick;
-                    this.brick.setState(State.SHOW_IS_SELECT, 4);
-                }
+                this.brick.manageState();
             } else if (e.getButton().equals(MouseButton.SECONDARY))
                 if (!(this.brick.isPiece())) this.brick.rotate();
         });

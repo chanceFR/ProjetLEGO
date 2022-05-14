@@ -820,7 +820,7 @@ public class Controller implements Initializable {
                  * dans le content colors(à droite de l'écran)
                  *
                  * */
-                if (model.getBrickWithColor(oldColor) == null) contentColorsRemoveColor(oldColor);
+                if (model.getBrickWithColor(oldColor).isEmpty()) contentColorsRemoveColor(oldColor);
             }
         });
         /*

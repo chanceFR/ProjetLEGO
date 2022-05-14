@@ -159,7 +159,7 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Permet de rendre cylindrique
      */
-    private ArrayList<Cylinder> cylinders;
+    private final ArrayList<Cylinder> cylinders;
 
     /**
      * Permet de savoir si la brique est utilisée pour pouvoir bouger un modele
@@ -219,7 +219,7 @@ public class Brick extends ArrayList<MinBrick> {
         }
         for (double i = 0.0; i < this.dim.getHeight(); i += 0.5) {
             Cylinder cylinder = new Cylinder();
-            cylinder.setRadius(Double.valueOf(this.dim.getWidth()) / 2);
+            cylinder.setRadius((double) this.dim.getWidth() / 2);
             cylinder.setHeight(0.5);
             cylinder.setOpacity(0);
             cylinders.add(cylinder);
@@ -257,6 +257,14 @@ public class Brick extends ArrayList<MinBrick> {
         }
         me.currentStep.getItems().add(this);
         this.move(getX(), getY(), getZ()); //on bouge la brique si collison
+    }
+
+    public void manageState(){
+        if(model.brickClicked != null && !model.brickClicked.equals(this)){
+            model.brickClicked.setState(State.NONE);
+            this.setState(State.SHOW_IS_SELECT);
+        }else
+            this.switchState();
     }
 
 
@@ -564,6 +572,8 @@ public class Brick extends ArrayList<MinBrick> {
         if (this.state.equals(state)) return;
         State old = this.state;
         this.state = state;
+        if(this.state.equals(State.NONE)) model.brickClicked=null;
+        else model.brickClicked=this;
         updateBorder();
         Fast.log(old + " --> " + this.state);
     }
@@ -580,6 +590,26 @@ public class Brick extends ArrayList<MinBrick> {
         updateBorder();
         Fast.log(old + " --> " + this.state + "| debug" + i);
     }
+
+    public void switchState(){
+        switch (state){
+            case FOLLOW_THE_MOUSE:
+            case FOLLOW_KEYPRESS:
+                setState(State.SHOW_IS_SELECT);
+                break;
+            case SHOW_IS_SELECT:
+                setState(State.NONE);
+                break;
+            case NONE:
+                setState(State.SHOW_IS_SELECT2);
+                break;
+            case SHOW_IS_SELECT2:
+                setState(State.FOLLOW_THE_MOUSE);
+                break;
+        }
+    }
+
+
 
     /**
      * Obtenir la dimension de la brique
@@ -723,54 +753,54 @@ public class Brick extends ArrayList<MinBrick> {
                             this.get(0).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         try {
                             this.get(2).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         try {
                             this.get(12).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         try {
                             this.get(14).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         if (!plate) {
                             try {
                                 this.get(3).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(5).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(15).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(17).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                         } else {
                             try {
                                 this.get(6).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(8).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                         }
                     }
                     case 4 -> {
@@ -778,49 +808,48 @@ public class Brick extends ArrayList<MinBrick> {
                             this.get(0).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
                         try {
                             this.get(3).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         try {
                             this.get(24).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         try {
                             this.get(27).getCylinder().setOpacity(0);
                         } catch (Exception e) {
                         }
-                        ;
+
                         if (!plate) {
                             try {
                                 this.get(4).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(7).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(28).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(31).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                         } else {
                             try {
                                 this.get(12).getCylinder().setOpacity(0);
                             } catch (Exception e) {
                             }
-                            ;
+
                             try {
                                 this.get(15).getCylinder().setOpacity(0);
                             } catch (Exception e) {
@@ -940,7 +969,7 @@ public class Brick extends ArrayList<MinBrick> {
 
     public void updateBorder() {
         switch (state) {
-            case SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
+            case SHOW_IS_SELECT2, SHOW_IS_SELECT -> setBorderColor(Color.web("#7CFC00"));
             case FOLLOW_THE_MOUSE -> setBorderColor(Color.web("#42C0FB"));
             case FOLLOW_KEYPRESS -> setBorderColor(Color.web("#DA70D6"));
             default -> {
@@ -1049,7 +1078,7 @@ public class Brick extends ArrayList<MinBrick> {
 
     public void setCylindrical(boolean b) {
         if (piece) return;
-        if (model.brickClicked.getDim().getWidth() != model.brickClicked.getDim().getDepth()) return;
+        if (this.dim.getWidth() != this.dim.getDepth()) return;
         cylindrical = b;
         updateDisplay();
     }
