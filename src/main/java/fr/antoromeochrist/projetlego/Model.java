@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class Model {
 
-    public HashMap<Brick, Color> bricks;
+    public ArrayList<Brick> bricks;
     public Brick brickClicked;
     public ArrayList<ImageStorage> imageStorages;
     public boolean dropInProgress;
@@ -29,7 +29,7 @@ public class Model {
     public ImageStorage dropSelectionData;
 
     public Model() {
-        bricks = new HashMap<>();
+        bricks = new ArrayList<>();
         dropInProgress = false;
         instruction = new ArrayList<>();
         imageStorages = new ArrayList<>();
@@ -52,25 +52,6 @@ public class Model {
     }
 
     /**
-     * Retourne le dictionnaire bricks à l'envers
-     *
-     * @return dictionnaire retourné
-     */
-    public HashMap<Color, ArrayList<Brick>> getReverseMap() {
-        return new HashMap<>(
-                bricks.entrySet().stream()
-                        .collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
-                        .collect(Collectors.toMap(
-                                item -> item.get(0).getValue(),
-                                item -> new ArrayList<>(
-                                        item.stream()
-                                                .map(Map.Entry::getKey)
-                                                .collect(Collectors.toList())
-                                ))
-                        ));
-    }
-
-    /**
      * Retourne la liste des briques qui ont la même couleur
      * <p>
      * avec la couleur.
@@ -79,7 +60,13 @@ public class Model {
      * @return une liste
      */
     public ArrayList<Brick> getBrickWithColor(Color c) {
-        return getReverseMap().get(c);
+        ArrayList<Brick> bs = new ArrayList<>();
+        for(Brick b : this.bricks){
+            if(b.getColor().equals(c)){
+                bs.add(b);
+            }
+        }
+        return bs;
     }
 
 

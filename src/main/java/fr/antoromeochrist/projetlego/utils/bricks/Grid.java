@@ -64,14 +64,7 @@ public class Grid extends ArrayList<MinBrick> {
                 b.setOpacity(0);
                 b.setOnMouseEntered(mouseEvent -> { //case de la grille
                     if (Controller.model.brickClicked != null) {
-                        if (Controller.model.brickClicked.getDim().getHeight() == 1)
-                            setCoors(b.getTranslateX(), b.getTranslateY() - 0.5, b.getTranslateZ());
-                        else if (Controller.model.brickClicked.getDim().getHeight() == 2)
-                            setCoors(b.getTranslateX(), b.getTranslateY() - 1.5, b.getTranslateZ());
-                        else if (Controller.model.brickClicked.getDim().getHeight() == 4)
-                            setCoors(b.getTranslateX(), b.getTranslateY() - 3.5, b.getTranslateZ());
-                        else if (Controller.model.brickClicked.getDim().getHeight() == 5)
-                            setCoors(b.getTranslateX(), b.getTranslateY() - 4.5, b.getTranslateZ());
+                        setCoors(b.getTranslateX(), b.getTranslateY()-0.25, b.getTranslateZ());
                     }
                 });
                 Controller.me.group.getChildren().add(b);
