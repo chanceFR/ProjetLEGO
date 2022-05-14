@@ -1,35 +1,4 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
-/*
-                                         #@&@&*
-                              ,&@@@@@#..@@@&.        @
-                             @          .  @@@@.  @ @  @
-                             @          , @ @   **  ,  @
-                             @         / @ @  ,  @ @ ,&
-                             @         (  .%@&       @
-                             @         #             @
-                             @         %  .@@@   & @  @              /@&%%@@(
-                             @         % @ /   #*     @        @@/,,#@@      @          @
-                             @         & @ &   / @ @ &,      @@         .@@.    #@      @@@*
-                             @         @  %@@@       @          ,&@@@&,  @       &  &@     @
-                             @         @          &@@@&                         @          @
-                             @         @  %@@@/  @ %   @                        @          @
-                             @         @ @ @   % @ %   (                        @          @@
-                  @@(    @@/ .&&*      @ @ @   ,   @@@                          @          @@ @@@
-         @      &%@@.    (@ &@@@@@,@  .@#/.&@@       @  *@%**(@@(               @        *@*    @
-    @@* (%      (/@@@@@@@@ @@@&&@@@..&@@@@@*@        @@@.       @@/@/      &.   @    @%         @
-    @      .@@   @@.   /@@@@@&&&@@@ @@@&&@@@( &@@@@@@@@@@@.        @        @@@@@@              @
-    @              %@/    @@*. .*@@ @@&/**#@@#@&,  ./@@   @@      (@@%     ,@                   @
-    @                      @@       #(     .@*     @@      @                                    @
-    @                             #@#       &@.            @                                @.
-    @                                   @                  @                            @,
-     &@                                 @                  @                        @(
-           ,@/                          @                  @                    @&
-                  @@                    @                  @    .@@%        @@
-                        @@              @            .@,
-                              *@*       @       @%
-                                     @@ @ @@
-
-*/
 
 /**
  * L'objet dimension a trois attributs.
@@ -59,7 +28,7 @@ public class Dim {
      * attributs
      */
     private int width, depth;
-    private double height;
+    private double height,oldHeight;
 
     /**
      * Constructeur sans préciser la hauteur
@@ -69,6 +38,7 @@ public class Dim {
     public Dim(int width, int depth) {
         this.width = width;
         this.height = 1;
+        this.oldHeight = 1;
         this.depth = depth;
     }
 
@@ -79,6 +49,7 @@ public class Dim {
         this.width = width;
         this.depth = depth;
         this.height = height;
+        this.oldHeight = this.height;
         this.isReverse = false;
     }
 
@@ -133,19 +104,28 @@ public class Dim {
     public String toString() {
         String s;
         if (isReverse) {
-            s = "" + (int)depth;
-            s += "x" + (int)width;
+            s = "" + depth;
+            s += "x" + width;
         } else {
-            s = "" + (int)width;
-            s += "x" + (int)depth;
+            s = "" + width;
+            s += "x" + depth;
         }
         if (height != 1) {
-            s += "x" + (int)height;
+            s += "x" + height;
         }
         return s;
     }
 
     public boolean equals(Dim d){
         return d.getHeight()==this.height && d.getWidth()==this.width && d.getDepth()==this.depth;
+    }
+
+    public void setHeight(double height) {
+        this.oldHeight = this.height;
+        this.height = height;
+    }
+
+    public double getOldHeight() {
+        return oldHeight;
     }
 }

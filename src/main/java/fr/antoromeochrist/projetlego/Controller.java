@@ -700,20 +700,10 @@ public class Controller implements Initializable {
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
                                 Dim dd = Dim.getDimWithText(imSto.getText());
                                 boolean dimRev = model.brickClicked.getDim().isReverse;
-
                                 if (dimRev) {
                                     dd.rotate();
-                                    if (dd.equals(model.brickClicked.getDim())) {
-                                        Fast.log("demon");
-                                        return;
-                                    }
-                                    dd.rotate();
-                                } else {
-                                    if (dd.equals(model.brickClicked.getDim())) {
-                                        Fast.log("demon");
-                                        return;
-                                    }
-                                }
+                                    if (dd.equals(model.brickClicked.getDim()))dd.rotate();return;
+                                } else if (dd.equals(model.brickClicked.getDim())) return;
 
                                 P3D first = new P3D(model.brickClicked.getVolume().get(0));
                                 Color oldColor = model.brickClicked.getColor();
@@ -784,9 +774,9 @@ public class Controller implements Initializable {
                          * vont avoir leur couleur mis à jour en (newColor)
                          *
                          * */
-                        for (Map.Entry<Brick, Color> entry : model.bricks.entrySet())
-                            if (entry.getValue().equals(cp.getOldValue()))
-                                entry.getKey().setColor(cp.getValue());
+                        for (Brick b : model.bricks)
+                            if (b.getColor().equals(cp.getOldValue()))
+                                b.setColor(cp.getValue());
                         /*
                          * Suppresion de doublon si il en trouve
                          * */
@@ -851,11 +841,13 @@ public class Controller implements Initializable {
          * Il faut la retirer
          * */
         colorpicker.setOnHidden(event -> {
-            if (!model.brickClicked.getColor().equals(colorpicker.getValue()))
-                for (MinBrick b : model.brickClicked) {
-                    b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
-                    b.getCylinder().setMaterial(new PhongMaterial(model.brickClicked.getColor()));
-                }
+            if(model.brickClicked != null) {
+                if (!model.brickClicked.getColor().equals(colorpicker.getValue()))
+                    for (MinBrick b : model.brickClicked) {
+                        b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+                        b.getCylinder().setMaterial(new PhongMaterial(model.brickClicked.getColor()));
+                    }
+            }
         });
 
         /*
@@ -898,7 +890,7 @@ public class Controller implements Initializable {
                 //on déselectionne l'ancienne brique cliqué si il y en avait une
                 if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 14);
                 //On met la brique qui provient du drop comme brick selectionné
-                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], grid.getMouseCoors()[2], 0, colorpicker.getValue());
+                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], 0,grid.getMouseCoors()[2],  colorpicker.getValue());
                 model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                 model.dropInProgress = false;
             }
@@ -943,10 +935,10 @@ public class Controller implements Initializable {
             if (model.brickClicked != null) {
                 switch (keyEvent.getCode()) {
                     case Y -> model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    /*case P -> {
-                        if (!(model.brickClicked.isPiece()) && model.brickClicked.getDim().getHeight() == 1)
+                    case P -> {
+                        if (!(model.brickClicked.isPiece()) && (model.brickClicked.getDim().getHeight() == 1 || model.brickClicked.getDim().getHeight() == 0.5) )
                             model.brickClicked.setPlate(!model.brickClicked.isPlate());
-                    }*/
+                    }
                     case H -> model.brickClicked.hide(!model.brickClicked.isHide());
 
                     case T -> model.brickClicked.createClone();
