@@ -830,9 +830,11 @@ public class Controller implements Initializable {
          */
 
         colorpicker.valueProperty().addListener((o, oldVal, newVal) -> {
-            for (MinBrick b : model.brickClicked) {
-                b.setMaterial(new PhongMaterial(newVal));
-                b.getCylinder().setMaterial(new PhongMaterial(newVal));
+            if(model.brickClicked != null){
+                for (MinBrick b : model.brickClicked) {
+                    b.setMaterial(new PhongMaterial(newVal));
+                    b.getCylinder().setMaterial(new PhongMaterial(newVal));
+                }
             }
         });
 
@@ -902,9 +904,11 @@ public class Controller implements Initializable {
          *
          * */
         subScene.setOnMouseMoved(e -> {
-            if (model.brickClicked != null && model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE))
+            if (model.brickClicked != null && model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE)) {
                 model.brickClicked.moveWhereIsMouseIn(grid);
-            if (model.brickClicked instanceof Figurine f) f.updateNodesLocation();
+                if (model.brickClicked.isPiece())
+                    if (model.brickClicked instanceof Figurine f) f.updateNodesLocation();
+            }
         });
 
         //Si on quitte la fenètre, la brique  set met en select !

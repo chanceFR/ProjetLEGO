@@ -8,11 +8,14 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
+
+import java.lang.reflect.Method;
 
 public class Figurine extends Brick {
 
@@ -908,7 +911,6 @@ public class Figurine extends Brick {
         rightKnee.setTranslateY(volume.get(volume.size() - 1).getY() - 1.05);
         rightKnee.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.15);
 
-
         leftButLock.setTranslateX(volume.get(volume.size() - 1).getX() - 2);
         leftButLock.setTranslateY(volume.get(volume.size() - 1).getY() - 1.05);
         leftButLock.setTranslateZ(volume.get(volume.size() - 1).getZ() + 0.12);
@@ -1040,4 +1042,7 @@ public class Figurine extends Brick {
         }
         updateNodesLocation();
     }
+
+
+
 }

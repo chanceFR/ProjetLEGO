@@ -421,7 +421,6 @@ public class Brick extends ArrayList<MinBrick> {
             }
         }
         cylinder.setTranslateY(-0.25+getY());
-
         this.updateDisplay();
     }
 
@@ -613,6 +612,7 @@ public class Brick extends ArrayList<MinBrick> {
      * Création de bordure
      */
     protected void createBorder() {
+       // Cylinder c1 createCylBorder()
     }
 
     /**
@@ -674,18 +674,31 @@ public class Brick extends ArrayList<MinBrick> {
             //brique cylindrique
             if (cylindrical) {
                 //on cache les cylindres dont on a pas besoin si c'est cylindrique
+                Fast.log("size cyl: "+this.size());
                 switch (this.dim.getWidth()) {
                     case 3 -> {
-                        this.get(this.size()/2).getCylinder().setOpacity(0);
-                        this.get(2+(this.size()/2)).getCylinder().setOpacity(0);
-                        this.get(6+(this.size()/2)).getCylinder().setOpacity(0);
-                        this.get(8+(this.size()/2)).getCylinder().setOpacity(0);
+                        this.get(0).getCylinder().setOpacity(0);
+                        this.get(2).getCylinder().setOpacity(0);
+                        this.get(12).getCylinder().setOpacity(0);
+                        this.get(14).getCylinder().setOpacity(0);
+                        if(!plate){
+                            this.get(3).getCylinder().setOpacity(0);
+                            this.get(5).getCylinder().setOpacity(0);
+                            this.get(15).getCylinder().setOpacity(0);
+                            this.get(17).getCylinder().setOpacity(0);
+                        }
                     }
                     case 4 -> {
-                        this.get(0+(this.size()/2)).getCylinder().setOpacity(0);
-                        this.get(3+(this.size()/2)).getCylinder().setOpacity(0);
-                        this.get(12+(this.size()/2)).getCylinder().setOpacity(0);
-                        this.get(15+(this.size()/2)).getCylinder().setOpacity(0);
+                        this.get(0).getCylinder().setOpacity(0);
+                        this.get(3).getCylinder().setOpacity(0);
+                        this.get(24).getCylinder().setOpacity(0);
+                        this.get(27).getCylinder().setOpacity(0);
+                        if(!plate) {
+                            this.get(4).getCylinder().setOpacity(0);
+                            this.get(7).getCylinder().setOpacity(0);
+                            this.get(28).getCylinder().setOpacity(0);
+                            this.get(31).getCylinder().setOpacity(0);
+                        }
                     }
                 }
                 //on cache les minbricks
@@ -698,16 +711,60 @@ public class Brick extends ArrayList<MinBrick> {
             else {
                 switch (this.dim.getWidth()) {
                     case 3 -> {
-                        if (this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
-                        if (this.get(2).getCylinder() != null) this.get(2).getCylinder().setOpacity(100);
-                        if (this.get(6).getCylinder() != null) this.get(6).getCylinder().setOpacity(100);
-                        if (this.get(8).getCylinder() != null) this.get(8).getCylinder().setOpacity(100);
+                        try{
+                            this.get(0).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+                        try{
+                            this.get(2).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+
+                        try{
+                            this.get(12).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+
+                        try{
+                            this.get(14).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+
+                        try{
+                            this.get(3).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+                        try{
+                            this.get(5).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+                        try{
+                            this.get(15).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+                        try{
+                            this.get(17).getCylinder().setOpacity(100);
+                        }catch (Exception e){
+
+                        }
+
                     }
                     case 4 -> {
-                        if (this.get(0).getCylinder() != null) this.get(0).getCylinder().setOpacity(100);
-                        if (this.get(3).getCylinder() != null) this.get(3).getCylinder().setOpacity(100);
-                        if (this.get(12).getCylinder() != null) this.get(12).getCylinder().setOpacity(100);
-                        if (this.get(15).getCylinder() != null) this.get(15).getCylinder().setOpacity(100);
+                        try{this.get(0).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(3).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(24).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(27).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(4).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(7).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(28).getCylinder().setOpacity(100);}catch(Exception e){};
+                        try{this.get(31).getCylinder().setOpacity(100);}catch(Exception e){};
                     }
                 }
                 //on affiche les minbricks
