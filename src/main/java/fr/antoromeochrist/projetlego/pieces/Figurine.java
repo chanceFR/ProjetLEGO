@@ -3,19 +3,20 @@ package fr.antoromeochrist.projetlego.pieces;
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.bricks.State;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 
-import java.lang.reflect.Method;
+import static fr.antoromeochrist.projetlego.Controller.model;
 
 public class Figurine extends Brick {
 
@@ -124,6 +125,7 @@ public class Figurine extends Brick {
     private final Cylinder magicien2;
     private final Cylinder magicien3;
     private final Cylinder invisibleHat;
+
 
     public Figurine(double x, double y, double z) {
         super(new Dim(4, 1, 5), x, y, z, Color.GRAY, true);
@@ -549,36 +551,14 @@ public class Figurine extends Brick {
         magicien3.setHeight(0.1);
         magicien3.setRadius(0.501);
         magicien3.setMaterial(new PhongMaterial(Color.RED));
-
         invisibleHat = new Cylinder();
         invisibleHat.setHeight(0.5);
         invisibleHat.setRadius(0.5);
         invisibleHat.setOpacity(0);
 
-
-        gentleman1.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                Fast.log("chapeau clické");
-                switchHat();
-            }
-        });
-        magicien1.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                Fast.log("chapeau clické");
-                switchHat();
-            }
-        });
-        invisibleHat.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                Fast.log("chapeau clické");
-                switchHat();
-            }
-        });
-
-
+        gentleman1.setOnMouseClicked(mouseEvent -> switchHat());
+        magicien1.setOnMouseClicked(mouseEvent -> switchHat());
+        invisibleHat.setOnMouseClicked(mouseEvent -> switchHat());
 
         nodes.add(mouth);
         nodes.add(mouth2);
@@ -653,16 +633,29 @@ public class Figurine extends Brick {
         nodes.add(rightLeg);
         nodes.add(leftFoot);
         nodes.add(rightFoot);
-        updateNodesLocation();
+        for (Node n : nodes) {
+            n.setOnMouseClicked(e -> {
+                if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
+                    if (model.brickClicked.equals(this)) {
+                        if (!this.getState().equals(State.SHOW_IS_SELECT))
+                            this.setState(State.SHOW_IS_SELECT, 134);
+                        else
+                            this.setState(State.FOLLOW_THE_MOUSE);
+                    } else {
+                        Brick old = model.brickClicked;
+                        old.setState(State.NONE, 555);
+                        model.brickClicked = this;
+                        this.setState(State.SHOW_IS_SELECT, 4);
+                    }
+                }
+            });
+        }
         Controller.me.group.getChildren().addAll(nodes);
+        setHat(this.hat);
     }
 
     public void updateNodesLocation() {
-
         double ecart = 2.35;
-
-        invisibleHat.setOpacity(0);
-
         mouth2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.59);
         mouth2.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
         mouth2.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0.48);
@@ -956,11 +949,6 @@ public class Figurine extends Brick {
                 gentleman3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
                 gentleman3.setTranslateY(volume.get(volume.size() - 1).getY() - 4.5);
                 gentleman3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
-                //suppresison des vars
-                //if(var == null)
-                    //var = new Type
-                    //nodes.add(var);
-                    //Controller.me.group.getChildren().add(var):
             }
             case THUG -> {
 
@@ -984,7 +972,6 @@ public class Figurine extends Brick {
                 magicien3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
                 magicien3.setTranslateY(volume.get(volume.size() - 1).getY() - 4.5);
                 magicien3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
-
             }
             case NONE -> {
                 if (!nodes.contains(invisibleHat)) {
@@ -995,54 +982,79 @@ public class Figurine extends Brick {
                 invisibleHat.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
             }
         }
-        double incre=4.25;
-        for(Node n :nodes){
-            n.setTranslateY(n.getTranslateY()+incre);
+        double incre = 4.25;
+        for (Node n : nodes) {
+            n.setTranslateY(n.getTranslateY() + incre);
         }
     }
-    public void clearHat(){
-        nodes.remove(gentleman1);
-        nodes.remove(gentleman2);
-        nodes.remove(gentleman3);
-        nodes.remove(magicien1);
-        nodes.remove(magicien2);
-        nodes.remove(magicien3);
-        nodes.remove(invisibleHat);
-    }
 
+    public void clearHat() {
+        Fast.log("Chapeau supprimé :" + hat);
+        switch (hat) {
+            case GENTLEMAN -> {
+                Controller.me.group.getChildren().remove(gentleman1);
+                Controller.me.group.getChildren().remove(gentleman2);
+                Controller.me.group.getChildren().remove(gentleman3);
+                nodes.remove(gentleman1);
+                nodes.remove(gentleman2);
+                nodes.remove(gentleman3);
+            }
+            case MAGICIAN -> {
+                Controller.me.group.getChildren().remove(magicien1);
+                Controller.me.group.getChildren().remove(magicien2);
+                Controller.me.group.getChildren().remove(magicien3);
+                nodes.remove(magicien1);
+                nodes.remove(magicien2);
+                nodes.remove(magicien3);
+            }
+            case NONE -> {
+                Controller.me.group.getChildren().remove(invisibleHat);
+                nodes.remove(invisibleHat);
+            }
+            case THUG -> {
+                //à completer
+            }
+        }
+    }
 
     public void setHat(HatType hat) {
         this.hat = hat;
-        updateNodesLocation();
-    }
-    public void switchHat(){
-        clearHat();
-        if (hat==HatType.GENTLEMAN){
-            Controller.me.group.getChildren().remove(gentleman1);
-            Controller.me.group.getChildren().remove(gentleman2);
-            Controller.me.group.getChildren().remove(gentleman3);
-            hat=HatType.MAGICIAN;
-            Controller.me.group.getChildren().add(magicien1);
-            Controller.me.group.getChildren().add(magicien2);
-            Controller.me.group.getChildren().add(magicien3);
-        }
-        else if (hat==HatType.MAGICIAN){
-            Controller.me.group.getChildren().remove(magicien1);
-            Controller.me.group.getChildren().remove(magicien2);
-            Controller.me.group.getChildren().remove(magicien3);
-            hat=HatType.NONE;
-            Controller.me.group.getChildren().add(invisibleHat);
-        }
-        else if (hat==HatType.NONE){
-            Controller.me.group.getChildren().remove(invisibleHat);
-            hat=HatType.GENTLEMAN;
-            Controller.me.group.getChildren().add(gentleman1);
-            Controller.me.group.getChildren().add(gentleman2);
-            Controller.me.group.getChildren().add(gentleman3);
+        switch (hat) {
+            case GENTLEMAN -> {
+                Controller.me.group.getChildren().add(gentleman1);
+                Controller.me.group.getChildren().add(gentleman2);
+                Controller.me.group.getChildren().add(gentleman3);
+                nodes.add(gentleman1);
+                nodes.add(gentleman2);
+                nodes.add(gentleman3);
+            }
+            case MAGICIAN -> {
+                Controller.me.group.getChildren().add(magicien1);
+                Controller.me.group.getChildren().add(magicien2);
+                Controller.me.group.getChildren().add(magicien3);
+                nodes.add(magicien1);
+                nodes.add(magicien2);
+                nodes.add(magicien3);
+            }
+            case NONE -> {
+                Controller.me.group.getChildren().add(invisibleHat);
+                nodes.add(invisibleHat);
+            }
+            case THUG -> {
+                //à completer
+            }
         }
         updateNodesLocation();
     }
 
+    public void switchHat() {
+        clearHat();
+        switch (hat) {
+            case GENTLEMAN -> setHat(HatType.MAGICIAN);
+            case MAGICIAN -> setHat(HatType.NONE);
+            case NONE -> setHat(HatType.GENTLEMAN);
+        }
+    }
 
 
 }

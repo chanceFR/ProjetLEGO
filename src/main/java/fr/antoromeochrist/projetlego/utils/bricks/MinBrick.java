@@ -36,13 +36,11 @@ public class MinBrick extends Box {
 
         this.setOnMouseEntered(mouseEvent -> {
             if (!model.brickClicked.equals(brick)) {
-                Fast.log("Coucou");
                 grid.setCoors(this.getTranslateX(), this.getTranslateY(), this.getTranslateZ()); //les 2 sont pas plates
             }
         });
         this.getCylinder().setOnMouseEntered(mouseEvent -> {
             if (!model.brickClicked.equals(brick)) {
-                Fast.log("salut");
                 grid.setCoors(this.getTranslateX(), this.getTranslateY(), this.getTranslateZ()); //les 2 sont pas plates
             }
         });
@@ -69,7 +67,7 @@ public class MinBrick extends Box {
         });
         this.getCylinder().setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                if (model.brickClicked.equals(this)) {
+                if (model.brickClicked.equals(brick)) {
                     if (!brick.getState().equals(State.SHOW_IS_SELECT))
                         this.brick.setState(State.SHOW_IS_SELECT, 134);
                     else
@@ -83,6 +81,7 @@ public class MinBrick extends Box {
             } else if (e.getButton().equals(MouseButton.SECONDARY))
                 if (!(this.brick.isPiece())) this.brick.rotate();
         });
+
         this.cyl();
     }
 

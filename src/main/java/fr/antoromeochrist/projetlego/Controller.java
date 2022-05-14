@@ -486,7 +486,7 @@ public class Controller implements Initializable {
                          * */
                         trash.setOnMousePressed(mouseEvent -> {
                             for (Object o : lv.getItems())
-                                if (o instanceof Brick b) if (b.isPiece()) b.remove();
+                                if (o instanceof Brick b) b.remove();
 
 
                             steps.getItems().remove(lv);
@@ -906,8 +906,6 @@ public class Controller implements Initializable {
         subScene.setOnMouseMoved(e -> {
             if (model.brickClicked != null && model.brickClicked.getState().equals(State.FOLLOW_THE_MOUSE)) {
                 model.brickClicked.moveWhereIsMouseIn(grid);
-                if (model.brickClicked.isPiece())
-                    if (model.brickClicked instanceof Figurine f) f.updateNodesLocation();
             }
         });
 

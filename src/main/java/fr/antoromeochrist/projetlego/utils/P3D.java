@@ -8,8 +8,8 @@ import javafx.geometry.Point3D;
  * Cette classe sert juste à modifier la méthode toString
  */
 public class P3D extends Point3D {
-    public P3D(double v, double v1, double v2) {
-        super(v, v1, v2);
+    public P3D(double x, double y, double z) {
+        super(x, y, z);
     }
 
     public P3D(P3D P3D) {
