@@ -3,6 +3,9 @@ package fr.antoromeochrist.projetlego.pieces;
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -109,9 +112,17 @@ public class Figurine extends Brick {
     private final Box rightLeg;
     private final Box leftFoot;
     private final Box rightFoot;
+    private HatType hat = HatType.GENTLEMAN;
+    private final Cylinder gentleman1;
+    private final Cylinder gentleman2;
+    private final Cylinder gentleman3;
+    private final Cylinder magicien1;
+    private final Cylinder magicien2;
+    private final Cylinder magicien3;
+    private final Cylinder invisibleHat;
 
     public Figurine(double x, double y, double z) {
-        super(new Dim(4, 1, 5), x, y, z, Color.GRAY,true);
+        super(new Dim(4, 1, 5), x, y, z, Color.GRAY, true);
         this.setPieceType("Figurine");
         Rotate rotateZ = addRotate(Rotate.Z_AXIS, 90);
 
@@ -390,36 +401,36 @@ public class Figurine extends Brick {
 
         leftShoulder = new Sphere();
         leftShoulder.setRadius(0.33);
-        leftShoulder.setMaterial(new PhongMaterial(Color.RED));
+        leftShoulder.setMaterial(new PhongMaterial(Color.BLACK));
 
         rightShoulder = new Sphere();
         rightShoulder.setRadius(0.33);
-        rightShoulder.setMaterial(new PhongMaterial(Color.GREEN));
+        rightShoulder.setMaterial(new PhongMaterial(Color.BLACK));
 
 
         leftArmTop = new Cylinder();
         leftArmTop.setHeight(0.8);
         leftArmTop.setRadius(0.24);
-        leftArmTop.setMaterial(new PhongMaterial(Color.RED));
+        leftArmTop.setMaterial(new PhongMaterial(Color.BLACK));
         leftArmTop.getTransforms().add(rotateZ12);
 
         rightArmTop = new Cylinder();
         rightArmTop.setHeight(0.8);
         rightArmTop.setRadius(0.24);
-        rightArmTop.setMaterial(new PhongMaterial(Color.GREEN));
+        rightArmTop.setMaterial(new PhongMaterial(Color.BLACK));
         rightArmTop.getTransforms().add(rotateZ_12);
 
         leftArmDown = new Cylinder();
         leftArmDown.setHeight(0.6);
         leftArmDown.setRadius(0.24);
-        leftArmDown.setMaterial(new PhongMaterial(Color.RED));
+        leftArmDown.setMaterial(new PhongMaterial(Color.WHITE));
         leftArmDown.getTransforms().add(rotateZ12);
         leftArmDown.getTransforms().add(rotateX90);
 
         rightArmDown = new Cylinder();
         rightArmDown.setHeight(0.6);
         rightArmDown.setRadius(0.24);
-        rightArmDown.setMaterial(new PhongMaterial(Color.GREEN));
+        rightArmDown.setMaterial(new PhongMaterial(Color.WHITE));
         rightArmDown.getTransforms().add(rotateZ_12);
         rightArmDown.getTransforms().add(rotateX90);
 
@@ -428,20 +439,20 @@ public class Figurine extends Brick {
         bodyMiddle.setHeight(2);
         bodyMiddle.setWidth(1.52);
         bodyMiddle.setDepth(1);
-        bodyMiddle.setMaterial(new PhongMaterial(Color.BLUE));
+        bodyMiddle.setMaterial(new PhongMaterial(Color.WHITE));
 
         bodyLeft = new Box();
         bodyLeft.setHeight(2);
         bodyLeft.setWidth(0.25);
         bodyLeft.setDepth(1);
-        bodyLeft.setMaterial(new PhongMaterial(Color.BLUE));
+        bodyLeft.setMaterial(new PhongMaterial(Color.WHITE));
         bodyLeft.getTransforms().add(rotateZ7);
 
         bodyRight = new Box();
         bodyRight.setHeight(2);
         bodyRight.setWidth(0.25);
         bodyRight.setDepth(1);
-        bodyRight.setMaterial(new PhongMaterial(Color.BLUE));
+        bodyRight.setMaterial(new PhongMaterial(Color.WHITE));
         bodyRight.getTransforms().add(rotateZ_7);
 
         pants = new Box();
@@ -459,50 +470,112 @@ public class Figurine extends Brick {
         leftKnee = new Cylinder();
         leftKnee.setRadius(0.25);
         leftKnee.setHeight(0.8);
-        leftKnee.setMaterial(new PhongMaterial(Color.RED));
+        leftKnee.setMaterial(new PhongMaterial(Color.BLACK));
         leftKnee.getTransforms().add(rotateZ);
 
         rightKnee = new Cylinder();
         rightKnee.setRadius(0.25);
         rightKnee.setHeight(0.8);
-        rightKnee.setMaterial(new PhongMaterial(Color.RED));
+        rightKnee.setMaterial(new PhongMaterial(Color.BLACK));
         rightKnee.getTransforms().add(rotateZ);
 
         leftButLock = new Box();
         leftButLock.setWidth(0.9);
         leftButLock.setDepth(0.75);
         leftButLock.setHeight(0.5);
-        leftButLock.setMaterial(new PhongMaterial(Color.RED));
+        leftButLock.setMaterial(new PhongMaterial(Color.BLACK));
 
         rightButLock = new Box();
         rightButLock.setWidth(0.9);
         rightButLock.setDepth(0.75);
         rightButLock.setHeight(0.5);
-        rightButLock.setMaterial(new PhongMaterial(Color.RED));
+        rightButLock.setMaterial(new PhongMaterial(Color.BLACK));
 
         leftLeg = new Box();
         leftLeg.setWidth(0.9);
         leftLeg.setDepth(0.75);
         leftLeg.setHeight(1);
-        leftLeg.setMaterial(new PhongMaterial(Color.RED));
+        leftLeg.setMaterial(new PhongMaterial(Color.BLACK));
 
         rightLeg = new Box();
         rightLeg.setWidth(0.9);
         rightLeg.setDepth(0.75);
         rightLeg.setHeight(1);
-        rightLeg.setMaterial(new PhongMaterial(Color.RED));
+        rightLeg.setMaterial(new PhongMaterial(Color.BLACK));
 
         leftFoot = new Box();
         leftFoot.setWidth(0.9);
         leftFoot.setHeight(0.30);
         leftFoot.setDepth(1);
-        leftFoot.setMaterial(new PhongMaterial(Color.RED));
+        leftFoot.setMaterial(new PhongMaterial(Color.YELLOW));
 
         rightFoot = new Box();
         rightFoot.setWidth(0.9);
         rightFoot.setHeight(0.30);
         rightFoot.setDepth(1);
-        rightFoot.setMaterial(new PhongMaterial(Color.RED));
+        rightFoot.setMaterial(new PhongMaterial(Color.YELLOW));
+
+        gentleman1 = new Cylinder();
+        gentleman1.setHeight(0.3);
+        gentleman1.setRadius(0.5);
+        gentleman1.setMaterial(new PhongMaterial(Color.BLACK));
+
+
+        gentleman2 = new Cylinder();
+        gentleman2.setHeight(0.05);
+        gentleman2.setRadius(0.7);
+        gentleman2.setMaterial(new PhongMaterial(Color.BLACK));
+
+        gentleman3 = new Cylinder();
+        gentleman3.setHeight(0.1);
+        gentleman3.setRadius(0.501);
+        gentleman3.setMaterial(new PhongMaterial(Color.WHITE));
+
+        magicien1 = new Cylinder();
+        magicien1.setHeight(0.9);
+        magicien1.setRadius(0.5);
+        magicien1.setMaterial(new PhongMaterial(Color.BLACK));
+
+
+        magicien2 = new Cylinder();
+        magicien2.setHeight(0.05);
+        magicien2.setRadius(0.7);
+        magicien2.setMaterial(new PhongMaterial(Color.BLACK));
+
+        magicien3 = new Cylinder();
+        magicien3.setHeight(0.1);
+        magicien3.setRadius(0.501);
+        magicien3.setMaterial(new PhongMaterial(Color.RED));
+
+        invisibleHat = new Cylinder();
+        invisibleHat.setHeight(0.5);
+        invisibleHat.setRadius(0.5);
+        invisibleHat.setOpacity(0);
+
+
+        gentleman1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Fast.log("chapeau clické");
+                switchHat();
+            }
+        });
+        magicien1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Fast.log("chapeau clické");
+                switchHat();
+            }
+        });
+        invisibleHat.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Fast.log("chapeau clické");
+                switchHat();
+            }
+        });
+
+
 
         nodes.add(mouth);
         nodes.add(mouth2);
@@ -584,6 +657,8 @@ public class Figurine extends Brick {
     public void updateNodesLocation() {
 
         double ecart = 2.35;
+
+        invisibleHat.setOpacity(0);
 
         mouth2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.59);
         mouth2.setTranslateY(volume.get(volume.size() - 1).getY() - 3.8);
@@ -859,5 +934,106 @@ public class Figurine extends Brick {
         rightFoot.setTranslateY(volume.get(volume.size() - 1).getY() + 0.35);
         rightFoot.setTranslateZ(volume.get(volume.size() - 1).getZ());
 
+        switch (hat) {
+            case GENTLEMAN -> {
+                if (!nodes.contains(gentleman1)) {
+                    nodes.add(gentleman1);
+                }
+                if (!nodes.contains(gentleman2)) {
+                    nodes.add(gentleman2);
+                }
+                if (!nodes.contains(gentleman3)) {
+                    nodes.add(gentleman3);
+                }
+                gentleman1.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                gentleman1.setTranslateY(volume.get(volume.size() - 1).getY() - 4.6);
+                gentleman1.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+                gentleman2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                gentleman2.setTranslateY(volume.get(volume.size() - 1).getY() - 4.4);
+                gentleman2.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+                gentleman3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                gentleman3.setTranslateY(volume.get(volume.size() - 1).getY() - 4.5);
+                gentleman3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+                //suppresison des vars
+                //if(var == null)
+                    //var = new Type
+                    //nodes.add(var);
+                    //Controller.me.group.getChildren().add(var):
+            }
+            case THUG -> {
+
+            }
+            case MAGICIAN -> {
+                if (!nodes.contains(magicien1)) {
+                    nodes.add(magicien1);
+                }
+                if (!nodes.contains(magicien2)) {
+                    nodes.add(magicien2);
+                }
+                if (!nodes.contains(magicien3)) {
+                    nodes.add(magicien3);
+                }
+                magicien1.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                magicien1.setTranslateY(volume.get(volume.size() - 1).getY() - 4.8);
+                magicien1.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+                magicien2.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                magicien2.setTranslateY(volume.get(volume.size() - 1).getY() - 4.4);
+                magicien2.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+                magicien3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                magicien3.setTranslateY(volume.get(volume.size() - 1).getY() - 4.5);
+                magicien3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+
+            }
+            case NONE -> {
+                if (!nodes.contains(invisibleHat)) {
+                    nodes.add(invisibleHat);
+                }
+                invisibleHat.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
+                invisibleHat.setTranslateY(volume.get(volume.size() - 1).getY() - 4.6);
+                invisibleHat.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
+            }
+        }
+    }
+    public void clearHat(){
+        nodes.remove(gentleman1);
+        nodes.remove(gentleman2);
+        nodes.remove(gentleman3);
+        nodes.remove(magicien1);
+        nodes.remove(magicien2);
+        nodes.remove(magicien3);
+        nodes.remove(invisibleHat);
+    }
+
+
+    public void setHat(HatType hat) {
+        this.hat = hat;
+        updateNodesLocation();
+    }
+    public void switchHat(){
+        clearHat();
+        if (hat==HatType.GENTLEMAN){
+            Controller.me.group.getChildren().remove(gentleman1);
+            Controller.me.group.getChildren().remove(gentleman2);
+            Controller.me.group.getChildren().remove(gentleman3);
+            hat=HatType.MAGICIAN;
+            Controller.me.group.getChildren().add(magicien1);
+            Controller.me.group.getChildren().add(magicien2);
+            Controller.me.group.getChildren().add(magicien3);
+        }
+        else if (hat==HatType.MAGICIAN){
+            Controller.me.group.getChildren().remove(magicien1);
+            Controller.me.group.getChildren().remove(magicien2);
+            Controller.me.group.getChildren().remove(magicien3);
+            hat=HatType.NONE;
+            Controller.me.group.getChildren().add(invisibleHat);
+        }
+        else if (hat==HatType.NONE){
+            Controller.me.group.getChildren().remove(invisibleHat);
+            hat=HatType.GENTLEMAN;
+            Controller.me.group.getChildren().add(gentleman1);
+            Controller.me.group.getChildren().add(gentleman2);
+            Controller.me.group.getChildren().add(gentleman3);
+        }
+        updateNodesLocation();
     }
 }
