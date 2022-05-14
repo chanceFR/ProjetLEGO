@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.SceneAntialiasing?>
+<?import javafx.scene.SubScene?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="660.0" prefWidth="1057.0" stylesheets="@../../../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.antoromeochrist.projetlego.Controller">
+    <children>
+
+        <!-- Environnement 3D-->
+        <SubScene fx:id="subScene" depthBuffer="true" fill="#2a2d34" height="515.0" layoutX="273.0" layoutY="140.0" width="563.0">
+            <antiAliasing>
+                <SceneAntialiasing fx:constant="BALANCED" />
+            </antiAliasing>
+            <root>
+                <Group fx:id="group" />
+            </root>
+        </SubScene>
+      <Rectangle fx:id="antibug" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="43.0" layoutX="513.0" layoutY="136.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="71.0" />
+
+        <!-- Cote gauche du logiciel -->
+        <VBox fx:id="vbox" layoutX="-2.0" layoutY="130.0" prefHeight="530.0" prefWidth="260.0">
+            <children>
+               <!-- Barre de recherche -->
+                <Group>
+                    <children>
+                        <!-- Rectangle pour la taille du groupe-->
+                        <Rectangle arcWidth="5.0" fill="#2c2f35" height="57.0" smooth="false" stroke="BLACK" strokeType="INSIDE" width="257.0" />
+                        <!-- Zone de texte ou on peut ecrire-->
+                        <TextField fx:id="searchBar" layoutX="19.0" layoutY="12.0" prefHeight="33.0" prefWidth="217.0" promptText="search... 🔍" stylesheets="@../../../style.css" />
+                    </children>
+                </Group>
+
+                <!-- Resultat de la requete, tableau des elements disponible -->
+                <Group>
+                    <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="201.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="255.0" />
+                        <ListView fx:id="listView" layoutX="20.0" layoutY="24.0" prefHeight="441.0" prefWidth="217.0" stylesheets="@../../../style.css" />
+                  <ColorPicker fx:id="colorpicker" layoutX="192.0" layoutY="-7.0" prefHeight="25.0" prefWidth="45.0" style="-fx-background-color: transparent;">
+                     <value>
+                        <Color red="0.501960813999176" green="0.501960813999176" blue="0.501960813999176" />
+                     </value>
+                  </ColorPicker>
+                    </children>
+                </Group>
+            </children>
+        </VBox>
+
+        <HBox fx:id="hbox" layoutY="30.0" prefHeight="100.0" prefWidth="1057.0">
+            <children>
+                <Group>
+                    <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="86.0" layoutX="41.0" layoutY="1.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="333.0" />
+                        <Group fx:id="clonee" layoutX="17.0" layoutY="10.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="105.0" />
+                                <ImageView fx:id="cloneeicon" fitHeight="14.0" fitWidth="14.0" layoutX="49.0" layoutY="13.0">
+                                    <Image url="@../../../clone.jpg" />
+                                </ImageView>
+                                <Text fx:id="cloneetext" fill="#edeeef" layoutX="41.0" layoutY="53.0" text="Clone" textAlignment="CENTER" />
+                     </children>
+                        </Group>
+                        <Group fx:id="hide" layoutX="152.0" layoutY="6.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="93.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="57.0" />
+                                <ImageView fx:id="hideicon" fitHeight="14.0" fitWidth="14.0" layoutX="23.0" layoutY="20.0">
+                                    <Image url="@../../../hide.jpg" />
+                                </ImageView>
+                                <Text fx:id="hidetext" fill="#edeeef" layoutX="17.0" layoutY="59.0" text="Hide" textAlignment="CENTER" />
+                     </children>
+                        </Group>
+                    </children>
+                </Group>
+            </children>
+        </HBox>
+
+        <MenuBar prefHeight="1.0" prefWidth="134.0" stylesheets="@../../../style.css">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Open File" />
+            </items>
+              <items>
+                  <MenuItem mnemonicParsing="false" text="Close" />
+              </items>
+          </Menu>
+
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                  <MenuItem mnemonicParsing="false" text="Copy" />
+              </items>
+              <items>
+                  <MenuItem mnemonicParsing="false" text="Clone" />
+              </items>
+              <items>
+                  <MenuItem mnemonicParsing="false" text="Hide" />
+              </items>
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+
+        </menus>
+      </MenuBar>
+      <Circle fill="#121418" layoutX="782.0" layoutY="210.0" radius="44.0" stroke="#121418" strokeType="INSIDE" strokeWidth="0.0" />
+      <ListView fx:id="contentColors" layoutX="836.0" layoutY="173.0" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" prefHeight="57.0" prefWidth="221.0" stylesheets="@../../../style.css" />
+      <Label fx:id="contentColorsText" layoutX="906.0" layoutY="148.0" text="Content colors" />
+      <ListView fx:id="steps" layoutX="836.0" layoutY="255.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="221.0" stylesheets="@../../../style.css" />
+      <Label fx:id="addStep" layoutX="979.0" layoutY="228.0" prefHeight="17.0" prefWidth="78.0" text="+ add step" textFill="GREY" />
+      <ImageView fx:id="top" fitHeight="32.0" fitWidth="30.0" layoutX="767.0" layoutY="169.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../top.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rbottom" fitHeight="31.0" fitWidth="29.0" layoutX="735.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rbottom.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rleft" fitHeight="31.0" fitWidth="29.0" layoutX="615.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rleft.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="minus" fitHeight="32.0" fitWidth="30.0" layoutX="546.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../minus.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="plus" fitHeight="32.0" fitWidth="30.0" layoutX="514.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../plus.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rright" fitHeight="31.0" fitWidth="45.0" layoutX="649.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rright.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="rtop" fitHeight="31.0" fitWidth="29.0" layoutX="709.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../rtop.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="left" fitHeight="32.0" fitWidth="30.0" layoutX="741.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../left.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="bottom" fitHeight="32.0" fitWidth="30.0" layoutX="767.0" layoutY="221.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../bottom.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="right" fitHeight="32.0" fitWidth="30.0" layoutX="793.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../right.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imageOfBrickSelectedInSearchMenu" fitHeight="1.0" fitWidth="1.0" layoutX="1046.0" layoutY="648.0" opacity="0.0" pickOnBounds="true" preserveRatio="true" />
+    </children>
+</AnchorPane>
