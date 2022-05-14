@@ -161,7 +161,7 @@ public class Brick extends ArrayList<MinBrick> {
     /**
      * Permet de rendre cylindrique
      */
-    private final Cylinder cylinder;
+    private ArrayList<Cylinder> cylinders;
 
     /**
      * Permet de savoir si la brique est utilisée pour pouvoir bouger un modele
@@ -212,21 +212,27 @@ public class Brick extends ArrayList<MinBrick> {
         this.setViewStatusHide(false); //mettre l'image oeil (non barré)
         this.volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
         this.delete = false;
+        this.cylinders = new ArrayList<>();
         for (int i = 0; i < volume.size(); i++) {
             MinBrick minBrick= new MinBrick(this);
             this.add(minBrick);
             me.group.getChildren().add(minBrick);
             me.group.getChildren().add(minBrick.getCylinder());
         }
+        for(double i=0.0; i < this.dim.getHeight();i+=0.5){
+            Cylinder cylinder = new Cylinder();
+            cylinder.setRadius(Double.valueOf(this.dim.getWidth()) / 2);
+            cylinder.setHeight(0.5);
+            cylinder.setOpacity(0);
+            cylinders.add(cylinder);
+        }
+        me.group.getChildren().addAll(cylinders);
+        
         this.piece = piece;
         this.nodes = new ArrayList<>();
-        cylinder = new Cylinder();
-        cylinder.setRadius(Double.valueOf(this.dim.getWidth()) / 2);
-        cylinder.setHeight(this.dim.getHeight());
-        cylinder.setOpacity(0);
         this.setColor(color);
         Fast.log("cyl3");
-        me.group.getChildren().add(cylinder);
+        
         /*
          * On fait en sorte que si on clique sur ce bouton
          * Qu'on puisse caché la brique
@@ -268,7 +274,7 @@ public class Brick extends ArrayList<MinBrick> {
             me.group.getChildren().removeAll(border);
             //suppression des cylindes
             for (MinBrick minBrick : this) me.group.getChildren().remove(minBrick.getCylinder());
-            me.group.getChildren().remove(cylinder);
+            me.group.getChildren().removeAll(cylinders);
             me.group.getChildren().removeAll(nodes);
             //on conserve l'étape ou était la brique
             ListView<Brick> stepWhere = me.getStepWhereIsBrick(this);
@@ -367,7 +373,7 @@ public class Brick extends ArrayList<MinBrick> {
             b.cyl();
         }
         if (me.notColorInContentColors(color)) me.contentColorAddColor(color);
-        cylinder.setMaterial(new PhongMaterial(color));
+        for(Cylinder c : cylinders) c.setMaterial(new PhongMaterial(color));
     }
 
     /**
@@ -402,25 +408,27 @@ public class Brick extends ArrayList<MinBrick> {
             get(i).setTranslateY(volume.get(i).getY());
             get(i).cyl();
         }
-        switch (this.dim.getWidth()) {
-            case 1 -> {
-                cylinder.setTranslateX(getX());
-                cylinder.setTranslateZ(getZ());
+        for(double i = 0.0 , i2=0; i< this.dim.getHeight(); i+=0.5,i2+=1){
+            switch (this.dim.getWidth()) {
+                case 1 -> {
+                    cylinders.get((int)i2).setTranslateX(getX());
+                    cylinders.get((int)i2).setTranslateZ(getZ());
+                }
+                case 2 -> {
+                    cylinders.get((int)i2).setTranslateX(getX() + 0.5);
+                    cylinders.get((int)i2).setTranslateZ(getZ() + 0.5);
+                }
+                case 3 -> {
+                    cylinders.get((int)i2).setTranslateX(getX() + 1);
+                    cylinders.get((int)i2).setTranslateZ(getZ() + 1);
+                }
+                case 4 -> {
+                    cylinders.get((int)i2).setTranslateX(getX() + 1.5);
+                    cylinders.get((int)i2).setTranslateZ(getZ() + 1.5);
+                }
             }
-            case 2 -> {
-                cylinder.setTranslateX(getX() + 0.5);
-                cylinder.setTranslateZ(getZ() + 0.5);
-            }
-            case 3 -> {
-                cylinder.setTranslateX(getX() + 1);
-                cylinder.setTranslateZ(getZ() + 1);
-            }
-            case 4 -> {
-                cylinder.setTranslateX(getX() + 1.5);
-                cylinder.setTranslateZ(getZ() + 1.5);
-            }
+            cylinders.get((int)i2).setTranslateY(getY()-i);
         }
-        cylinder.setTranslateY(-0.25+getY());
         this.updateDisplay();
     }
 
@@ -656,7 +664,9 @@ public class Brick extends ArrayList<MinBrick> {
             //on cache le gros cylindre si la brique est cylindrique
 
             if (cylindrical) {
-                cylinder.setOpacity(0);
+                for(double i = 0.0 , i2=0; i< this.dim.getHeight(); i+=0.5,i2+=1) {
+                    cylinders.get((int) i2).setOpacity(0);
+                }
                 Fast.log("cyl2");
                 //on cache les minBricks si la brique est pas cylindrique
             } else for (MinBrick mb : this) mb.setOpacity(0);
@@ -673,39 +683,48 @@ public class Brick extends ArrayList<MinBrick> {
         if (this.dim.getWidth() == this.dim.getDepth()) {
             //brique cylindrique
             if (cylindrical) {
+                //on cache les minbricks
+                for (MinBrick mb : this) mb.setOpacity(0);
+                //on affiche tous les cylindres
+                for(Cylinder c: cylinders) {
+                    c.setOpacity(100);
+                }
+                //si c'est plat
+                if(plate) cylinders.get(cylinders.size()-1).setOpacity(0);
                 //on cache les cylindres dont on a pas besoin si c'est cylindrique
                 Fast.log("size cyl: "+this.size());
                 switch (this.dim.getWidth()) {
                     case 3 -> {
-                        this.get(0).getCylinder().setOpacity(0);
-                        this.get(2).getCylinder().setOpacity(0);
-                        this.get(12).getCylinder().setOpacity(0);
-                        this.get(14).getCylinder().setOpacity(0);
+                        try{this.get(0).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(2).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(12).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(14).getCylinder().setOpacity(0);}catch(Exception e){};
                         if(!plate){
-                            this.get(3).getCylinder().setOpacity(0);
-                            this.get(5).getCylinder().setOpacity(0);
-                            this.get(15).getCylinder().setOpacity(0);
-                            this.get(17).getCylinder().setOpacity(0);
+                            try{this.get(3).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(5).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(15).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(17).getCylinder().setOpacity(0);}catch(Exception e){};
+                        }else{
+                            try{this.get(6).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(8).getCylinder().setOpacity(0);}catch(Exception e){};
                         }
                     }
                     case 4 -> {
-                        this.get(0).getCylinder().setOpacity(0);
-                        this.get(3).getCylinder().setOpacity(0);
-                        this.get(24).getCylinder().setOpacity(0);
-                        this.get(27).getCylinder().setOpacity(0);
+                        try{this.get(0).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(3).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(24).getCylinder().setOpacity(0);}catch(Exception e){};
+                        try{this.get(27).getCylinder().setOpacity(0);}catch(Exception e){};
                         if(!plate) {
-                            this.get(4).getCylinder().setOpacity(0);
-                            this.get(7).getCylinder().setOpacity(0);
-                            this.get(28).getCylinder().setOpacity(0);
-                            this.get(31).getCylinder().setOpacity(0);
+                            try{this.get(4).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(7).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(28).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(31).getCylinder().setOpacity(0);}catch(Exception e){};
+                        }else{
+                            try{this.get(12).getCylinder().setOpacity(0);}catch(Exception e){};
+                            try{this.get(15).getCylinder().setOpacity(0);}catch(Exception e){};
                         }
                     }
                 }
-                //on cache les minbricks
-                for (MinBrick mb : this) mb.setOpacity(0);
-                //on affiche le cylindre qui fait la taille du block
-                cylinder.setOpacity(100);
-                Fast.log("cyl4");
             }
             //on affiche les cylindres qui était caché car la brique est plus cylindrique mais cubique
             else {
@@ -770,7 +789,9 @@ public class Brick extends ArrayList<MinBrick> {
                 //on affiche les minbricks
                 for (MinBrick mb : this) mb.setOpacity(100);
                 //on cache le cylindre qui fait la taille du block
-                cylinder.setOpacity(0);
+                for(Cylinder c: cylinders) {
+                    c.setOpacity(0);
+                }
             }
         }
 

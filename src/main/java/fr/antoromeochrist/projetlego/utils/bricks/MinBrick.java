@@ -9,7 +9,7 @@ import static fr.antoromeochrist.projetlego.Controller.grid;
 import static fr.antoromeochrist.projetlego.Controller.model;
 
 /**
- * Une {@link this} est une box avec un cylindre qui,
+ * Une {@link MinBrick} est une box avec un cylindre qui,
  * <p>
  * bouge en même temps(grâce à la méthode cyl()).
  * <p>
