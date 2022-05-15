@@ -23,6 +23,8 @@ public class Model {
     public boolean rightClickActive;
     public double mouseX;
     public double mouseY;
+    public float oldAngleX;
+    public float oldAngleY;
 
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour

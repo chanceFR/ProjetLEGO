@@ -76,7 +76,9 @@ public class CameraUtils extends PerspectiveCamera {
         dezoom(20);
         timeline.setCycleCount(1);
         timeline.setOnFinished(actionEvent -> {KeyFrame k = timeline.getKeyFrames().get(timeline.getKeyFrames().size()-1);
+            KeyFrame k2 = timeline.getKeyFrames().get(timeline.getKeyFrames().size()-2);
             timeline.getKeyFrames().clear();
+            timeline.getKeyFrames().add(k2);
             timeline.getKeyFrames().add(k);});
         
     }
@@ -100,13 +102,16 @@ public class CameraUtils extends PerspectiveCamera {
     public void addRotationsX(DurationAngle... durationAngles) {
         for (DurationAngle d : durationAngles) {
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(x_axis.angleProperty(), d.getAngle())));
+            Controller.model.oldAngleX = d.getAngle();
         }
+
     }
 
     public void addRotationsY(DurationAngle... durationAngles) {
         for (DurationAngle d : durationAngles) {
             new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(y_axis.angleProperty(), d.getAngle()));
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(y_axis.angleProperty(), d.getAngle())));
+            Controller.model.oldAngleY = d.getAngle();
         }
     }
 

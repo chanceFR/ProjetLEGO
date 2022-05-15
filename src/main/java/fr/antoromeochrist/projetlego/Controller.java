@@ -10,6 +10,7 @@ import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -27,6 +28,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -34,6 +36,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import static fr.antoromeochrist.projetlego.utils.CameraUtils.x_axis;
+import static fr.antoromeochrist.projetlego.utils.CameraUtils.y_axis;
 
 public class Controller implements Initializable {
 
@@ -204,6 +209,7 @@ public class Controller implements Initializable {
          * */
         camera = new CameraUtils(true);
         camera.setAngleY(-30);
+        camera.addRotationsY(new DurationAngle(0, 0.4f));
         camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
         camera.timeline.play();
 
@@ -885,11 +891,34 @@ public class Controller implements Initializable {
         });
         subScene.setOnMouseDragged(e -> {
             if (model.rightClickActive) {
-                //camera.addRotationsY(new DurationAngle((float)e.getX()-(float)model.mouseX, 0.001f));
+
+
+                KeyFrame lastXkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size()-2);
+                KeyFrame lastYkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size()-1);
+
+                float newAngleX = camera.getAngleY();
+                float newAngleY = camera.getAngleX();
+
+
+
+
+                DurationAngle dx = new DurationAngle(newAngleX, 0.001f);
+                KeyFrame newX= new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
+
+
                 camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 100));
-                camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.001f));
+                camera.timeline.getKeyFrames().add(newX);
+
+
+
+                DurationAngle dy = new DurationAngle(newAngleY, 0.001f);
+                KeyFrame newY = new KeyFrame(Duration.seconds(dy.getDuration()), new KeyValue(y_axis.angleProperty(), dy.getAngle()));
                 camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 100));
-                camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.001f));
+                camera.timeline.getKeyFrames().add(newY);
+
+
+
+
                 camera.timeline.play();
 
             }
