@@ -28,7 +28,7 @@ public class Dim {
      * attributs
      */
     private int width, depth;
-    private double height,oldHeight;
+    private double height, oldHeight;
 
     /**
      * Constructeur sans préciser la hauteur
@@ -40,6 +40,10 @@ public class Dim {
         this.height = 1;
         this.oldHeight = 1;
         this.depth = depth;
+    }
+
+    public Dim(Dim dim) {
+        this(dim.getWidth(), dim.getDepth(), dim.getHeight());
     }
 
     /**
@@ -116,8 +120,8 @@ public class Dim {
         return s;
     }
 
-    public boolean equals(Dim d){
-        return d.getHeight()==this.height && d.getWidth()==this.width && d.getDepth()==this.depth;
+    public boolean equals(Dim d) {
+        return d.getHeight() == this.height && d.getWidth() == this.width && d.getDepth() == this.depth;
     }
 
     public void setHeight(double height) {

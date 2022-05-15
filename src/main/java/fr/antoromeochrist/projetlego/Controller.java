@@ -30,7 +30,6 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class Controller implements Initializable {
      * Nous n'avons pas besoin de faire : new Brick(controller,...) ; nous pouvons simplement faire new Brick(..) ;
      * Et être toujours capable d'utiliser les variables du contrôleur dans la classe Brick.
      */
-    public static Controller me;
+    public static Controller controller;
 
     /*
      Listes des composants graphiques provenant du fichier "view.fxml"
@@ -172,7 +171,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //init//
-        me = this;
+        controller = this;
         model = new Model();
         currentStep = new ListView();
         //init//
@@ -447,11 +446,7 @@ public class Controller implements Initializable {
                             }
                         }
                         //Les briques seront caché + leurs boutons passeront de view.png à noview.png.
-                        for (Object obj : lv.getItems()) {
-                            ((Brick) obj).hide(current.isHide());
-
-                        }
-                        mouseEvent.consume();//anti bug graphique
+                        for (Object obj : lv.getItems()) ((Brick) obj).hide(current.isHide());
                     });
 
                     /*
@@ -487,10 +482,7 @@ public class Controller implements Initializable {
                         trash.setOnMousePressed(mouseEvent -> {
                             for (Object o : lv.getItems())
                                 if (o instanceof Brick b) b.remove();
-
-
                             steps.getItems().remove(lv);
-                            mouseEvent.consume();//anti bug graphique
                         });
                     }
 
@@ -524,8 +516,10 @@ public class Controller implements Initializable {
                                 /*
                                  * Création de lb
                                  * */
-
-                                Label lb = new Label("      " + brk.getDim().toString() + "             ");
+                                //D2 permet d'afficher l'inversement de la dimension si la brick a été rotate
+                                Dim d2 = new Dim(brk.getDim());
+                                d2.rotate();
+                                Label lb = new Label("      " + d2 + "             ");
                                 lb.setStyle("-fx-text-fill: #808080;");
 
                                 /*
@@ -549,7 +543,6 @@ public class Controller implements Initializable {
                                     if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 12);
                                     brk.setState(State.SHOW_IS_SELECT, 13);
                                     model.brickClicked = brk;
-                                    mouseEvent.consume();//anti bug graphique
                                 });
                                 setGraphic(hbx1);
                                 lv.setPrefHeight(lv.getItems().size() * 50 + 5);
@@ -698,47 +691,23 @@ public class Controller implements Initializable {
                                 model.dropInProgress = false;
                             }
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
-                                Dim dd = Dim.getDimWithText(imSto.getText());
-                                boolean dimRev = model.brickClicked.getDim().isReverse;
-                                if (dimRev) {
-                                    dd.rotate();
-                                    if (dd.equals(model.brickClicked.getDim()))dd.rotate();return;
-                                } else if (dd.equals(model.brickClicked.getDim())) return;
-
+                                boolean reverse = model.brickClicked.getDim().isReverse;
+                                Fast.log("Reverse: " + reverse);
                                 P3D first = new P3D(model.brickClicked.getVolume().get(0));
                                 Color oldColor = model.brickClicked.getColor();
-                                //boolean plate = model.brickClicked.isPlate();
+                                boolean plate = model.brickClicked.isPlate();
                                 boolean cylindrical = model.brickClicked.isCylindrical();
                                 boolean smooth = model.brickClicked.isSmooth();
                                 model.brickClicked.remove();
-
                                 if (model.brickClicked != null) model.brickClicked.removeBorder();
-
-                                //Si la brique a été rotate
-                                if (dimRev) {
-                                    dd.rotate();
-                                    model.brickClicked = new Brick(dd, first.getX(), first.getY(), first.getZ(), oldColor);
-                                } else {
-                                    model.brickClicked = new Brick(Dim.getDimWithText(imSto.getText()), first.getX(), first.getY(), first.getZ(), oldColor);
-                                }
-
-                                /*
-                                //La brique doit plus être plate si sa hauteur est supérieur à 1
-                                if (model.brickClicked.getDim().getHeight() == 1)
-                                    model.brickClicked.setPlate(plate);
-                                else
-                                    model.brickClicked.setPlate(false);*/
-
-                                //La brique doit être carré pour rester cylindrique
-                                if (model.brickClicked.getDim().getWidth() == model.brickClicked.getDim().getDepth())
-                                    model.brickClicked.setCylindrical(cylindrical);
+                                model.brickClicked = new Brick(Dim.getDimWithText(imSto.getText()), first.getX(), first.getY(), first.getZ(), oldColor);
+                                model.brickClicked.setCylindrical(cylindrical);
                                 model.brickClicked.setSmooth(smooth);
+                                model.brickClicked.setPlate(plate);
                                 model.brickClicked.setState(State.SHOW_IS_SELECT);
+                                if (reverse) model.brickClicked.rotate();
                             }
                         }
-
-
-                        e.consume();//anti bug graphique
                     });
                 }
             }
@@ -830,7 +799,7 @@ public class Controller implements Initializable {
          */
 
         colorpicker.valueProperty().addListener((o, oldVal, newVal) -> {
-            if(model.brickClicked != null){
+            if (model.brickClicked != null) {
                 for (MinBrick b : model.brickClicked) {
                     b.setMaterial(new PhongMaterial(newVal));
                     b.getCylinder().setMaterial(new PhongMaterial(newVal));
@@ -843,7 +812,7 @@ public class Controller implements Initializable {
          * Il faut la retirer
          * */
         colorpicker.setOnHidden(event -> {
-            if(model.brickClicked != null) {
+            if (model.brickClicked != null) {
                 if (!model.brickClicked.getColor().equals(colorpicker.getValue()))
                     for (MinBrick b : model.brickClicked) {
                         b.setMaterial(new PhongMaterial(model.brickClicked.getColor()));
@@ -892,7 +861,7 @@ public class Controller implements Initializable {
                 //on déselectionne l'ancienne brique cliqué si il y en avait une
                 if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 14);
                 //On met la brique qui provient du drop comme brick selectionné
-                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], 0,grid.getMouseCoors()[2],  colorpicker.getValue());
+                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], 0, grid.getMouseCoors()[2], colorpicker.getValue());
                 model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                 model.dropInProgress = false;
             }
@@ -921,65 +890,48 @@ public class Controller implements Initializable {
         subScene.setOnScroll(scrollEvent -> camera.zoom(scrollEvent.getDeltaY() / 10));
 
 
+        anchorPane.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.CONTROL)) model.ctrlActive = true;
+        });
+
+
         /*
          * Si on appuie sur échap et que la brique pouvait bougé dans la grille
          * On vient de faire le drop.
          *
          * */
         anchorPane.setOnKeyReleased(keyEvent -> {
+            //si on appuie plus sur la touche ctrl
+            if (keyEvent.getCode().equals(KeyCode.CONTROL)) model.ctrlActive = false;
             //evites que du texte se tapes quand on bouge la brique avec les touches
-            if (keyEvent.getCode().equals(KeyCode.UNDO) || keyEvent.getCode().equals(KeyCode.ESCAPE))
+            if (keyEvent.getCode().equals(KeyCode.ESCAPE))
                 /*
                  * * La brique cesse de suivre la souris
                  */
                 if (model.dropInProgress)
                     clearBreakSelection();
             if (model.brickClicked != null) {
+                if (model.ctrlActive) {
+                    switch (keyEvent.getCode()) {
+                        case I -> model.brickClicked.setSmooth(!model.brickClicked.isSmooth());
+                        case O -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical());
+                        case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate());
+                        case H -> model.brickClicked.hide(!model.brickClicked.isHide());
+                        //case D -> model.brickClicked.createClone();
+                        case R -> model.brickClicked.rotate();
+                        case UP -> model.brickClicked.up();
+                        case DOWN -> model.brickClicked.down();
+                    }
+                }
                 switch (keyEvent.getCode()) {
                     case Y -> model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                    case P -> {
-                        if (!(model.brickClicked.isPiece()) && (model.brickClicked.getDim().getHeight() == 1 || model.brickClicked.getDim().getHeight() == 0.5) )
-                            model.brickClicked.setPlate(!model.brickClicked.isPlate());
-                    }
-                    case H -> model.brickClicked.hide(!model.brickClicked.isHide());
-
-                    case T -> model.brickClicked.createClone();
-
-                    case W -> {
-                        model.brickClicked.up();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case X -> {
-                        model.brickClicked.down();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case LEFT, Q -> {
-                        model.brickClicked.leftX();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case D, RIGHT -> {
-                        model.brickClicked.rightX();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case Z, UP -> {
-                        model.brickClicked.rightZ();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case S, DOWN -> {
-                        model.brickClicked.leftZ();
-                        model.brickClicked.setState(State.FOLLOW_KEYPRESS);
-                    }
-                    case R -> {
-                        if (!(model.brickClicked.isPiece()))
-                            model.brickClicked.rotate();
-                    }
-                    case G -> model.brickClicked.remove();
-                    case K -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical());
-                    case L -> model.brickClicked.setSmooth(!model.brickClicked.isSmooth());
+                    case LEFT -> model.brickClicked.leftX();
+                    case RIGHT -> model.brickClicked.rightX();
+                    case UP -> model.brickClicked.rightZ();
+                    case DOWN -> model.brickClicked.leftZ();
+                    case DELETE -> model.brickClicked.remove();
                 }
             }
-
-
         });
         /*
          *
@@ -991,7 +943,7 @@ public class Controller implements Initializable {
             listView.getItems().clear();
             listView.getItems().addAll(searchList(searchBar.getText(), model.imageStorages));
         });
-
+        steps.setOnMouseClicked(event -> controller.steps.refresh());
 
 
         /*
@@ -1022,7 +974,7 @@ public class Controller implements Initializable {
         });
 
         clonee.setOnMousePressed(e -> {
-            if (model.brickClicked != null) model.brickClicked.createClone();
+            //if (model.brickClicked != null) model.brickClicked.createClone();
             try {
                 cloneeicon.setImage(new ImagePath("clonehover.jpg"));
                 cloneetext.setFill(Color.web("#42C0FB"));

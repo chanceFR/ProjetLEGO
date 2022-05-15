@@ -19,6 +19,7 @@ public class Model {
     public ArrayList<ImageStorage> imageStorages;
     public boolean dropInProgress;
     public ArrayList<Step> instruction;
+    public boolean ctrlActive;
 
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour
@@ -29,6 +30,7 @@ public class Model {
     public ImageStorage dropSelectionData;
 
     public Model() {
+        ctrlActive=false;
         bricks = new ArrayList<>();
         dropInProgress = false;
         instruction = new ArrayList<>();

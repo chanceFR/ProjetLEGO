@@ -1,6 +1,5 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
@@ -40,7 +39,7 @@ public class MinBrick extends Box {
             }
         });
         this.getCylinder().setOnMouseEntered(mouseEvent -> {
-            if (model.brickClicked != null &&  !model.brickClicked.equals(brick)) {
+            if (model.brickClicked != null && !model.brickClicked.equals(brick)) {
                 grid.setCoors(this.getTranslateX(), this.getTranslateY(), this.getTranslateZ()); //les 2 sont pas plates
             }
         });
@@ -51,13 +50,13 @@ public class MinBrick extends Box {
          **/
         this.setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-               this.brick.manageState();
+                this.brick.manageState(e.getClickCount());
             } else if (e.getButton().equals(MouseButton.SECONDARY))
                 if (!(this.brick.isPiece())) this.brick.rotate();
         });
         this.getCylinder().setOnMouseClicked(e -> {
             if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                this.brick.manageState();
+                this.brick.manageState(e.getClickCount());
             } else if (e.getButton().equals(MouseButton.SECONDARY))
                 if (!(this.brick.isPiece())) this.brick.rotate();
         });

@@ -3,20 +3,15 @@ package fr.antoromeochrist.projetlego.pieces;
 import fr.antoromeochrist.projetlego.Controller;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
 import fr.antoromeochrist.projetlego.utils.bricks.Dim;
-import fr.antoromeochrist.projetlego.utils.bricks.State;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
-
-import static fr.antoromeochrist.projetlego.Controller.model;
 
 public class Figurine extends Brick {
 
@@ -636,11 +631,11 @@ public class Figurine extends Brick {
         for (Node n : nodes) {
             n.setOnMouseClicked(e -> {
                 if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                   this.manageState();
+                   this.manageState(e.getClickCount());
                 }
             });
         }
-        Controller.me.group.getChildren().addAll(nodes);
+        Controller.controller.group.getChildren().addAll(nodes);
         setHat(this.hat);
     }
 
@@ -982,23 +977,23 @@ public class Figurine extends Brick {
         Fast.log("Chapeau supprimé :" + hat);
         switch (hat) {
             case GENTLEMAN -> {
-                Controller.me.group.getChildren().remove(gentleman1);
-                Controller.me.group.getChildren().remove(gentleman2);
-                Controller.me.group.getChildren().remove(gentleman3);
+                Controller.controller.group.getChildren().remove(gentleman1);
+                Controller.controller.group.getChildren().remove(gentleman2);
+                Controller.controller.group.getChildren().remove(gentleman3);
                 nodes.remove(gentleman1);
                 nodes.remove(gentleman2);
                 nodes.remove(gentleman3);
             }
             case MAGICIAN -> {
-                Controller.me.group.getChildren().remove(magicien1);
-                Controller.me.group.getChildren().remove(magicien2);
-                Controller.me.group.getChildren().remove(magicien3);
+                Controller.controller.group.getChildren().remove(magicien1);
+                Controller.controller.group.getChildren().remove(magicien2);
+                Controller.controller.group.getChildren().remove(magicien3);
                 nodes.remove(magicien1);
                 nodes.remove(magicien2);
                 nodes.remove(magicien3);
             }
             case NONE -> {
-                Controller.me.group.getChildren().remove(invisibleHat);
+                Controller.controller.group.getChildren().remove(invisibleHat);
                 nodes.remove(invisibleHat);
             }
             case THUG -> {
@@ -1011,23 +1006,23 @@ public class Figurine extends Brick {
         this.hat = hat;
         switch (hat) {
             case GENTLEMAN -> {
-                Controller.me.group.getChildren().add(gentleman1);
-                Controller.me.group.getChildren().add(gentleman2);
-                Controller.me.group.getChildren().add(gentleman3);
+                Controller.controller.group.getChildren().add(gentleman1);
+                Controller.controller.group.getChildren().add(gentleman2);
+                Controller.controller.group.getChildren().add(gentleman3);
                 nodes.add(gentleman1);
                 nodes.add(gentleman2);
                 nodes.add(gentleman3);
             }
             case MAGICIAN -> {
-                Controller.me.group.getChildren().add(magicien1);
-                Controller.me.group.getChildren().add(magicien2);
-                Controller.me.group.getChildren().add(magicien3);
+                Controller.controller.group.getChildren().add(magicien1);
+                Controller.controller.group.getChildren().add(magicien2);
+                Controller.controller.group.getChildren().add(magicien3);
                 nodes.add(magicien1);
                 nodes.add(magicien2);
                 nodes.add(magicien3);
             }
             case NONE -> {
-                Controller.me.group.getChildren().add(invisibleHat);
+                Controller.controller.group.getChildren().add(invisibleHat);
                 nodes.add(invisibleHat);
             }
             case THUG -> {

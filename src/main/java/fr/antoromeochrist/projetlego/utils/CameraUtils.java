@@ -69,7 +69,7 @@ public class CameraUtils extends PerspectiveCamera {
     public CameraUtils(boolean b) {
         super(b);
         timeline = new Timeline();
-        Controller.me.group.getChildren().add(this);
+        Controller.controller.group.getChildren().add(this);
         getTransforms().addAll(x_axis, y_axis, new Rotate(0, Rotate.Z_AXIS));
         dezoom(20);
         timeline.setCycleCount(1);

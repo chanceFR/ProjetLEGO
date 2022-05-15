@@ -43,17 +43,17 @@ public class Grid extends ArrayList<MinBrick> {
                     Cylinder c1 = createCyl(start.add(0, 0, 0.5), 1, 0.01);
                     c1.getTransforms().add(rotateZ);
                     c1.setMaterial(new PhongMaterial(c));
-                    Controller.me.group.getChildren().add(c1);
+                    Controller.controller.group.getChildren().add(c1);
                 }
                 if (x % 2 == 0) {
                     Cylinder c2 = createCyl(start.add(-0.5, 0, 0), 1, 0.01);
                     c2.getTransforms().add(rotateX);
                     c2.setMaterial(new PhongMaterial(c));
-                    Controller.me.group.getChildren().add(c2);
+                    Controller.controller.group.getChildren().add(c2);
                 }
                 Cylinder c4 = createCyl(start.add(0, 0, 0), 0.01, 0.30);
                 c4.setMaterial(new PhongMaterial(c));
-                Controller.me.group.getChildren().add(c4);
+                Controller.controller.group.getChildren().add(c4);
                 Box b = new Box();
                 b.setHeight(0.01);
                 b.setWidth(1);
@@ -67,7 +67,7 @@ public class Grid extends ArrayList<MinBrick> {
                         setCoors(b.getTranslateX(), b.getTranslateY()-0.25, b.getTranslateZ());
                     }
                 });
-                Controller.me.group.getChildren().add(b);
+                Controller.controller.group.getChildren().add(b);
             }
         }
     }
