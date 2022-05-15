@@ -414,7 +414,6 @@ public class Brick extends ArrayList<MinBrick> {
         while (Volume.volumeIntersection(this, model.bricks)) {
             volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
             increment += 0.5;
-            System.out.println("Collision !");
         }
         for (int i = 0; i < volume.size(); i++) {
             get(i).setTranslateX(volume.get(i).getX());
@@ -586,7 +585,6 @@ public class Brick extends ArrayList<MinBrick> {
         if (this.state.equals(State.NONE)) model.brickClicked = null;
         else model.brickClicked = this;
         updateBorder();
-        Fast.log(old + " --> " + this.state);
     }
 
     /**
@@ -599,7 +597,6 @@ public class Brick extends ArrayList<MinBrick> {
         State old = this.state;
         this.state = state;
         updateBorder();
-        Fast.log(old + " --> " + this.state + "| debug" + i);
     }
 
     public void switchState() {
@@ -1135,7 +1132,7 @@ public class Brick extends ArrayList<MinBrick> {
         this.pieceType = type;
     }
 
-    protected Rotate addRotate(Point3D axis, double angle) {
+    public static Rotate addRotate(Point3D axis, double angle) {
         Rotate rotate = new Rotate();
         rotate.setAngle(angle);
         rotate.setPivotX(0);

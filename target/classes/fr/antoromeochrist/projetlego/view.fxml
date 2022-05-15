@@ -128,16 +128,6 @@
             <Image url="@../../../top.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="rbottom" fitHeight="31.0" fitWidth="29.0" layoutX="735.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rbottom.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rleft" fitHeight="31.0" fitWidth="29.0" layoutX="615.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rleft.png" />
-         </image>
-      </ImageView>
       <ImageView fx:id="minus" fitHeight="32.0" fitWidth="30.0" layoutX="546.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../minus.png" />
@@ -146,16 +136,6 @@
       <ImageView fx:id="plus" fitHeight="32.0" fitWidth="30.0" layoutX="514.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../plus.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rright" fitHeight="31.0" fitWidth="45.0" layoutX="649.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rright.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="rtop" fitHeight="31.0" fitWidth="29.0" layoutX="709.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../rtop.png" />
          </image>
       </ImageView>
       <ImageView fx:id="left" fitHeight="32.0" fitWidth="30.0" layoutX="741.0" layoutY="195.0" pickOnBounds="true" preserveRatio="true">

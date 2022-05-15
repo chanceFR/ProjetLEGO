@@ -9,6 +9,7 @@ import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.animation.KeyFrame;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -25,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -99,17 +101,6 @@ public class Controller implements Initializable {
 
     @FXML
     private ImageView minus;
-
-
-    @FXML
-    private ImageView rtop;
-
-    @FXML
-    private ImageView rleft;
-    @FXML
-    private ImageView rright;
-    @FXML
-    private ImageView rbottom;
 
     @FXML
     private ImageView top;
@@ -214,6 +205,7 @@ public class Controller implements Initializable {
         camera = new CameraUtils(true);
         camera.setAngleY(-30);
         camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
+        camera.timeline.play();
 
         /*
          * Menu de droite - gestion des étapes
@@ -692,7 +684,6 @@ public class Controller implements Initializable {
                             }
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
                                 boolean reverse = model.brickClicked.getDim().isReverse;
-                                Fast.log("Reverse: " + reverse);
                                 P3D first = new P3D(model.brickClicked.getVolume().get(0));
                                 Color oldColor = model.brickClicked.getColor();
                                 boolean plate = model.brickClicked.isPlate();
@@ -848,6 +839,7 @@ public class Controller implements Initializable {
          *
          * */
         subScene.setOnMouseEntered(mouseEvent -> {
+
             searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
             listView.setDisable(true); //évites que si on appuie sur des touches ça bouge légèrement les images
             /*
@@ -866,6 +858,20 @@ public class Controller implements Initializable {
                 model.dropInProgress = false;
             }
         });
+
+        subScene.setOnMousePressed(e -> {
+            model.mouseX = e.getX();
+            model.mouseY = e.getY();
+            //on commence à maintenir clique droit
+            if (e.getButton().equals(MouseButton.SECONDARY)) model.rightClickActive = true;
+        });
+        subScene.setOnMouseReleased(e -> {
+            //on arrête de maintenir clique droit
+            if (e.getButton().equals(MouseButton.SECONDARY)) model.rightClickActive = false;
+            camera.setAngleY(camera.getAngleY());
+        });
+
+
         /*
          * Temps qu'on a pas cliqué sur la brique, la brique bouge dans la grille.
          *
@@ -877,6 +883,18 @@ public class Controller implements Initializable {
                 model.brickClicked.moveWhereIsMouseIn(grid);
             }
         });
+        subScene.setOnMouseDragged(e -> {
+            if (model.rightClickActive) {
+                //camera.addRotationsY(new DurationAngle((float)e.getX()-(float)model.mouseX, 0.001f));
+                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 100));
+                camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.001f));
+                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 100));
+                camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.001f));
+                camera.timeline.play();
+
+            }
+        });
+
 
         //Si on quitte la fenètre, la brique  set met en select !
         subScene.setOnMouseExited(mouseEvent -> {
@@ -1024,78 +1042,6 @@ public class Controller implements Initializable {
             }
         });
 
-        rleft.setOnMouseReleased(e -> {
-            try {
-                rleft.setImage(new ImagePath("rleft.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-
-        rright.setOnMouseReleased(e -> {
-            try {
-                rright.setImage(new ImagePath("rright.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-
-        rtop.setOnMouseReleased(e -> {
-            try {
-                rtop.setImage(new ImagePath("rtop.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-
-        rbottom.setOnMouseReleased(e -> {
-            try {
-                rbottom.setImage(new ImagePath("rbottom.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-        rleft.setOnMousePressed(e -> {
-            camera.setAngleX(camera.getAngleX() - rot);
-            camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
-            try {
-                rleft.setImage(new ImagePath("rleftHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-        rright.setOnMousePressed(e -> {
-            camera.setAngleX(camera.getAngleX() + rot);
-            camera.addRotationsY(new DurationAngle(camera.getAngleX(), 0.4f));
-            try {
-                rright.setImage(new ImagePath("rrightHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-        rtop.setOnMousePressed(e -> {
-            camera.setAngleY(camera.getAngleY() + rot);
-            camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
-            try {
-                rtop.setImage(new ImagePath("rtopHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
-        rbottom.setOnMousePressed(e -> {
-            camera.setAngleY(camera.getAngleY() - rot);
-            camera.addRotationsX(new DurationAngle(camera.getAngleY(), 0.4f));
-            try {
-                rbottom.setImage(new ImagePath("rbottomHover.png"));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
 
         left.setOnMouseReleased(e -> {
             try {

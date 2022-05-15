@@ -1,6 +1,8 @@
 package fr.antoromeochrist.projetlego.utils;
 
 import fr.antoromeochrist.projetlego.Controller;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -55,7 +57,7 @@ public class CameraUtils extends PerspectiveCamera {
     /**
      * Permet d'appliquer des rotations sur la caméra
      */
-    private final Timeline timeline;
+    public final Timeline timeline;
 
     /**
      * Les angles de la caméra
@@ -73,7 +75,10 @@ public class CameraUtils extends PerspectiveCamera {
         getTransforms().addAll(x_axis, y_axis, new Rotate(0, Rotate.Z_AXIS));
         dezoom(20);
         timeline.setCycleCount(1);
-        timeline.setOnFinished(actionEvent -> timeline.getKeyFrames().clear());
+        timeline.setOnFinished(actionEvent -> {KeyFrame k = timeline.getKeyFrames().get(timeline.getKeyFrames().size()-1);
+            timeline.getKeyFrames().clear();
+            timeline.getKeyFrames().add(k);});
+        
     }
 
     public void setAngleY(float angleY) {
@@ -96,7 +101,6 @@ public class CameraUtils extends PerspectiveCamera {
         for (DurationAngle d : durationAngles) {
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(x_axis.angleProperty(), d.getAngle())));
         }
-        timeline.play();
     }
 
     public void addRotationsY(DurationAngle... durationAngles) {
@@ -104,7 +108,6 @@ public class CameraUtils extends PerspectiveCamera {
             new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(y_axis.angleProperty(), d.getAngle()));
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(d.getDuration()), new KeyValue(y_axis.angleProperty(), d.getAngle())));
         }
-        timeline.play();
     }
 
     /**
