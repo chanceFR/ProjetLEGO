@@ -517,7 +517,7 @@ public class Controller implements Initializable {
                                 //D2 permet d'afficher l'inversement de la dimension si la brick a été rotate
                                 Dim d2 = new Dim(brk.getDim());
                                 d2.rotate();
-                                Label lb = new Label("      " + d2 + "             ");
+                                Label lb = new Label("     " + d2 + "     ");
                                 lb.setStyle("-fx-text-fill: #808080;");
 
                                 /*
