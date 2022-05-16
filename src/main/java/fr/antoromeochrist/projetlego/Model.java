@@ -54,8 +54,8 @@ public class Model {
             imageStorages.add(new ImageStorage("brick | 3x3", new ImagePath("3x3.png")));
             imageStorages.add(new ImageStorage("brick | 3x4", new ImagePath("3x4.png")));
             imageStorages.add(new ImageStorage("brick | 4x4", new ImagePath("4x4.png")));
-            imageStorages.add(new ImageStorage("brick | 1x1x2", new ImagePath("1x1x2.png")));
-            imageStorages.add(new ImageStorage("brick | 1x1x4", new ImagePath("1x1x4.png")));
+            imageStorages.add(new ImageStorage("brick | 1x1x2.0", new ImagePath("1x1x2.png")));
+            imageStorages.add(new ImageStorage("brick | 1x1x4.0", new ImagePath("1x1x4.png")));
 
             imageStorages.add(new ImageStorage("brick plate | 1x1x0.5", new ImagePath("1x1.png")));
             imageStorages.add(new ImageStorage("brick plate | 1x2x0.5", new ImagePath("1x2.png")));
