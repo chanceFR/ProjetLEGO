@@ -67,6 +67,9 @@ public class Grid extends ArrayList<MinBrick> {
                         setCoors(b.getTranslateX(), b.getTranslateY()-0.25, b.getTranslateZ());
                     }
                 });
+                b.setOnMouseClicked(e->{
+                    if(Controller.model.brickClicked != null) Controller.model.brickClicked.switchState();
+                });
                 Controller.controller.group.getChildren().add(b);
             }
         }
