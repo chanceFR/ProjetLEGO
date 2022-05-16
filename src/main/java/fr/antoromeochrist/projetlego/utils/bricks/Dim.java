@@ -28,7 +28,7 @@ public class Dim {
      * attributs
      */
     private int width, depth;
-    private double height, oldHeight;
+    private double height;
 
     /**
      * Constructeur sans préciser la hauteur
@@ -38,7 +38,6 @@ public class Dim {
     public Dim(int width, int depth) {
         this.width = width;
         this.height = 1;
-        this.oldHeight = 1;
         this.depth = depth;
     }
 
@@ -53,7 +52,6 @@ public class Dim {
         this.width = width;
         this.depth = depth;
         this.height = height;
-        this.oldHeight = this.height;
         this.isReverse = false;
     }
 
@@ -61,9 +59,10 @@ public class Dim {
      * Retourne un objet dimension à partir d'un texte
      */
     public static Dim getDimWithText(String text) {
-        String[] s = text.replace(" ", "").split("x");
+        String texts[] = text.replace(" ","").split("\\|");
+        String[] s = texts[1].split("x");
         if (s.length == 3) {
-            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Double.parseDouble(s[2]));
         } else {
             return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
         }
@@ -125,11 +124,6 @@ public class Dim {
     }
 
     public void setHeight(double height) {
-        this.oldHeight = this.height;
         this.height = height;
-    }
-
-    public double getOldHeight() {
-        return oldHeight;
     }
 }

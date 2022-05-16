@@ -186,7 +186,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param c   couleur
      */
     public Brick(Dim dim, double x, double y, double z, Color c) {
-        this(dim, x, y, z, c, false);
+        this(dim, x, y, z, c, false, false);
     }
 
     /**
@@ -194,10 +194,12 @@ public class Brick extends ArrayList<MinBrick> {
      *
      * @see fr.antoromeochrist.projetlego.utils.ColorPick
      */
-    public Brick(Dim dim, double x, double y, double z, Color color, boolean piece) {
+    public Brick(Dim dim, double x, double y, double z, Color color, boolean plate, boolean piece) {
+        Fast.log("Constructor");
         model.bricks.add(this);
         this.state = State.NONE;
         this.hide = false;
+        this.plate = plate;
         this.cylindrical = false;
         this.smooth = false;
         this.dim = dim;
@@ -212,18 +214,25 @@ public class Brick extends ArrayList<MinBrick> {
         this.delete = false;
         this.cylinders = new ArrayList<>();
         for (int i = 0; i < volume.size(); i++) {
+            Fast.log("> Spawn minbrick");
             MinBrick minBrick = new MinBrick(this);
             this.add(minBrick);
             controller.group.getChildren().add(minBrick);
             controller.group.getChildren().add(minBrick.getCylinder());
         }
-        for (double i = 0.0; i < this.dim.getHeight(); i += 0.5) {
+        double dc = this.dim.getHeight() * 2;
+        Fast.log("number of cylinders to add :" + dc);
+        for (double i = 0.0; i < dc; i += 1) {
+            Fast.log("> Spawn cylinder");
             Cylinder cylinder = new Cylinder();
             cylinder.setRadius((double) this.dim.getWidth() / 2);
             cylinder.setHeight(0.5);
+            Fast.log("cyl opacity 0 #1");
             cylinder.setOpacity(0);
+            cylinder.setMaterial(new PhongMaterial(this.color));
             cylinders.add(cylinder);
         }
+
         controller.group.getChildren().addAll(cylinders);
 
         this.piece = piece;
@@ -256,7 +265,7 @@ public class Brick extends ArrayList<MinBrick> {
             }
         }
         controller.currentStep.getItems().add(this);
-        this.move(getX(), getY(), getZ()); //on bouge la brique si collison
+        this.move(getX(), getY(), getZ(), 1234); //on bouge la brique si collison
     }
 
     public void manageState(int click) {
@@ -397,7 +406,7 @@ public class Brick extends ArrayList<MinBrick> {
      * @param z coordonnée
      */
     public void translate(double x, double y, double z) {
-        move(getX() + x, getY() + y, getZ() + z);
+        move(getX() + x, getY() + y, getZ() + z, 2345);
         this.setState(State.FOLLOW_KEYPRESS);
     }
 
@@ -408,39 +417,44 @@ public class Brick extends ArrayList<MinBrick> {
      * @param y coordonnée
      * @param z coordonnée
      */
-    public void move(double x, double y, double z) {
+    public void move(double x, double y, double z, int debug) {
+        Fast.log("move #" + debug);
+        Fast.log("> dimension: " + this.dim);
         volume = Volume.createAllVolume(new P3D(x, y, z), this.dim);
         double increment = 0.0;
         while (Volume.volumeIntersection(this, model.bricks)) {
             volume = Volume.createAllVolume(new P3D(x, y - increment, z), this.dim);
             increment += 0.5;
         }
+        Fast.log("> brick size: " + this.size() + " volume size: " + this.volume.size());
         for (int i = 0; i < volume.size(); i++) {
             get(i).setTranslateX(volume.get(i).getX());
             get(i).setTranslateZ(volume.get(i).getZ());
             get(i).setTranslateY(volume.get(i).getY());
             get(i).cyl();
         }
-        for (double i = 0.0, i2 = 0; i < this.dim.getHeight(); i += 0.5, i2 += 1) {
+        double i = 0;
+        for (Cylinder c : cylinders) {
             switch (this.dim.getWidth()) {
                 case 1 -> {
-                    cylinders.get((int) i2).setTranslateX(getX());
-                    cylinders.get((int) i2).setTranslateZ(getZ());
+                    c.setTranslateX(getX());
+                    c.setTranslateZ(getZ());
                 }
                 case 2 -> {
-                    cylinders.get((int) i2).setTranslateX(getX() + 0.5);
-                    cylinders.get((int) i2).setTranslateZ(getZ() + 0.5);
+                    c.setTranslateX(getX() + 0.5);
+                    c.setTranslateZ(getZ() + 0.5);
                 }
                 case 3 -> {
-                    cylinders.get((int) i2).setTranslateX(getX() + 1);
-                    cylinders.get((int) i2).setTranslateZ(getZ() + 1);
+                    c.setTranslateX(getX() + 1);
+                    c.setTranslateZ(getZ() + 1);
                 }
                 case 4 -> {
-                    cylinders.get((int) i2).setTranslateX(getX() + 1.5);
-                    cylinders.get((int) i2).setTranslateZ(getZ() + 1.5);
+                    c.setTranslateX(getX() + 1.5);
+                    c.setTranslateZ(getZ() + 1.5);
                 }
             }
-            cylinders.get((int) i2).setTranslateY(getY() - i);
+            c.setTranslateY(getY() - i);
+            i += 0.5;
         }
         if (!piece) {
             this.updateDisplay();
@@ -455,7 +469,7 @@ public class Brick extends ArrayList<MinBrick> {
     }
 
     public void moveWhereIsMouseIn(Grid grid) {
-        this.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+        this.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], 890);
     }
 
 /*
@@ -714,8 +728,8 @@ public class Brick extends ArrayList<MinBrick> {
             //on cache le gros cylindre si la brique est cylindrique
 
             if (cylindrical) {
-                for (double i = 0.0, i2 = 0; i < this.dim.getHeight(); i += 0.5, i2 += 1) {
-                    cylinders.get((int) i2).setOpacity(0);
+                for (Cylinder c : cylinders) {
+                    c.setOpacity(0);
                 }
                 //on cache les minBricks si la brique est pas cylindrique
             } else for (MinBrick mb : this) mb.setOpacity(0);
@@ -742,6 +756,9 @@ public class Brick extends ArrayList<MinBrick> {
                 }
                 //si c'est plat
                 if (plate) cylinders.get(cylinders.size() - 1).setOpacity(0);
+
+                cylinders.get(0).setOpacity(100);
+
                 //on cache les cylindres dont on a pas besoin si c'est cylindrique
                 switch (this.dim.getWidth()) {
                     case 3 -> {
@@ -1054,26 +1071,35 @@ public class Brick extends ArrayList<MinBrick> {
      * @param b booléen
      */
     public void hide(boolean b) {
+        if (this.hide == b) return;
         this.hide = b;
         updateDisplay();
     }
 
-    public void setCylindrical(boolean b) {
+    public void setCylindrical(boolean b, int debug) {
         if (this.piece) return;
+        if (this.cylindrical == b) return;
+        Fast.log("setCylindrical #" + debug);
         if (this.dim.getWidth() != this.dim.getDepth()) return;
         cylindrical = b;
         updateDisplay();
     }
 
-    public void setSmooth(boolean b) {
+    public void setSmooth(boolean b, int debug) {
         if (this.piece) return;
+        if (this.smooth == b) return;
+        Fast.log("setPlate #" + debug);
         smooth = b;
         updateDisplay();
     }
 
-    public void setPlate(boolean b) {
+    public void setPlate(boolean b, int debug) {
         if (this.piece) return;
         if (this.getDim().getHeight() > 1) return;
+        if (this.plate == b) return;
+        Fast.log("setPlate #" + debug);
+        Fast.log("> minBrick size before plate operation :" + this.size());
+        Fast.log("> cylinder size before plate operation :" + cylinders.size());
         this.plate = b;
         double d;
         if (plate) {
@@ -1086,13 +1112,29 @@ public class Brick extends ArrayList<MinBrick> {
                 controller.group.getChildren().remove(get(i).getCylinder());
             }
             for (int i : indexToRemove) {
+                Fast.log("> remove minBrick");
                 this.remove(i);
             }
+            //suprimer les cylindres sauf le premier
+            Fast.log("> save the first cylinders");
+            ArrayList<Integer> indexCylToRemove = new ArrayList<>();
+            for (int i = 1; i < this.cylinders.size(); i++) {
+                controller.group.getChildren().remove(cylinders.get(i));
+                indexCylToRemove.add(i);
+            }
+
+            for (int i = indexCylToRemove.size() - 1; i > 0; i--) {
+                Fast.log("> remove cylinder");
+                cylinders.remove(i);
+            }
+
+
         } else {
             d = (this.size());
-            this.dim.setHeight(this.dim.getOldHeight());
+            this.dim.setHeight(1);
             for (int i = 0; i < d; i++) {
                 MinBrick mb = new MinBrick(this);
+                Fast.log("> Spawn minbrick #7459");
                 mb.setMaterial(new PhongMaterial(this.getColor()));
                 if (hide) {
                     mb.getCylinder().setOpacity(0);
@@ -1102,8 +1144,33 @@ public class Brick extends ArrayList<MinBrick> {
                 controller.group.getChildren().add(mb);
                 controller.group.getChildren().add(mb.getCylinder());
             }
+            //mettre à jour les cylindres
+
+            //supprime tous les cylindres
+            for (Cylinder c : cylinders) {
+                Fast.log("> remove cylinder");
+                controller.group.getChildren().remove(c);
+            }
+            cylinders.clear();
+            //ajouter tous les cylindres dont on a
+            double dc = this.dim.getHeight() * 2;
+            Fast.log("number of cylinders to add :" + dc);
+            for (double i = 0.0; i < dc; i += 1) {
+                Fast.log("> Spawn cylinder");
+                Cylinder cylinder = new Cylinder();
+                cylinder.setRadius((double) this.dim.getWidth() / 2);
+                cylinder.setHeight(0.5);
+                cylinder.setOpacity(0);
+                Fast.log("cyl opacity 0 #2");
+                cylinder.setMaterial(new PhongMaterial(this.color));
+                cylinders.add(cylinder);
+            }
+
+            controller.group.getChildren().addAll(cylinders);
         }
-        move(getX(), getY(), getZ());
+        Fast.log("> size after plate operation :" + this.size());
+        Fast.log("> cylinder size before plate operation :" + cylinders.size());
+        move(getX(), getY(), getZ(), 666);
         controller.steps.refresh();//on refrest la dim dans les labels du menu.
     }
 

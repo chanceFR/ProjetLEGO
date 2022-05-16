@@ -698,9 +698,9 @@ public class Controller implements Initializable {
                                 model.brickClicked.remove();
                                 if (model.brickClicked != null) model.brickClicked.removeBorder();
                                 model.brickClicked = new Brick(Dim.getDimWithText(imSto.getText()), first.getX(), first.getY(), first.getZ(), oldColor);
-                                model.brickClicked.setCylindrical(cylindrical);
-                                model.brickClicked.setSmooth(smooth);
-                                model.brickClicked.setPlate(plate);
+                                model.brickClicked.setCylindrical(cylindrical, 678);
+                                model.brickClicked.setSmooth(smooth, 4567);
+                                model.brickClicked.setPlate(plate, 78564);
                                 model.brickClicked.setState(State.SHOW_IS_SELECT);
                                 if (reverse) model.brickClicked.rotate();
                             }
@@ -856,10 +856,16 @@ public class Controller implements Initializable {
              * */
             if (model.dropInProgress) {
                 clearBreakSelection();
-                //on déselectionne l'ancienne brique cliqué si il y en avait une
                 if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 14);
-                //On met la brique qui provient du drop comme brick selectionné
-                model.brickClicked = new Brick(Dim.getDimWithText(model.dropSelectionData.getText()), grid.getMouseCoors()[0], 0, grid.getMouseCoors()[2], colorpicker.getValue());
+                String text = model.dropSelectionData.getText();
+                Dim dim = Dim.getDimWithText(text);
+                boolean piece = text.contains("piece");
+                if (piece) {
+                    model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), false, true);
+                } else {
+                    model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), (dim.getHeight() == 0.5), false);
+                    model.brickClicked.setCylindrical(text.contains("cylinder"), 36789);
+                }
                 model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                 model.dropInProgress = false;
             }
@@ -893,30 +899,25 @@ public class Controller implements Initializable {
             if (model.rightClickActive) {
 
 
-                KeyFrame lastXkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size()-2);
-                KeyFrame lastYkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size()-1);
+                KeyFrame lastXkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size() - 2);
+                KeyFrame lastYkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size() - 1);
 
                 float newAngleX = camera.getAngleY();
                 float newAngleY = camera.getAngleX();
 
 
-
-
                 DurationAngle dx = new DurationAngle(newAngleX, 0.001f);
-                KeyFrame newX= new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
+                KeyFrame newX = new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
 
 
                 camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 100));
                 camera.timeline.getKeyFrames().add(newX);
 
 
-
                 DurationAngle dy = new DurationAngle(newAngleY, 0.001f);
                 KeyFrame newY = new KeyFrame(Duration.seconds(dy.getDuration()), new KeyValue(y_axis.angleProperty(), dy.getAngle()));
                 camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 100));
                 camera.timeline.getKeyFrames().add(newY);
-
-
 
 
                 camera.timeline.play();
@@ -960,9 +961,9 @@ public class Controller implements Initializable {
             if (model.brickClicked != null) {
                 if (model.ctrlActive) {
                     switch (keyEvent.getCode()) {
-                        case I -> model.brickClicked.setSmooth(!model.brickClicked.isSmooth());
-                        case O -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical());
-                        case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate());
+                        case I -> model.brickClicked.setSmooth(!model.brickClicked.isSmooth(), 230345);
+                        case O -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical(), 95728);
+                        case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate(), 34567);
                         case H -> model.brickClicked.hide(!model.brickClicked.isHide());
                         //case D -> model.brickClicked.createClone();
                         case R -> model.brickClicked.rotate();

@@ -123,7 +123,7 @@ public class Figurine extends Brick {
 
 
     public Figurine(double x, double y, double z) {
-        super(new Dim(4, 1, 5), x, y, z, Color.GRAY, true);
+        super(new Dim(4, 1, 5), x, y, z, Color.GRAY,false, true);
         this.setPieceType("Figurine");
         Rotate rotateZ = addRotate(Rotate.Z_AXIS, 90);
 

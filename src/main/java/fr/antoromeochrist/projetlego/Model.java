@@ -35,39 +35,48 @@ public class Model {
     public ImageStorage dropSelectionData;
 
     public Model() {
-        mouseX=0;
-        mouseY=0;
-        rightClickActive=false;
-        ctrlActive=false;
+        mouseX = 0;
+        mouseY = 0;
+        rightClickActive = false;
+        ctrlActive = false;
         bricks = new ArrayList<>();
         dropInProgress = false;
         instruction = new ArrayList<>();
         imageStorages = new ArrayList<>();
         try {
-            imageStorages.add(new ImageStorage("1x1", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("1x2", new ImagePath("1x2.png")));
-            imageStorages.add(new ImageStorage("1x3", new ImagePath("1x3.png")));
-            imageStorages.add(new ImageStorage("1x4", new ImagePath("1x4.png")));
-            imageStorages.add(new ImageStorage("2x2", new ImagePath("2x2.png")));
-            imageStorages.add(new ImageStorage("2x3", new ImagePath("2x3.png")));
-            imageStorages.add(new ImageStorage("2x4", new ImagePath("2x4.png")));
-            imageStorages.add(new ImageStorage("3x3", new ImagePath("3x3.png")));
-            imageStorages.add(new ImageStorage("3x4", new ImagePath("3x4.png")));
-            imageStorages.add(new ImageStorage("4x4", new ImagePath("4x4.png")));
-            imageStorages.add(new ImageStorage("1x1x2", new ImagePath("1x1x2.png")));
-            imageStorages.add(new ImageStorage("1x1x4", new ImagePath("1x1x4.png")));
-            imageStorages.add(new ImageStorage("1x1x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("1x2x0.5", new ImagePath("1x2.png")));
-            imageStorages.add(new ImageStorage("1x3x0.5", new ImagePath("1x3.png")));
-            imageStorages.add(new ImageStorage("1x4x0.5", new ImagePath("1x4.png")));
-            imageStorages.add(new ImageStorage("2x2x0.5", new ImagePath("2x2.png")));
-            imageStorages.add(new ImageStorage("2x3x0.5", new ImagePath("2x3.png")));
-            imageStorages.add(new ImageStorage("2x4x0.5", new ImagePath("2x4.png")));
-            imageStorages.add(new ImageStorage("3x3x0.5", new ImagePath("3x3.png")));
-            imageStorages.add(new ImageStorage("3x4x0.5", new ImagePath("3x4.png")));
-            imageStorages.add(new ImageStorage("4x4x0.5", new ImagePath("4x4.png")));
-            imageStorages.add(new ImageStorage("1x1x2x0.5", new ImagePath("1x1x2.png")));
-            imageStorages.add(new ImageStorage("1x1x4x0.5", new ImagePath("1x1x4.png")));
+            imageStorages.add(new ImageStorage("brick | 1x1", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("brick | 1x2", new ImagePath("1x2.png")));
+            imageStorages.add(new ImageStorage("brick | 1x3", new ImagePath("1x3.png")));
+            imageStorages.add(new ImageStorage("brick | 1x4", new ImagePath("1x4.png")));
+            imageStorages.add(new ImageStorage("brick | 2x2", new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("brick | 2x3", new ImagePath("2x3.png")));
+            imageStorages.add(new ImageStorage("brick | 2x4", new ImagePath("2x4.png")));
+            imageStorages.add(new ImageStorage("brick | 3x3", new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("brick | 3x4", new ImagePath("3x4.png")));
+            imageStorages.add(new ImageStorage("brick | 4x4", new ImagePath("4x4.png")));
+            imageStorages.add(new ImageStorage("brick | 1x1x2", new ImagePath("1x1x2.png")));
+            imageStorages.add(new ImageStorage("brick | 1x1x4", new ImagePath("1x1x4.png")));
+
+            imageStorages.add(new ImageStorage("brick plate | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("brick plate | 1x2x0.5", new ImagePath("1x2.png")));
+            imageStorages.add(new ImageStorage("brick plate | 1x3x0.5", new ImagePath("1x3.png")));
+            imageStorages.add(new ImageStorage("brick plate | 1x4x0.5", new ImagePath("1x4.png")));
+            imageStorages.add(new ImageStorage("brick plate | 2x2x0.5", new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("brick plate | 2x3x0.5", new ImagePath("2x3.png")));
+            imageStorages.add(new ImageStorage("brick plate | 2x4x0.5", new ImagePath("2x4.png")));
+            imageStorages.add(new ImageStorage("brick plate | 3x3x0.5", new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("brick plate | 3x4x0.5", new ImagePath("3x4.png")));
+            imageStorages.add(new ImageStorage("brick plate | 4x4x0.5", new ImagePath("4x4.png")));
+
+            imageStorages.add(new ImageStorage("cylinder | 1x1", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder | 2x2", new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("cylinder | 3x3", new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("cylinder | 4x4", new ImagePath("4x4.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 2x2x0.5", new ImagePath("2x2.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 3x3x0.5", new ImagePath("3x3.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 4x4x0.5", new ImagePath("4x4.png")));
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -83,8 +92,8 @@ public class Model {
      */
     public ArrayList<Brick> getBrickWithColor(Color c) {
         ArrayList<Brick> bs = new ArrayList<>();
-        for(Brick b : this.bricks){
-            if(b.getColor().equals(c)){
+        for (Brick b : this.bricks) {
+            if (b.getColor().equals(c)) {
                 bs.add(b);
             }
         }
