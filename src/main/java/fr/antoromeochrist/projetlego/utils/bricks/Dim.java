@@ -1,5 +1,9 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
+import fr.antoromeochrist.projetlego.utils.print.Fast;
+
+import java.util.Arrays;
+
 /**
  * L'objet dimension a trois attributs.
  *
@@ -61,11 +65,10 @@ public class Dim {
     public static Dim getDimWithText(String text) {
         String texts[] = text.replace(" ","").split("\\|");
         String[] s = texts[1].split("x");
-        if (s.length == 3) {
+        if (s.length == 3)
             return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Double.parseDouble(s[2]));
-        } else {
+        else
             return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
-        }
     }
 
     /**

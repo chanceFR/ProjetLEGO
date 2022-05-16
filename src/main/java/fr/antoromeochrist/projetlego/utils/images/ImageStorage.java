@@ -45,13 +45,9 @@ public class ImageStorage {
      * @return image
      */
     public static Image getImage(ArrayList<ImageStorage> list, String text){
-        for(ImageStorage il : list){
-            if(il.getText().equals(text)){
+        for(ImageStorage il : list)
+            if(il.getText().replace(" ","").split("\\|")[1].equals(text))
                 return il.getImage();
-            }
-        }
         return null;
     }
-
-
 }
