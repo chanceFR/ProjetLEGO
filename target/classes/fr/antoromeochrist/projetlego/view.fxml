@@ -3,6 +3,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.SceneAntialiasing?>
 <?import javafx.scene.SubScene?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -44,7 +45,22 @@
                         <!-- Rectangle pour la taille du groupe-->
                         <Rectangle arcWidth="5.0" fill="#2c2f35" height="57.0" smooth="false" stroke="BLACK" strokeType="INSIDE" width="257.0" />
                         <!-- Zone de texte ou on peut ecrire-->
-                        <TextField fx:id="searchBar" layoutX="19.0" layoutY="12.0" prefHeight="33.0" prefWidth="217.0" promptText="search... 🔍" stylesheets="@../../../style.css" />
+                        <TextField fx:id="searchBar" layoutX="18.0" layoutY="2.0" prefHeight="33.0" prefWidth="217.0" promptText="search... 🔍" stylesheets="@../../../style.css" />
+                  <CheckBox fx:id="plateCB" layoutX="27.0" layoutY="37.0" mnemonicParsing="false" text="Plate" textFill="#1b1818">
+                     <font>
+                        <Font size="9.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="cylindricalCB" layoutX="82.0" layoutY="37.0" mnemonicParsing="false" text="Cylindrical" textFill="#1b1818">
+                     <font>
+                        <Font size="9.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="smoothCB" layoutX="159.0" layoutY="37.0" mnemonicParsing="false" text="Smooth" textFill="#1b1818">
+                     <font>
+                        <Font size="9.0" />
+                     </font>
+                  </CheckBox>
                     </children>
                 </Group>
 
