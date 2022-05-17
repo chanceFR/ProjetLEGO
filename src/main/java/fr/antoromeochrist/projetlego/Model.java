@@ -9,6 +9,8 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Model {
@@ -34,6 +36,7 @@ public class Model {
      * @see fr.antoromeochrist.projetlego.utils.bricks.Volume
      */
     public ImageStorage dropSelectionData;
+
 
     public Model() {
         mouseX = 0;
@@ -117,8 +120,19 @@ public class Model {
         return bs;
     }
 
-    public void saveAllData(ArrayList<Step> steps){
-        for(Step step : steps){
+    public void writeData(String data) throws IOException {
+
+
+
+
+        FileWriter fWriter = new FileWriter(project.getAbsolutePath());
+        fWriter.write(data);
+        System.out.println(data);
+        fWriter.close();
+    }
+
+    public void saveAllData(){
+        for(Step step : instruction){
             System.out.println(">>"+step.getName());
             for(Brick b : step.getBricks().getItems()){
                 System.out.println(">>"+b);
@@ -128,6 +142,12 @@ public class Model {
         if(project == null){
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Choose a file to save project");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
+            project = fileChooser.showOpenDialog(Main.software);
+            if (project != null) {
+                System.out.println("fichier sélectionné");
+
+            }
         }
 
     }
