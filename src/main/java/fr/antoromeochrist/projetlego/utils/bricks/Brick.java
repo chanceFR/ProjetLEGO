@@ -475,7 +475,7 @@ public class Brick extends ArrayList<MinBrick> {
         this.setState(State.NONE);
         boolean piece = this.piece;
         if (piece) {
-            model.brickClicked = new Brick(dim, getX(), getY(), getZ(), this.color, false, true);
+            model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
         } else {
             model.brickClicked = new Brick(dim, getX(), getY(), getZ(), this.color, (dim.getHeight() == 0.5), false);
             model.brickClicked.setCylindrical(this.cylindrical, 36788);
@@ -489,7 +489,7 @@ public class Brick extends ArrayList<MinBrick> {
         this.setState(State.NONE);
         boolean piece = this.piece;
         if (piece) {
-            model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], this.color, false, true);
+            model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
         } else {
             model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], this.color, (dim.getHeight() == 0.5), false);
             model.brickClicked.setCylindrical(this.cylindrical, 36788);
