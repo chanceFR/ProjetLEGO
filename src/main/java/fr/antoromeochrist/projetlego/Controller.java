@@ -1199,8 +1199,10 @@ public class Controller implements Initializable {
             } else if (cylindricalCB.isSelected()) {
                 listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
-            } else {
+            }else  if (smoothCB.isSelected()){
                 listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+            }else{
+                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
             }
         });
 
@@ -1231,8 +1233,10 @@ public class Controller implements Initializable {
             } else if (cylindricalCB.isSelected()) {
                 listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
-            } else {
+            }else if (smoothCB.isSelected()){
                 listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+            }else{
+                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
             }
         });
 
@@ -1263,8 +1267,10 @@ public class Controller implements Initializable {
             } else if (cylindricalCB.isSelected()) {
                 listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
-            } else {
+            } else  if (smoothCB.isSelected()){
                 listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+            }else{
+                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
             }
         });
 
