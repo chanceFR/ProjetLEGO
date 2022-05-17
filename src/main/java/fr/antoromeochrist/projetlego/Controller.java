@@ -135,6 +135,15 @@ public class Controller implements Initializable {
     @FXML
     public Label close;
 
+    @FXML
+    public CheckBox plateCB;
+
+    @FXML
+    public CheckBox cylindricalCB;
+
+    @FXML
+    public CheckBox smoothCB;
+
 
     /**
      * Cette variable permet de stocker l'étape actuelle pour ainsi
@@ -160,14 +169,6 @@ public class Controller implements Initializable {
      * @see fr.antoromeochrist.projetlego.utils.bricks.Volume
      */
     public static Grid grid;
-
-    /**
-     * Variable finale qui définit la quantité de rotation lorsque vous faites une rotation avec la souris.
-     *
-     * @see fr.antoromeochrist.projetlego.utils.CameraUtils
-     * @see fr.antoromeochrist.projetlego.utils.DurationAngle
-     */
-    public static final float rot = 11.25f;
 
     /**
      * Permet de savoir si on est dans la subscene
@@ -1169,9 +1170,105 @@ public class Controller implements Initializable {
 
         close.setOnMouseClicked(e -> System.exit(0));
 
+
+        plateCB.setOnAction(e -> {
+            listView.getItems().clear();
+
+            //cyl plate smooth
+            if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //cyl smooth
+            else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate cyl
+            else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate smooth
+            else if (plateCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //plate
+            } else if (plateCB.isSelected()) {
+                listView.getItems().addAll(searchList("plate", model.imageStorages));
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //cylinder
+            } else if (cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                //smooth
+            } else {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+            }
+        });
+
+        smoothCB.setOnAction(e -> {
+            listView.getItems().clear();
+            //cyl plate smooth
+            if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //cyl smooth
+            else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate cyl
+            else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate smooth
+            else if (plateCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //plate
+            } else if (plateCB.isSelected()) {
+                listView.getItems().addAll(searchList("plate", model.imageStorages));
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //cylinder
+            } else if (cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                //smooth
+            } else {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+            }
+        });
+
+        cylindricalCB.setOnAction(e -> {
+            listView.getItems().clear();
+            //cyl plate smooth
+            if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //cyl smooth
+            else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate cyl
+            else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+            }
+            //plate smooth
+            else if (plateCB.isSelected() && smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //plate
+            } else if (plateCB.isSelected()) {
+                listView.getItems().addAll(searchList("plate", model.imageStorages));
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                //cylinder
+            } else if (cylindricalCB.isSelected()) {
+                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                //smooth
+            } else {
+                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+            }
+        });
+
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
     }
+
 
     /**
      * Mise à jour de l'image qui représente la {@link Brick}

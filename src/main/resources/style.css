@@ -150,5 +150,16 @@ list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color:#808080;
 }
 
+.check-box .box {
+	-fx-background-color: gray;
+	-fx-border-color: gray;
+	-fx-border-radius: 0;
+}
+.check-box:selected .mark {
+	-fx-background-color: white;
+}
+.check-box:selected .box {
+	-fx-background-color: gray;
+}
 
 
