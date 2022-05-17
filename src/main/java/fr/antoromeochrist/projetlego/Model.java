@@ -168,6 +168,21 @@ public class Model {
                 sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
                 return;
             }
+        } else {
+            File temp = selectOpenProject();
+            if (temp == null) {
+                sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
+                return;
+            } else {
+                try {
+                    saveAllData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                controller.reset();
+                project = temp;
+                sendNotif("L'ancien projet a été sauvegardé avec succès.");
+            }
         }
         Scanner obj = null;
         try {
@@ -377,7 +392,10 @@ public class Model {
         if (project == null) {
             Fast.log("En attente de sélection de fichier");
             project = selectSaveProject();
-            if (project == null) sendNotif("Vous n'avez pas sélectionné de fichier pour sauvegarder votre projet.");
+            if (project == null) {
+                sendNotif("Vous n'avez pas sélectionné de fichier\n pour sauvegarder votre projet.");
+                return;
+            }
         }
         System.out.println("Ecriture dans le fichier en cours...");
         FileWriter fWriter = null;

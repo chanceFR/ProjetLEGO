@@ -996,6 +996,7 @@ public class Figurine extends Brick {
     }
 
     public void setHat(HatType hat) {
+        clearHat();
         this.hat = hat;
         switch (hat) {
             case GENTLEMAN -> {
@@ -1023,7 +1024,6 @@ public class Figurine extends Brick {
     }
 
     public void switchHat() {
-        clearHat();
         switch (hat) {
             case GENTLEMAN -> setHat(HatType.MAGICIAN);
             case MAGICIAN -> setHat(HatType.NONE);

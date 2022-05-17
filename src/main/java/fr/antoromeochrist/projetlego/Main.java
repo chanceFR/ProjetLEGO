@@ -24,12 +24,6 @@ import java.util.Objects;
 public class Main extends Application {
 
     /**
-     * Coordonnéés pour bouger la fenêtre (logiciel en entier)
-     */
-    public static double xOffset = 0;
-    public static double yOffset = 0;
-
-    /**
      * Coordonnéés pour bouger la petite fenêtre d'acceuil ("open project ....")
      */
 

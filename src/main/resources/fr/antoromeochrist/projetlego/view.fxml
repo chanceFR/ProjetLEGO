@@ -46,17 +46,17 @@
                         <Rectangle arcWidth="5.0" fill="#2c2f35" height="57.0" smooth="false" stroke="BLACK" strokeType="INSIDE" width="257.0" />
                         <!-- Zone de texte ou on peut ecrire-->
                         <TextField fx:id="searchBar" layoutX="18.0" layoutY="2.0" prefHeight="33.0" prefWidth="217.0" promptText="search... 🔍" stylesheets="@../../../style.css" />
-                  <CheckBox fx:id="plateCB" layoutX="27.0" layoutY="37.0" mnemonicParsing="false" text="Plate" textFill="#1b1818">
+                  <CheckBox fx:id="plateCB" layoutX="27.0" layoutY="37.0" mnemonicParsing="false" text="Plate" textFill="white">
                      <font>
                         <Font size="9.0" />
                      </font>
                   </CheckBox>
-                  <CheckBox fx:id="cylindricalCB" layoutX="82.0" layoutY="37.0" mnemonicParsing="false" text="Cylindrical" textFill="#1b1818">
+                  <CheckBox fx:id="cylindricalCB" layoutX="82.0" layoutY="37.0" mnemonicParsing="false" text="Cylindrical" textFill="white">
                      <font>
                         <Font size="9.0" />
                      </font>
                   </CheckBox>
-                  <CheckBox fx:id="smoothCB" layoutX="159.0" layoutY="37.0" mnemonicParsing="false" text="Smooth" textFill="#1b1818">
+                  <CheckBox fx:id="smoothCB" layoutX="159.0" layoutY="37.0" mnemonicParsing="false" text="Smooth" textFill="white">
                      <font>
                         <Font size="9.0" />
                      </font>

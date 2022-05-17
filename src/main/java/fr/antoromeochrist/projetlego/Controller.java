@@ -8,6 +8,7 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
@@ -28,9 +29,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -400,7 +403,7 @@ public class Controller implements Initializable {
                         //Fast.log("L'instruction existe !");
                         model.instruction.get(i);
                         model.instruction.get(i).setTf(field);
-                        model.instruction.get(i).setName(model.instruction.get(i).getName(),123);
+                        model.instruction.get(i).setName(model.instruction.get(i).getName(), 123);
                     } catch (Exception e) {
                         model.instruction.add(new Step("step " + i, (ListView<Brick>) steps.getItems().get(i), field));
                     }
@@ -425,7 +428,7 @@ public class Controller implements Initializable {
                     //Fast.log("instructions i : " + model.instruction.get(i).getName());
                     //field prendra forcément la valeur contenue dans current lors de sa création.
                     field.setText(current.getName());
-                    field.textProperty().addListener((observable, oldValue, newValue) -> current.setName(newValue,34));
+                    field.textProperty().addListener((observable, oldValue, newValue) -> current.setName(newValue, 34));
 
                     /*
                      * Menu de droite - gestion des étapes
@@ -506,7 +509,7 @@ public class Controller implements Initializable {
                          * */
                         trash.setOnMousePressed(mouseEvent -> {
                             int size = lv.getItems().size();
-                            for (int o = 0; o < size; o++){
+                            for (int o = 0; o < size; o++) {
                                 if (lv.getItems().get(o) instanceof Brick b) b.remove();
                             }
                             steps.getItems().remove(lv);
@@ -536,7 +539,15 @@ public class Controller implements Initializable {
                                 hbx1.setAlignment(Pos.CENTER_LEFT);
                                 hbx1.setStyle("-fx-font-size: 12px;");
                                 ImageView iv = new ImageView();
-                                iv.setImage(ImageStorage.getImage(model.imageStorages, brk.getDim().toString()));
+                                if (!brk.isPiece()) {
+                                    iv.setImage(ImageStorage.getImage(model.imageStorages, brk.getDim().toString()));
+                                } else {
+                                    try {
+                                        iv.setImage(new ImagePath("figurine.png"));
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                                 iv.setFitHeight(20);
                                 iv.setFitWidth(20);
 
@@ -862,10 +873,10 @@ public class Controller implements Initializable {
             }
         });
 
-        listView.setOnMouseEntered( e-> inSubsceneAndListViewAndSteps=true);
-        steps.setOnMouseEntered( e-> inSubsceneAndListViewAndSteps=true);
-        listView.setOnMouseExited( e-> inSubsceneAndListViewAndSteps=false);
-        steps.setOnMouseExited( e-> inSubsceneAndListViewAndSteps=false);
+        listView.setOnMouseEntered(e -> inSubsceneAndListViewAndSteps = true);
+        steps.setOnMouseEntered(e -> inSubsceneAndListViewAndSteps = true);
+        listView.setOnMouseExited(e -> inSubsceneAndListViewAndSteps = false);
+        steps.setOnMouseExited(e -> inSubsceneAndListViewAndSteps = false);
 
         anchorPane.setOnMouseMoved(e -> {
             if (model.dropInProgress) {
@@ -933,26 +944,19 @@ public class Controller implements Initializable {
         });
         subScene.setOnMouseDragged(e -> {
             if (model.rightClickActive) {
-
-
-                KeyFrame lastXkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size() - 2);
-                KeyFrame lastYkey = camera.timeline.getKeyFrames().get(camera.timeline.getKeyFrames().size() - 1);
-
                 float newAngleX = camera.getAngleY();
                 float newAngleY = camera.getAngleX();
-
-
                 DurationAngle dx = new DurationAngle(newAngleX, 0.001f);
                 KeyFrame newX = new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
 
 
-                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY)/10));
+                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 10));
                 camera.timeline.getKeyFrames().add(newX);
 
 
                 DurationAngle dy = new DurationAngle(newAngleY, 0.001f);
                 KeyFrame newY = new KeyFrame(Duration.seconds(dy.getDuration()), new KeyValue(y_axis.angleProperty(), dy.getAngle()));
-                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX)/10));
+                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 10));
                 camera.timeline.getKeyFrames().add(newY);
                 model.mouseX = e.getX();
                 model.mouseY = e.getY();
@@ -1183,19 +1187,6 @@ public class Controller implements Initializable {
                 ex.printStackTrace();
             }
         });
-
-        anchorPane.setOnMousePressed(event -> {
-            Main.xOffset = event.getSceneX();
-            Main.yOffset = event.getSceneY();
-        });
-        anchorPane.setOnMouseDragged(event -> {
-            if (!inSubsceneAndListViewAndSteps) {
-                Main.software.setX(event.getScreenX() - Main.xOffset);
-                Main.software.setY(event.getScreenY() - Main.yOffset);
-            }
-        });
-
-
         close.setOnMouseClicked(e -> System.exit(0));
 
 
@@ -1301,13 +1292,15 @@ public class Controller implements Initializable {
                 listView.getItems().addAll(searchList(sb + "", model.imageStorages));
             }
         });
-        openProject.setOnAction(e -> {
-            model.loadData();
-        });
+        openProject.setOnAction(e -> model.loadData());
 
         saveAs.setOnAction(e -> {
             try {
-                model.saveAllData();
+                File temp = model.selectSaveProject();
+                if (temp != null) {
+                    model.project = temp;
+                    model.saveAllData();
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -1322,12 +1315,8 @@ public class Controller implements Initializable {
             }
 
         });
-
-
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
-
-
     }
 
 
@@ -1415,4 +1404,22 @@ public class Controller implements Initializable {
                 for (Brick br : ((ListView<Brick>) lv).getItems()) if (br.equals(b)) return lv;
         return null;
     }
+
+    public void reset() {
+        ArrayList<Brick> removeB = new ArrayList<>();
+        for (Object o : steps.getItems()) {
+            for (Brick b : ((ListView<Brick>) o).getItems()) {
+                removeB.add(b);
+            }
+        }
+        for (Brick b : removeB) {
+            Fast.log("remove");
+            b.remove();
+        }
+        Step first = model.instruction.get(0);
+        model.instruction.clear();
+        model.instruction.add(first);
+        model.instruction.get(0).setName("step 0", 45);
+    }
+
 }

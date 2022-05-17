@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="148.0" prefWidth="389.0" stylesheets="@../../../homestyle.css"
+<AnchorPane fx:id="anchorpane" prefHeight="148.0" prefWidth="389.0" stylesheets="@../../../homestyle.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="fr.antoromeochrist.projetlego.notifWindows.ControllerNotif">
     <Rectangle fill="#212328" height="75.0" layoutY="-2.0" smooth="false" stroke="BLACK" strokeMiterLimit="0.0"
