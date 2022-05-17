@@ -631,7 +631,7 @@ public class Figurine extends Brick {
         for (Node n : nodes) {
             n.setOnMouseClicked(e -> {
                 if (e.getButton().equals(MouseButton.PRIMARY)) { //click gauche
-                   this.manageState(e.getClickCount());
+                  this.switchState();
                 }
             });
         }
