@@ -873,10 +873,11 @@ public class Controller implements Initializable {
                 if (model.brickClicked != null) model.brickClicked.setState(State.NONE, 14);
                 String text = model.dropSelectionData.getText();
                 Dim dim = Dim.getDimWithText(text);
-                boolean piece = text.contains("piece");
-                if (piece) {
-                    model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), false, true);
-                } else {
+
+                if(text.contains("Figurine")){
+                        model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+                }
+                else {
                     model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), (dim.getHeight() == 0.5), false);
                     model.brickClicked.setCylindrical(text.contains("cylinder"), 36788);
                     model.brickClicked.setSmooth(text.contains("smooth"), 36789);

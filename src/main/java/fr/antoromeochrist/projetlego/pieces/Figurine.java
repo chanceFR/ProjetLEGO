@@ -507,13 +507,13 @@ public class Figurine extends Brick {
         leftFoot.setWidth(0.9);
         leftFoot.setHeight(0.30);
         leftFoot.setDepth(1);
-        leftFoot.setMaterial(new PhongMaterial(Color.YELLOW));
+        leftFoot.setMaterial(new PhongMaterial(Color.BLACK));
 
         rightFoot = new Box();
         rightFoot.setWidth(0.9);
         rightFoot.setHeight(0.30);
         rightFoot.setDepth(1);
-        rightFoot.setMaterial(new PhongMaterial(Color.YELLOW));
+        rightFoot.setMaterial(new PhongMaterial(Color.BLACK));
 
         gentleman1 = new Cylinder();
         gentleman1.setHeight(0.3);
