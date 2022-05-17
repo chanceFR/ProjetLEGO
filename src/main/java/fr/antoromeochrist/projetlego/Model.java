@@ -69,33 +69,33 @@ public class Model {
             imageStorages.add(new ImageStorage("   brick plate | 2x3x0.5", new ImagePath("2x3.png")));
             imageStorages.add(new ImageStorage("   brick plate | 2x4x0.5", new ImagePath("2x4.png")));
             imageStorages.add(new ImageStorage("   brick plate | 3x3x0.5", new ImagePath("3x3.png")));
-            imageStorages.add(new ImageStorage("   brick plate | 3x4x0.5", new ImagePath("4x4x0.5s.png")));
-            imageStorages.add(new ImageStorage("   brick plate | 4x4x0.5", new ImagePath("4x4x0.5s2.png")));
+            imageStorages.add(new ImageStorage("   brick plate | 3x4x0.5", new ImagePath("3x4.png")));
+            imageStorages.add(new ImageStorage("   brick plate | 4x4x0.5", new ImagePath("4x4.png")));
             imageStorages.add(new ImageStorage("      cylinder | 1x1    ", new ImagePath("1x1c.png")));
             imageStorages.add(new ImageStorage("      cylinder | 2x2    ", new ImagePath("2x2c.png")));
             imageStorages.add(new ImageStorage("      cylinder | 3x3    ", new ImagePath("3x3c.png")));
             imageStorages.add(new ImageStorage("      cylinder | 4x4    ", new ImagePath("4x4c.png")));
-            imageStorages.add(new ImageStorage("cylinder plate | 1x1x0.5", new ImagePath("1x1x0.5cs.png")));
-            imageStorages.add(new ImageStorage("cylinder plate | 2x2x0.5", new ImagePath("2x2x0.5cs.png")));
-            imageStorages.add(new ImageStorage("cylinder plate | 3x3x0.5", new ImagePath("3x3x0.5cs.png")));
-            imageStorages.add(new ImageStorage("cylinder plate | 4x4x0.5", new ImagePath("4x4x0.5cs.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 1x1x0.5", new ImagePath("1x1c.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 2x2x0.5", new ImagePath("2x2c.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 3x3x0.5", new ImagePath("3x3c.png")));
+            imageStorages.add(new ImageStorage("cylinder plate | 4x4x0.5", new ImagePath("4x4c.png")));
 
             //roméo
-            imageStorages.add(new ImageStorage("  brick smooth | 1x1x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 1x2x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 1x3x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 1x4x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 2x2x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 2x3x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 2x4x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 3x3x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 3x4x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("  brick smooth | 4x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x1x0.5", new ImagePath("1x1x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x2x0.5", new ImagePath("1x2x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x3x0.5", new ImagePath("1x3x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x4x0.5", new ImagePath("1x4x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x2x0.5", new ImagePath("2x2x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x3x0.5", new ImagePath("2x3x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x4x0.5", new ImagePath("2x4x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x3x0.5", new ImagePath("3x3x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x4x0.5", new ImagePath("3x3x0.5s.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 4x4x0.5", new ImagePath("4x4x0.5s.png")));
 
-            imageStorages.add(new ImageStorage("cylinder smooth | 1x1x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("cylinder smooth | 2x2x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("cylinder smooth | 3x3x0.5", new ImagePath("1x1.png")));
-            imageStorages.add(new ImageStorage("cylinder smooth | 4x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 1x1x0.5", new ImagePath("1x1x0.5cs.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 2x2x0.5", new ImagePath("2x2x0.5cs.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 3x3x0.5", new ImagePath("3x3x0.5cs.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 4x4x0.5", new ImagePath("4x4x0.5cs.png")));
             //roméo
 
         } catch (FileNotFoundException e) {
