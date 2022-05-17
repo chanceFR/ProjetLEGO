@@ -983,7 +983,7 @@ public class Controller implements Initializable {
                         case R -> model.brickClicked.rotate();
                         case UP -> model.brickClicked.up();
                         case DOWN -> model.brickClicked.down();
-                        case S -> model.saveAllData(model.instruction);
+                        case S -> model.saveAllData();
                     }
                 }
                 switch (keyEvent.getCode()) {
