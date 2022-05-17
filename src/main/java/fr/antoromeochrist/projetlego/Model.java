@@ -1,17 +1,32 @@
 package fr.antoromeochrist.projetlego;
 
+import fr.antoromeochrist.projetlego.pieces.Figurine;
+import fr.antoromeochrist.projetlego.pieces.HatType;
 import fr.antoromeochrist.projetlego.utils.bricks.Brick;
+import fr.antoromeochrist.projetlego.utils.bricks.Dim;
 import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
+
+import static fr.antoromeochrist.projetlego.Controller.controller;
+import static fr.antoromeochrist.projetlego.Main.notifWindow;
 
 
 public class Model {
@@ -27,8 +42,9 @@ public class Model {
     public double mouseY;
     public float oldAngleX;
     public float oldAngleY;
+    public File project;
 
-    private File project;
+    public String lastMessageNotif = "";
 
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour
@@ -123,40 +139,256 @@ public class Model {
         return bs;
     }
 
-    public void selectProject(){
+    public File selectOpenProject() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open project");
+        fileChooser.setTitle("Open Project");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
-        project = fileChooser.showOpenDialog(Main.software);
+        return fileChooser.showOpenDialog(Main.software);
+    }
+
+    public File selectSaveProject() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Project");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
+        return fileChooser.showSaveDialog(Main.software);
+    }
+
+    private int getSizeOfStep(ArrayList<String> lines) {
+        int i = 0;
+        for (String s : lines)
+            if (s.startsWith("step")) i++;
+        return i;
     }
 
 
-
-    public void writeData() throws IOException {
-        //JSONArray employeeList = new JSONArray();
-        //FileWriter fWriter = new FileWriter(project.getAbsolutePath());
-        //fWriter.write(data);
-        //System.out.println(data);
-        //fWriter.close();
-    }
-
-    public void saveAllData(){
-        for(Step step : instruction){
-            System.out.println(">>"+step.getName());
-            for(Brick b : step.getBricks().getItems()){
-                System.out.println(">>"+b);
+    public void loadData() {
+        if (project == null) {
+            project = selectOpenProject();
+            if (project == null) {
+                sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
+                return;
             }
         }
-
-        if(project == null){
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Choose a file to save project");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
-            project = fileChooser.showOpenDialog(Main.software);
-            if (project != null) {
-                System.out.println("fichier sélectionné");
-            }
+        Scanner obj = null;
+        try {
+            obj = new Scanner(project);
+        } catch (FileNotFoundException ignored) {
         }
 
+        ArrayList<String> lines = new ArrayList<>();
+        //récupération des lignes
+        while (obj.hasNextLine()) lines.add(obj.nextLine());
+        for (String line : lines) {
+            Fast.log("Ligne récupéré: " + line);
+        }
+
+
+        Fast.log("Première brique: ");
+
+        //première brique
+        String idPre = "0";
+        String[] dt0 = lines.get(getSizeOfStep(lines)).split("\\:");
+
+        boolean piece0 = dt0[1].equals("figurine");
+        Fast.log("> piece: " + piece0);
+        String coor0 = dt0[2];
+        //
+        String xSt0 = "";
+        int i3_0 = 1;
+        while (coor0.toCharArray()[i3_0] != ';') {
+            xSt0 += coor0.toCharArray()[i3_0];
+            i3_0++;
+        }
+        int x0 = Integer.parseInt(xSt0);
+        String zSt0 = "";
+        int i4_0 = coor0.length() - 2;
+        while (coor0.toCharArray()[i4_0] != ';') {
+            zSt0 += coor0.toCharArray()[i4_0];
+            i4_0--;
+        }
+        zSt0 = new StringBuilder(zSt0).reverse().toString();
+        int z0 = Integer.parseInt(zSt0);
+        String h0 = "";
+        int i0 = 0;
+        while (coor0.toCharArray()[i0] != ';') {
+            i0++;
+        }
+        while (coor0.toCharArray()[i0 + 1] != ';') {
+            i0++;
+            h0 += coor0.toCharArray()[i0];
+        }
+        Fast.log("> x :" + x0 + " y:" + h0 + " z:" + z0);
+
+        if (piece0) {
+            Fast.log("Processus de création de la figurine en cours...");
+            Figurine f = new Figurine(x0, Double.parseDouble(h0), z0);
+            f.updateDisplay();
+            f.setHat(HatType.valueOf(dt0[3]));
+            f.hide(Boolean.parseBoolean(dt0[4]));
+        } else {
+            Dim dim = Dim.convertToDim(dt0[3]);
+            Fast.log("> Dim :" + dim);
+            Fast.log("> Color: " + Color.valueOf(dt0[8]));
+            Fast.log("> Plate: " + (dim.getHeight() == 0.5));
+            Fast.log("> Cylindrical: " + Boolean.parseBoolean(dt0[5]));
+            Fast.log("> Smooth: " + Boolean.parseBoolean(dt0[6]));
+            Fast.log("> Hide: " + Boolean.parseBoolean(dt0[7]));
+
+            Brick b = new Brick(dim, x0, Double.parseDouble(h0), z0, Color.valueOf(dt0[8]), (dim.getHeight() == 0.5), false);
+            b.setCylindrical(Boolean.parseBoolean(dt0[5]), 678);
+            b.setSmooth(Boolean.parseBoolean(dt0[6]), 679);
+            b.hide(Boolean.parseBoolean(dt0[7]));
+        }
+
+        ArrayList<String> stepNames = new ArrayList();
+        for (int i = 0; i < getSizeOfStep(lines); i++) {
+            stepNames.add(lines.get(i).split("\\:")[2]);
+        }
+        Fast.log("Step names: " + stepNames);
+
+        instruction.get(0).setName(stepNames.get(0), 345);
+        int stepDiffrent = 0;
+        for (int i = getSizeOfStep(lines) + 1; i < lines.size(); i++) {
+            String[] dt = lines.get(i).split("\\:");
+            if (!idPre.equals(dt[0])) {
+                stepDiffrent++;
+                Fast.log("On ajoute une nouvelle étape");
+                ListView nL = new ListView();
+                instruction.add(new Step(stepNames.get(stepDiffrent), nL));
+                controller.steps.getItems().add(nL);
+                controller.currentStep = nL;
+                idPre = dt[0];
+            }
+            Fast.log("Nouvelle Brick");
+            boolean piece = dt[1].equals("figurine");
+            Fast.log("> piece: " + piece);
+            String coor = dt[2];
+            //
+            String xSt = "";
+            int i3_ = 1;
+            while (coor.toCharArray()[i3_] != ';') {
+                xSt += coor.toCharArray()[i3_];
+                i3_++;
+            }
+            int x = Integer.parseInt(xSt);
+            String zSt = "";
+            int i4_ = coor.length() - 2;
+            while (coor.toCharArray()[i4_] != ';') {
+                zSt += coor.toCharArray()[i4_];
+                i4_--;
+            }
+            zSt = new StringBuilder(zSt).reverse().toString();
+            int z = Integer.parseInt(zSt);
+
+            String h = "";
+            int i1 = 0;
+            while (coor.toCharArray()[i1] != ';') {
+                i1++;
+            }
+            while (coor.toCharArray()[i1 + 1] != ';') {
+                i1++;
+                h += coor.toCharArray()[i1];
+            }
+            Fast.log("> x :" + x + " y:" + h + " z:" + z);
+            if (piece) {
+                Figurine f = new Figurine(x, Double.parseDouble(h), z);
+                f.setHat(HatType.valueOf(dt[3]));
+                f.hide(Boolean.parseBoolean(dt[4]));
+                f.updateDisplay();
+            } else {
+                Dim dim = Dim.convertToDim(dt[3]);
+                Fast.log("> Dim :" + dim);
+                Fast.log("> Color: " + Color.valueOf(dt[8]));
+                Fast.log("> Plate: " + (dim.getHeight() == 0.5));
+                Fast.log("> Cylindrical: " + Boolean.parseBoolean(dt[5]));
+                Fast.log("> Smooth: " + Boolean.parseBoolean(dt[6]));
+                Fast.log("> Hide: " + Boolean.parseBoolean(dt[7]));
+                Brick b = new Brick(dim, x, Double.parseDouble(h), z, Color.valueOf(dt[8]), (dim.getHeight() == 0.5), false);
+                b.setCylindrical(Boolean.parseBoolean(dt[5]), 678);
+                b.setSmooth(Boolean.parseBoolean(dt[6]), 679);
+                b.hide(Boolean.parseBoolean(dt[7]));
+            }
+        }
     }
+
+
+    public String getData() {
+        ArrayList<String> lines = new ArrayList<>();
+        int i = 0;
+        for (Step step : instruction) {
+            lines.add("step:" + i + ":" + step.getName());
+            i++;
+        }
+        Fast.log("steps size: " + instruction.size());
+        for (int i2 = 0; i2 < instruction.size(); i2++) {
+            Fast.log("étape actuelle: " + instruction.get(i2).getName());
+            for (Brick b : ((ListView<Brick>) controller.steps.getItems().get(i2)).getItems()) {
+                Fast.log("current step size: " + instruction.get(i2).getBricks().getItems().size());
+                if (b.getPieceType().equals("Figurine")) {
+                    Figurine f = (Figurine) b;
+                    String str = i2 + ":figurine:" + b.getVolume().get(0) + ":" + f.getHat() + ":" + f.isHide();
+                    Fast.log(str);
+                    lines.add(str);
+                } else {
+                    String str = i2 + ":brick:" + b.getVolume().get(0) + ":" + b.getDim() + ":" + b.isPlate() + ":" + b.isCylindrical() + ":" + b.isSmooth() + ":" + b.isHide() + ":" + b.getColor();
+                    Fast.log(str);
+                    lines.add(str);
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) sb.append(line + "\n");
+        return sb.toString();
+    }
+
+
+    private double xOffsetNW = 0;
+    private double yOffsetNW = 0;
+
+    public void sendNotif(String message) {
+        lastMessageNotif = message;
+        notifWindow = new Stage();
+        Parent pNotifWindow = null;
+        try {
+            pNotifWindow = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dsview.fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        notifWindow.setScene(new Scene(pNotifWindow));
+        pNotifWindow.setOnMousePressed(event -> {
+            xOffsetNW = event.getSceneX();
+            yOffsetNW = event.getSceneY();
+        });
+        pNotifWindow.setOnMouseDragged(event -> {
+            notifWindow.setX(event.getScreenX() - xOffsetNW);
+            notifWindow.setY(event.getScreenY() - yOffsetNW);
+        });
+        notifWindow.setTitle("Enregistrement échoué");
+        notifWindow.setMinWidth(387);
+        notifWindow.setMinHeight(127);
+        notifWindow.setMaxWidth(387);
+        notifWindow.setMaxHeight(127);
+        notifWindow.initStyle(StageStyle.UNDECORATED);
+        notifWindow.show();
+    }
+
+    public void saveAllData() throws IOException {
+        String data = getData();
+        if (project == null) {
+            Fast.log("En attente de sélection de fichier");
+            project = selectSaveProject();
+            if (project == null) sendNotif("Vous n'avez pas sélectionné de fichier pour sauvegarder votre projet.");
+        }
+        System.out.println("Ecriture dans le fichier en cours...");
+        FileWriter fWriter = null;
+        try {
+            fWriter = new FileWriter(project.getAbsolutePath());
+            fWriter.write(data);
+            fWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

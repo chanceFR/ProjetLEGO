@@ -196,6 +196,7 @@ public class Brick extends ArrayList<MinBrick> {
     public Brick(Dim dim, double x, double y, double z, Color color, boolean plate, boolean piece) {
         //Fast.log("Constructor");
         model.bricks.add(this);
+        this.pieceType = "brick";
         this.state = State.NONE;
         this.hide = false;
         this.plate = plate;
@@ -1226,6 +1227,10 @@ public class Brick extends ArrayList<MinBrick> {
 
     protected void setPieceType(String type) {
         this.pieceType = type;
+    }
+
+    public String getPieceType() {
+        return pieceType;
     }
 
     public static Rotate addRotate(Point3D axis, double angle) {

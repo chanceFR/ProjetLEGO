@@ -1,6 +1,8 @@
 package fr.antoromeochrist.projetlego.utils.bricks;
 
+import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 
 /**
  * Cette classe permet de stoker 2 variables.
@@ -20,10 +22,17 @@ public class Step {
     private boolean isHide;
     private String text;
     private ListView<Brick> bricks;
+    private TextField tf;
 
     /**
      * Constructeur avec une String
      */
+    public Step(String text, ListView<Brick> bricks,TextField tf) {
+        this.isHide = false;
+        this.text = text;
+        this.bricks = bricks;
+        this.tf = tf;
+    }
     public Step(String text, ListView<Brick> bricks) {
         this.isHide = false;
         this.text = text;
@@ -33,8 +42,10 @@ public class Step {
     /**
      * Mettre à jour le texte
      */
-    public void setText(String text) {
+    public void setName(String text,int debug) {
+        //Fast.log("-->"+text+" #"+debug);
         this.text = text;
+        this.tf.setText(this.text);
     }
 
     /**
@@ -73,5 +84,13 @@ public class Step {
 
     public ListView<Brick> getBricks() {
         return bricks;
+    }
+
+    public TextField getTf() {
+        return tf;
+    }
+
+    public void setTf(TextField tf) {
+        this.tf = tf;
     }
 }
