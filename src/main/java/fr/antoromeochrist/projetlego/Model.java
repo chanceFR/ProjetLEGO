@@ -96,6 +96,8 @@ public class Model {
             imageStorages.add(new ImageStorage("cylinder smooth | 2x2x0.5", new ImagePath("2x2x0.5cs.png")));
             imageStorages.add(new ImageStorage("cylinder smooth | 3x3x0.5", new ImagePath("3x3x0.5cs.png")));
             imageStorages.add(new ImageStorage("cylinder smooth | 4x4x0.5", new ImagePath("4x4x0.5cs.png")));
+
+            imageStorages.add(new ImageStorage("      Figurine | 4x1x5  ", new ImagePath("Figurine.png")));
             //roméo
 
         } catch (FileNotFoundException e) {
