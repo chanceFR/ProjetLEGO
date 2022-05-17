@@ -5,12 +5,13 @@ import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Model {
 
@@ -26,6 +27,8 @@ public class Model {
     public float oldAngleX;
     public float oldAngleY;
 
+    private File project;
+
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour
      * débuter le drag and drop dans le  <a href="#{@link}">{@link Controller}</a>.
@@ -33,6 +36,7 @@ public class Model {
      * @see fr.antoromeochrist.projetlego.utils.bricks.Volume
      */
     public ImageStorage dropSelectionData;
+
 
     public Model() {
         mouseX = 0;
@@ -75,6 +79,24 @@ public class Model {
             imageStorages.add(new ImageStorage("cylinder plate | 3x3x0.5", new ImagePath("3x3x0.5cs.png")));
             imageStorages.add(new ImageStorage("cylinder plate | 4x4x0.5", new ImagePath("4x4x0.5cs.png")));
 
+            //roméo
+            imageStorages.add(new ImageStorage("  brick smooth | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 4x4x0.5", new ImagePath("1x1.png")));
+
+            imageStorages.add(new ImageStorage("cylinder smooth | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 2x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 3x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 4x4x0.5", new ImagePath("1x1.png")));
+            //roméo
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -98,5 +120,35 @@ public class Model {
         return bs;
     }
 
+    public void writeData(String data) throws IOException {
 
+
+
+
+        FileWriter fWriter = new FileWriter(project.getAbsolutePath());
+        fWriter.write(data);
+        System.out.println(data);
+        fWriter.close();
+    }
+
+    public void saveAllData(){
+        for(Step step : instruction){
+            System.out.println(">>"+step.getName());
+            for(Brick b : step.getBricks().getItems()){
+                System.out.println(">>"+b);
+            }
+        }
+
+        if(project == null){
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose a file to save project");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
+            project = fileChooser.showOpenDialog(Main.software);
+            if (project != null) {
+                System.out.println("fichier sélectionné");
+
+            }
+        }
+
+    }
 }

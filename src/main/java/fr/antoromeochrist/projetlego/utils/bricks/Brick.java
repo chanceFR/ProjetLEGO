@@ -17,8 +17,7 @@ import javafx.scene.transform.Rotate;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import static fr.antoromeochrist.projetlego.Controller.controller;
-import static fr.antoromeochrist.projetlego.Controller.model;
+import static fr.antoromeochrist.projetlego.Controller.*;
 
 /*
                                  ,...,      .....
@@ -472,23 +471,33 @@ public class Brick extends ArrayList<MinBrick> {
         this.move(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], 890);
     }
 
-/*
+    public void createCloneOver() {
+        this.setState(State.NONE);
+        boolean piece = this.piece;
+        if (piece) {
+            model.brickClicked = new Brick(dim, getX(), getY(), getZ(), this.color, false, true);
+        } else {
+            model.brickClicked = new Brick(dim, getX(), getY(), getZ(), this.color, (dim.getHeight() == 0.5), false);
+            model.brickClicked.setCylindrical(this.cylindrical, 36788);
+            model.brickClicked.setSmooth(this.smooth, 36789);
+        }
+        model.brickClicked.setState(State.SHOW_IS_SELECT);
+        model.brickClicked.hide(this.hide);
+    }
+
     public void createClone() {
         this.setState(State.NONE);
-        if (!this.piece) { //la brique a cloné n'est pas une pièce
-            model.brickClicked = new Brick(this.dim, this.getX(), this.getY(), this.getZ(), this.getColor());
-            model.brickClicked.setState(State.SHOW_IS_SELECT);
-            model.brickClicked.setCylindrical(this.cylindrical);
-            model.brickClicked.setSmooth(this.smooth);
-            model.brickClicked.setPlate(this.plate);
-            if (this.dim.isReverse) model.brickClicked.rotate();
-        //Fast.log("v size: " + model.brickClicked.getVolume().size());
-            model.brickClicked.updateDisplay();
+        boolean piece = this.piece;
+        if (piece) {
+            model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], this.color, false, true);
         } else {
-            if (pieceType.equals("Figurine")) model.brickClicked = new Figurine(this.getX(), this.getY(), this.getZ());
+            model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], this.color, (dim.getHeight() == 0.5), false);
+            model.brickClicked.setCylindrical(this.cylindrical, 36788);
+            model.brickClicked.setSmooth(this.smooth, 36789);
         }
+        model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
         model.brickClicked.hide(this.hide);
-    }*/
+    }
 
     /**
      * Translation de -1 sur l'axe y
@@ -722,7 +731,10 @@ public class Brick extends ArrayList<MinBrick> {
 
         //tous doit être caché
         if (hide) {
-            //on cache les cylindres si la brique est pas lisse
+            /*
+            on cache les cylindres si la brique est pas lisse car si elle est lisse ça veut dire que
+            c'est déjà fait pour nous
+             */
             if (!smooth) for (MinBrick mb : this) mb.getCylinder().setOpacity(0);
 
             //on cache le gros cylindre si la brique est cylindrique
@@ -993,10 +1005,8 @@ public class Brick extends ArrayList<MinBrick> {
                 }
             }
         }
-
-        //on supprime tous les cylindres si la brique doit être lisse
-        if (smooth) for (MinBrick mb : this) mb.getCylinder().setOpacity(0);
-
+        //on supprime tous les cylindres si la brique lisse et plate
+        if (smooth && plate) for (MinBrick mb : this) mb.getCylinder().setOpacity(0);
         //on met à jour les bordures
         updateBorder();
     }
@@ -1110,6 +1120,7 @@ public class Brick extends ArrayList<MinBrick> {
     public void setSmooth(boolean b, int debug) {
         if (this.piece) return;
         if (this.smooth == b) return;
+        if (this.dim.getHeight() != 0.5 && b) return;
         //Fast.log("setPlate #" + debug);
         smooth = b;
         updateDisplay();
@@ -1144,13 +1155,10 @@ public class Brick extends ArrayList<MinBrick> {
                 controller.group.getChildren().remove(cylinders.get(i));
                 indexCylToRemove.add(i);
             }
-
             for (int i = indexCylToRemove.size() - 1; i > 0; i--) {
                 //Fast.log("> remove cylinder");
                 cylinders.remove(i);
             }
-
-
         } else {
             d = (this.size());
             this.dim.setHeight(1);
@@ -1187,7 +1195,6 @@ public class Brick extends ArrayList<MinBrick> {
                 cylinder.setMaterial(new PhongMaterial(this.color));
                 cylinders.add(cylinder);
             }
-
             controller.group.getChildren().addAll(cylinders);
         }
         //Fast.log("> size after plate operation :" + this.size());

@@ -8,7 +8,6 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
@@ -27,7 +26,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
@@ -132,6 +130,13 @@ public class Controller implements Initializable {
     public Label addStep;
 
     /**
+     * Permet de fermer la fenêtre
+     */
+    @FXML
+    public Label close;
+
+
+    /**
      * Cette variable permet de stocker l'étape actuelle pour ainsi
      * insérer chaque nouvelle brique que l'on pose dedans.
      * <p>
@@ -163,6 +168,11 @@ public class Controller implements Initializable {
      * @see fr.antoromeochrist.projetlego.utils.DurationAngle
      */
     public static final float rot = 11.25f;
+
+    /**
+     * Permet de savoir si on est dans la subscene
+     */
+    public boolean inSubscene = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -377,7 +387,10 @@ public class Controller implements Initializable {
                     try {
                         model.instruction.get(i);
                     } catch (Exception e) {
-                        model.instruction.add(new Step("step " + i));
+                        model.instruction.add(new Step("step " + i, (ListView<Brick>) steps.getItems().get(i)));
+                    }
+                    for (int i2 = 0; i2 < steps.getItems().size(); i2++) {
+                        model.instruction.get(i2).setBricks((ListView<Brick>) steps.getItems().get(i));
                     }
 
                     /*
@@ -397,7 +410,7 @@ public class Controller implements Initializable {
                      * */
 
                     //field prendra forcément la valeur contenue dans current lors de sa création.
-                    field.setText(current.getText());
+                    field.setText(current.getName());
                     field.textProperty().addListener((observable, oldValue, newValue) -> current.setText(newValue));
 
                     /*
@@ -845,7 +858,7 @@ public class Controller implements Initializable {
          *
          * */
         subScene.setOnMouseEntered(mouseEvent -> {
-
+            inSubscene = true;
             searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
             listView.setDisable(true); //évites que si on appuie sur des touches ça bouge légèrement les images
             /*
@@ -864,7 +877,8 @@ public class Controller implements Initializable {
                     model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), false, true);
                 } else {
                     model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), (dim.getHeight() == 0.5), false);
-                    model.brickClicked.setCylindrical(text.contains("cylinder"), 36789);
+                    model.brickClicked.setCylindrical(text.contains("cylinder"), 36788);
+                    model.brickClicked.setSmooth(text.contains("smooth"), 36789);
                 }
                 model.brickClicked.setState(State.FOLLOW_THE_MOUSE);
                 model.dropInProgress = false;
@@ -926,10 +940,10 @@ public class Controller implements Initializable {
         });
 
 
-        //Si on quitte la fenètre, la brique  set met en select !
         subScene.setOnMouseExited(mouseEvent -> {
             searchBar.setDisable(false);
             listView.setDisable(false);
+            inSubscene = false;
         });
 
         /*
@@ -965,10 +979,11 @@ public class Controller implements Initializable {
                         case O -> model.brickClicked.setCylindrical(!model.brickClicked.isCylindrical(), 95728);
                         case P -> model.brickClicked.setPlate(!model.brickClicked.isPlate(), 34567);
                         case H -> model.brickClicked.hide(!model.brickClicked.isHide());
-                        //case D -> model.brickClicked.createClone();
+                        case D -> model.brickClicked.createClone();
                         case R -> model.brickClicked.rotate();
                         case UP -> model.brickClicked.up();
                         case DOWN -> model.brickClicked.down();
+                        case S -> model.saveAllData(model.instruction);
                     }
                 }
                 switch (keyEvent.getCode()) {
@@ -1022,7 +1037,7 @@ public class Controller implements Initializable {
         });
 
         clonee.setOnMousePressed(e -> {
-            //if (model.brickClicked != null) model.brickClicked.createClone();
+            if (model.brickClicked != null) model.brickClicked.createCloneOver();
             try {
                 cloneeicon.setImage(new ImagePath("clonehover.jpg"));
                 cloneetext.setFill(Color.web("#42C0FB"));
@@ -1139,6 +1154,21 @@ public class Controller implements Initializable {
                 ex.printStackTrace();
             }
         });
+
+        anchorPane.setOnMousePressed(event -> {
+            Main.xOffset = event.getSceneX();
+            Main.yOffset = event.getSceneY();
+        });
+        anchorPane.setOnMouseDragged(event -> {
+            if (!inSubscene) {
+                Main.software.setX(event.getScreenX() - Main.xOffset);
+                Main.software.setY(event.getScreenY() - Main.yOffset);
+            }
+        });
+
+
+        close.setOnMouseClicked(e -> System.exit(0));
+
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
     }
