@@ -8,7 +8,6 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
@@ -27,7 +26,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
@@ -389,7 +387,10 @@ public class Controller implements Initializable {
                     try {
                         model.instruction.get(i);
                     } catch (Exception e) {
-                        model.instruction.add(new Step("step " + i));
+                        model.instruction.add(new Step("step " + i, (ListView<Brick>) steps.getItems().get(i)));
+                    }
+                    for (int i2 = 0; i2 < steps.getItems().size(); i2++) {
+                        model.instruction.get(i2).setBricks((ListView<Brick>) steps.getItems().get(i));
                     }
 
                     /*
@@ -409,7 +410,7 @@ public class Controller implements Initializable {
                      * */
 
                     //field prendra forcément la valeur contenue dans current lors de sa création.
-                    field.setText(current.getText());
+                    field.setText(current.getName());
                     field.textProperty().addListener((observable, oldValue, newValue) -> current.setText(newValue));
 
                     /*
@@ -857,7 +858,7 @@ public class Controller implements Initializable {
          *
          * */
         subScene.setOnMouseEntered(mouseEvent -> {
-            inSubscene=true;
+            inSubscene = true;
             searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
             listView.setDisable(true); //évites que si on appuie sur des touches ça bouge légèrement les images
             /*
@@ -942,7 +943,7 @@ public class Controller implements Initializable {
         subScene.setOnMouseExited(mouseEvent -> {
             searchBar.setDisable(false);
             listView.setDisable(false);
-            inSubscene=false;
+            inSubscene = false;
         });
 
         /*
@@ -982,6 +983,7 @@ public class Controller implements Initializable {
                         case R -> model.brickClicked.rotate();
                         case UP -> model.brickClicked.up();
                         case DOWN -> model.brickClicked.down();
+                        case S -> model.saveAllData(model.instruction);
                     }
                 }
                 switch (keyEvent.getCode()) {
@@ -1158,7 +1160,7 @@ public class Controller implements Initializable {
             Main.yOffset = event.getSceneY();
         });
         anchorPane.setOnMouseDragged(event -> {
-            if(!inSubscene) {
+            if (!inSubscene) {
                 Main.software.setX(event.getScreenX() - Main.xOffset);
                 Main.software.setY(event.getScreenY() - Main.yOffset);
             }

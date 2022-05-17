@@ -5,13 +5,11 @@ import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Model {
 
@@ -27,6 +25,7 @@ public class Model {
     public float oldAngleX;
     public float oldAngleY;
 
+    private File project;
 
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour
@@ -118,5 +117,18 @@ public class Model {
         return bs;
     }
 
+    public void saveAllData(ArrayList<Step> steps){
+        for(Step step : steps){
+            System.out.println(">>"+step.getName());
+            for(Brick b : step.getBricks().getItems()){
+                System.out.println(">>"+b);
+            }
+        }
 
+        if(project == null){
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose a file to save project");
+        }
+
+    }
 }
