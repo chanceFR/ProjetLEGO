@@ -5,6 +5,7 @@ import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Model {
     public double mouseY;
     public float oldAngleX;
     public float oldAngleY;
+
 
     /**
      * Cette variable va permettre de récupérer la dimension de la brique quand on clique sur une image pour
@@ -74,6 +76,24 @@ public class Model {
             imageStorages.add(new ImageStorage("cylinder plate | 2x2x0.5", new ImagePath("2x2c.png")));
             imageStorages.add(new ImageStorage("cylinder plate | 3x3x0.5", new ImagePath("3x3c.png")));
             imageStorages.add(new ImageStorage("cylinder plate | 4x4x0.5", new ImagePath("4x4c.png")));
+
+            //roméo
+            imageStorages.add(new ImageStorage("  brick smooth | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 1x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 2x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 3x4x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("  brick smooth | 4x4x0.5", new ImagePath("1x1.png")));
+
+            imageStorages.add(new ImageStorage("cylinder smooth | 1x1x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 2x2x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 3x3x0.5", new ImagePath("1x1.png")));
+            imageStorages.add(new ImageStorage("cylinder smooth | 4x4x0.5", new ImagePath("1x1.png")));
+            //roméo
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
