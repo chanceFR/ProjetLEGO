@@ -175,6 +175,9 @@ public class Controller implements Initializable {
      */
     public boolean inSubscene = false;
 
+    public float testY;
+    public float testX;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //init//
@@ -926,13 +929,15 @@ public class Controller implements Initializable {
                 KeyFrame newX = new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
 
 
-                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 100));
+                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) ));
                 camera.timeline.getKeyFrames().add(newX);
 
 
                 DurationAngle dy = new DurationAngle(newAngleY, 0.001f);
                 KeyFrame newY = new KeyFrame(Duration.seconds(dy.getDuration()), new KeyValue(y_axis.angleProperty(), dy.getAngle()));
-                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 100));
+
+
+                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) ));
                 camera.timeline.getKeyFrames().add(newY);
 
 
