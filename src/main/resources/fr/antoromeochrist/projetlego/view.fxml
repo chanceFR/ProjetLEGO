@@ -106,33 +106,18 @@
                 </Group>
             </children>
         </HBox>
-
-        <MenuBar prefHeight="1.0" prefWidth="134.0" stylesheets="@../../../style.css">
+        <MenuBar fx:id="menuBar" prefHeight="1.0" prefWidth="134.0" stylesheets="@../../../style.css">
         <menus>
           <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Open File" />
-            </items>
+            <items><MenuItem mnemonicParsing="false" text="Open File" /></items>
               <items>
-                  <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" text="Save as" />
+              </items>
+              <items>
+                  <MenuItem mnemonicParsing="false" text="Save" />
               </items>
           </Menu>
-
-            <Menu mnemonicParsing="false" text="Edit">
-              <items>
-                  <MenuItem mnemonicParsing="false" text="Copy" />
-              </items>
-              <items>
-                  <MenuItem mnemonicParsing="false" text="Clone" />
-              </items>
-              <items>
-                  <MenuItem mnemonicParsing="false" text="Hide" />
-              </items>
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-
+            <Menu mnemonicParsing="false" text="Help"></Menu>
         </menus>
       </MenuBar>
       <Circle fill="#121418" layoutX="782.0" layoutY="210.0" radius="44.0" stroke="#121418" strokeType="INSIDE" strokeWidth="0.0" />
