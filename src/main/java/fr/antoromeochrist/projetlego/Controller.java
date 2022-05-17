@@ -8,7 +8,6 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
@@ -175,7 +174,7 @@ public class Controller implements Initializable {
     /**
      * Permet de savoir si on est dans la subscene
      */
-    public boolean inSubscene = false;
+    public boolean inSubsceneAndListViewAndSteps = false;
 
     @FXML
     private MenuItem openProject;
@@ -506,8 +505,10 @@ public class Controller implements Initializable {
                          *
                          * */
                         trash.setOnMousePressed(mouseEvent -> {
-                            for (Object o : lv.getItems())
-                                if (o instanceof Brick b) b.remove();
+                            int size = lv.getItems().size();
+                            for (int o = 0; o < size; o++){
+                                if (lv.getItems().get(o) instanceof Brick b) b.remove();
+                            }
                             steps.getItems().remove(lv);
                         });
                     }
@@ -860,6 +861,12 @@ public class Controller implements Initializable {
                 imageOfBrickSelectedInSearchMenu.setY(e.getSceneY() - 50);
             }
         });
+
+        listView.setOnMouseEntered( e-> inSubsceneAndListViewAndSteps=true);
+        steps.setOnMouseEntered( e-> inSubsceneAndListViewAndSteps=true);
+        listView.setOnMouseExited( e-> inSubsceneAndListViewAndSteps=false);
+        steps.setOnMouseExited( e-> inSubsceneAndListViewAndSteps=false);
+
         anchorPane.setOnMouseMoved(e -> {
             if (model.dropInProgress) {
                 imageOfBrickSelectedInSearchMenu.setX(e.getSceneX() - 50);
@@ -873,7 +880,7 @@ public class Controller implements Initializable {
          *
          * */
         subScene.setOnMouseEntered(mouseEvent -> {
-            inSubscene = true;
+            inSubsceneAndListViewAndSteps = true;
             searchBar.setDisable(true); //évites que si on appuie sur des touches ça ajoute le texte
             listView.setDisable(true); //évites que si on appuie sur des touches ça bouge légèrement les images
             /*
@@ -959,7 +966,7 @@ public class Controller implements Initializable {
         subScene.setOnMouseExited(mouseEvent -> {
             searchBar.setDisable(false);
             listView.setDisable(false);
-            inSubscene = false;
+            inSubsceneAndListViewAndSteps = false;
         });
 
         /*
@@ -1182,7 +1189,7 @@ public class Controller implements Initializable {
             Main.yOffset = event.getSceneY();
         });
         anchorPane.setOnMouseDragged(event -> {
-            if (!inSubscene) {
+            if (!inSubsceneAndListViewAndSteps) {
                 Main.software.setX(event.getScreenX() - Main.xOffset);
                 Main.software.setY(event.getScreenY() - Main.yOffset);
             }

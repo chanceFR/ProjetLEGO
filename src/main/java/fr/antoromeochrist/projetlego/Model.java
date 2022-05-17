@@ -222,9 +222,9 @@ public class Model {
         if (piece0) {
             Fast.log("Processus de création de la figurine en cours...");
             Figurine f = new Figurine(x0, Double.parseDouble(h0), z0);
+            f.hide(Boolean.parseBoolean(dt0[4]));
             f.updateDisplay();
             f.setHat(HatType.valueOf(dt0[3]));
-            f.hide(Boolean.parseBoolean(dt0[4]));
         } else {
             Dim dim = Dim.convertToDim(dt0[3]);
             Fast.log("> Dim :" + dim);
@@ -292,9 +292,9 @@ public class Model {
             Fast.log("> x :" + x + " y:" + h + " z:" + z);
             if (piece) {
                 Figurine f = new Figurine(x, Double.parseDouble(h), z);
-                //f.setHat(HatType.valueOf(dt[3]));
                 f.hide(Boolean.parseBoolean(dt[4]));
                 f.updateDisplay();
+                f.setHat(HatType.valueOf(dt[3]));
             } else {
                 Dim dim = Dim.convertToDim(dt[3]);
                 Fast.log("> Dim :" + dim);

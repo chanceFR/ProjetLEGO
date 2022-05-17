@@ -360,7 +360,7 @@ public class Brick extends ArrayList<MinBrick> {
             //suppresion dans le content color si il reste plus de brick de sa couleur
             Color beforeDel = getColor();
             model.bricks.remove(this);
-            if (model.getBrickWithColor(beforeDel) == null) {
+            if (model.getBrickWithColor(beforeDel).size() == 0) {
                 //Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
                 controller.contentColorsRemoveColor(beforeDel);
             }
