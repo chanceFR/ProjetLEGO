@@ -913,7 +913,6 @@ public class Figurine extends Brick {
         rightFoot.setTranslateX(volume.get(volume.size() - 1).getX() - 1);
         rightFoot.setTranslateY(volume.get(volume.size() - 1).getY() + 0.35);
         rightFoot.setTranslateZ(volume.get(volume.size() - 1).getZ());
-
         switch (hat) {
             case GENTLEMAN -> {
                 if (!nodes.contains(gentleman1)) {
@@ -934,9 +933,6 @@ public class Figurine extends Brick {
                 gentleman3.setTranslateX(volume.get(volume.size() - 1).getX() - 1.5);
                 gentleman3.setTranslateY(volume.get(volume.size() - 1).getY() - 4.5);
                 gentleman3.setTranslateZ(volume.get(volume.size() - 1).getZ() - 0);
-            }
-            case THUG -> {
-
             }
             case MAGICIAN -> {
                 if (!nodes.contains(magicien1)) {
@@ -996,9 +992,6 @@ public class Figurine extends Brick {
                 Controller.controller.group.getChildren().remove(invisibleHat);
                 nodes.remove(invisibleHat);
             }
-            case THUG -> {
-                //à completer
-            }
         }
     }
 
@@ -1025,9 +1018,6 @@ public class Figurine extends Brick {
                 Controller.controller.group.getChildren().add(invisibleHat);
                 nodes.add(invisibleHat);
             }
-            case THUG -> {
-                //à completer
-            }
         }
         updateNodesLocation();
     }
@@ -1041,5 +1031,7 @@ public class Figurine extends Brick {
         }
     }
 
-
+    public HatType getHat() {
+        return hat;
+    }
 }

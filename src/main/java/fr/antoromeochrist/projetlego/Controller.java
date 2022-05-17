@@ -8,6 +8,7 @@ import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.bricks.*;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
+import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
@@ -29,6 +30,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -175,8 +177,15 @@ public class Controller implements Initializable {
      */
     public boolean inSubscene = false;
 
-    public float testY;
-    public float testX;
+    @FXML
+    private MenuItem openProject;
+
+    @FXML
+    private MenuItem saveAs;
+
+    @FXML
+    private MenuItem save;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -389,14 +398,16 @@ public class Controller implements Initializable {
                      * Si c'est la première fois faut le relier à instruction !
                      **/
                     try {
+                        //Fast.log("L'instruction existe !");
                         model.instruction.get(i);
+                        model.instruction.get(i).setTf(field);
+                        model.instruction.get(i).setName(model.instruction.get(i).getName(),123);
                     } catch (Exception e) {
-                        model.instruction.add(new Step("step " + i, (ListView<Brick>) steps.getItems().get(i)));
+                        model.instruction.add(new Step("step " + i, (ListView<Brick>) steps.getItems().get(i), field));
                     }
                     for (int i2 = 0; i2 < steps.getItems().size(); i2++) {
                         model.instruction.get(i2).setBricks((ListView<Brick>) steps.getItems().get(i));
                     }
-
                     /*
                      * Maintenant qu'on sait que la valeur du texte de field est forcément relié à instruction
                      *
@@ -412,10 +423,10 @@ public class Controller implements Initializable {
                      *
                      *
                      * */
-
+                    //Fast.log("instructions i : " + model.instruction.get(i).getName());
                     //field prendra forcément la valeur contenue dans current lors de sa création.
                     field.setText(current.getName());
-                    field.textProperty().addListener((observable, oldValue, newValue) -> current.setText(newValue));
+                    field.textProperty().addListener((observable, oldValue, newValue) -> current.setName(newValue,34));
 
                     /*
                      * Menu de droite - gestion des étapes
@@ -877,10 +888,9 @@ public class Controller implements Initializable {
                 String text = model.dropSelectionData.getText();
                 Dim dim = Dim.getDimWithText(text);
 
-                if(text.contains("Figurine")){
-                        model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
-                }
-                else {
+                if (text.contains("Figurine")) {
+                    model.brickClicked = new Figurine(grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2]);
+                } else {
                     model.brickClicked = new Brick(dim, grid.getMouseCoors()[0], grid.getMouseCoors()[1], grid.getMouseCoors()[2], colorpicker.getValue(), (dim.getHeight() == 0.5), false);
                     model.brickClicked.setCylindrical(text.contains("cylinder"), 36788);
                     model.brickClicked.setSmooth(text.contains("smooth"), 36789);
@@ -929,15 +939,13 @@ public class Controller implements Initializable {
                 KeyFrame newX = new KeyFrame(Duration.seconds(dx.getDuration()), new KeyValue(x_axis.angleProperty(), dx.getAngle()));
 
 
-                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) ));
+                camera.setAngleY((camera.getAngleY() - ((float) e.getY() - (float) model.mouseY) / 100));
                 camera.timeline.getKeyFrames().add(newX);
 
 
                 DurationAngle dy = new DurationAngle(newAngleY, 0.001f);
                 KeyFrame newY = new KeyFrame(Duration.seconds(dy.getDuration()), new KeyValue(y_axis.angleProperty(), dy.getAngle()));
-
-
-                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) ));
+                camera.setAngleX((camera.getAngleX() + ((float) e.getX() - (float) model.mouseX) / 100));
                 camera.timeline.getKeyFrames().add(newY);
 
 
@@ -990,7 +998,13 @@ public class Controller implements Initializable {
                         case R -> model.brickClicked.rotate();
                         case UP -> model.brickClicked.up();
                         case DOWN -> model.brickClicked.down();
-                        case S -> model.saveAllData();
+                        case S -> {
+                            try {
+                                model.saveAllData();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
                 switch (keyEvent.getCode()) {
@@ -1179,109 +1193,133 @@ public class Controller implements Initializable {
 
         plateCB.setOnAction(e -> {
             listView.getItems().clear();
-            String sb = searchBar.getText()+" ";
+            String sb = searchBar.getText() + " ";
 
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder", model.imageStorages));
                 //smooth
-            }else  if (smoothCB.isSelected()){
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
-            }else{
-                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
+            } else if (smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
+            } else {
+                listView.getItems().addAll(searchList(sb + "", model.imageStorages));
             }
         });
 
         smoothCB.setOnAction(e -> {
             listView.getItems().clear();
-            String sb = searchBar.getText()+" ";
+            String sb = searchBar.getText() + " ";
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder", model.imageStorages));
                 //smooth
-            }else if (smoothCB.isSelected()){
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
-            }else{
-                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
+            } else if (smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
+            } else {
+                listView.getItems().addAll(searchList(sb + "", model.imageStorages));
             }
         });
 
         cylindricalCB.setOnAction(e -> {
             listView.getItems().clear();
-            String sb = searchBar.getText()+" ";
+            String sb = searchBar.getText() + " ";
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb + "cylinder", model.imageStorages));
                 //smooth
-            } else  if (smoothCB.isSelected()){
-                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
-            }else{
-                listView.getItems().addAll(searchList(sb+"", model.imageStorages));
+            } else if (smoothCB.isSelected()) {
+                listView.getItems().addAll(searchList(sb + "smooth", model.imageStorages));
+            } else {
+                listView.getItems().addAll(searchList(sb + "", model.imageStorages));
             }
         });
+        openProject.setOnAction(e -> {
+            model.loadData();
+        });
+
+        saveAs.setOnAction(e -> {
+            try {
+                model.saveAllData();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+
+        save.setOnAction(e -> {
+            try {
+                model.saveAllData();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        });
+
 
         subScene.setFill(Color.web("#181a1e"));
         subScene.setCamera(camera);
+
+
     }
 
 

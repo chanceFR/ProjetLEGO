@@ -43,9 +43,12 @@ public class Main extends Application {
 
     public static Stage software;
     //Fenêtre de l'ensemble du logiciel
+
     public static Stage home;
-    //Petite fenêtre popup qui demande si on veut ouvrir un projet ou en créé un nouveau
-    //Cette fenêtre n'est pas indispensable
+    //Fenêtre d'acceuil : si on veut ouvrir le projet / en créé un nouveau...
+
+    public static Stage notifWindow;
+    //Petite fenêtre popup qui envoie des notifications /avertissements
 
     @Override
     public void start(Stage stage) throws Exception {

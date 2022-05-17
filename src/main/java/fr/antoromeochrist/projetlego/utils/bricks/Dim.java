@@ -70,6 +70,13 @@ public class Dim {
         else
             return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
     }
+    public static Dim convertToDim(String text) {
+        String[] s = text.replace(" ","").split("x");
+        if (s.length >= 3)
+            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Double.parseDouble(s[2]));
+        else
+            return new Dim(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+    }
 
     /**
      * Avoir la largeur

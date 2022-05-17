@@ -18,6 +18,6 @@ module com.example.projetlego {
     opens fr.antoromeochrist.projetlego.utils.images to javafx.fxml;
     exports fr.antoromeochrist.projetlego.utils.print;
     opens fr.antoromeochrist.projetlego.utils.print to javafx.fxml;
-    exports fr.antoromeochrist.projetlego.home;
-    opens fr.antoromeochrist.projetlego.home to javafx.fxml;
+    exports fr.antoromeochrist.projetlego.notifWindows;
+    opens fr.antoromeochrist.projetlego.notifWindows to javafx.fxml;
 }
