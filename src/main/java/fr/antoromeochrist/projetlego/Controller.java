@@ -1173,95 +1173,98 @@ public class Controller implements Initializable {
 
         plateCB.setOnAction(e -> {
             listView.getItems().clear();
+            String sb = searchBar.getText()+" ";
 
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList("plate", model.imageStorages));
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
             } else {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
             }
         });
 
         smoothCB.setOnAction(e -> {
             listView.getItems().clear();
+            String sb = searchBar.getText()+" ";
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList("plate", model.imageStorages));
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
             } else {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
             }
         });
 
         cylindricalCB.setOnAction(e -> {
             listView.getItems().clear();
+            String sb = searchBar.getText()+" ";
             //cyl plate smooth
             if (plateCB.isSelected() && cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //cyl smooth
             else if (cylindricalCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate cyl
             else if (plateCB.isSelected() && cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder plate", model.imageStorages));
-                listView.getItems().addAll(searchList("cylinder smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder smooth", model.imageStorages));
             }
             //plate smooth
             else if (plateCB.isSelected() && smoothCB.isSelected()) {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //plate
             } else if (plateCB.isSelected()) {
-                listView.getItems().addAll(searchList("plate", model.imageStorages));
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"plate", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
                 //cylinder
             } else if (cylindricalCB.isSelected()) {
-                listView.getItems().addAll(searchList("cylinder", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"cylinder", model.imageStorages));
                 //smooth
             } else {
-                listView.getItems().addAll(searchList("smooth", model.imageStorages));
+                listView.getItems().addAll(searchList(sb+"smooth", model.imageStorages));
             }
         });
 
