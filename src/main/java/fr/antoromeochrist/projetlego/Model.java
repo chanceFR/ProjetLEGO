@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class Model {
 
     public ArrayList<Brick> bricks;
@@ -120,15 +121,21 @@ public class Model {
         return bs;
     }
 
-    public void writeData(String data) throws IOException {
+    public void selectProject(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open project");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BRICKDESIGNER", "*.bd"));
+        project = fileChooser.showOpenDialog(Main.software);
+    }
 
 
 
-
-        FileWriter fWriter = new FileWriter(project.getAbsolutePath());
-        fWriter.write(data);
-        System.out.println(data);
-        fWriter.close();
+    public void writeData() throws IOException {
+        //JSONArray employeeList = new JSONArray();
+        //FileWriter fWriter = new FileWriter(project.getAbsolutePath());
+        //fWriter.write(data);
+        //System.out.println(data);
+        //fWriter.close();
     }
 
     public void saveAllData(){
@@ -146,7 +153,6 @@ public class Model {
             project = fileChooser.showOpenDialog(Main.software);
             if (project != null) {
                 System.out.println("fichier sélectionné");
-
             }
         }
 
