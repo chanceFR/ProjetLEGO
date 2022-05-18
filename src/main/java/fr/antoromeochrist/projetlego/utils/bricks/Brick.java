@@ -3,7 +3,6 @@ package fr.antoromeochrist.projetlego.utils.bricks;
 import fr.antoromeochrist.projetlego.pieces.Figurine;
 import fr.antoromeochrist.projetlego.utils.P3D;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
-import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
@@ -290,6 +289,7 @@ public class Brick extends ArrayList<MinBrick> {
     public void remove() {
         if (!delete) { //evite des bugs si on clique deux fois sur le bouton corbeille(à cause de lag)
             delete = true;
+            model.numberOfBrickWithColor.replace(this.color,model.numberOfBrickWithColor.get(this.color)-1);
             /*suppression des briques*/
             controller.group.getChildren().removeAll(this);
             //suppresion des bordures
@@ -360,7 +360,7 @@ public class Brick extends ArrayList<MinBrick> {
             //suppresion dans le content color si il reste plus de brick de sa couleur
             Color beforeDel = getColor();
             model.bricks.remove(this);
-            if (model.getBrickWithColor(beforeDel).size() == 0) {
+            if (model.numberOfBrickWithColor.get(beforeDel) == 0) {
                 //Fast.log("Suppresion du content colors car plus de brique de la couleur de la brique");
                 controller.contentColorsRemoveColor(beforeDel);
             }
@@ -388,12 +388,26 @@ public class Brick extends ArrayList<MinBrick> {
      * @param color la couleur
      */
     public void setColor(Color color) {
+        if(this.color != null && this.color.equals(color)) return;
+
+        if(this.color != null){
+            model.numberOfBrickWithColor.replace(this.color,model.numberOfBrickWithColor.get(this.color)-1);
+        }
         this.color = color;
+        if(model.numberOfBrickWithColor.containsKey(this.color)){
+            model.numberOfBrickWithColor.replace(this.color,model.numberOfBrickWithColor.get(this.color)+1);
+        }else{
+            model.numberOfBrickWithColor.put(this.color,1);
+        }
+
         rect.setFill(color);
         for (MinBrick b : this) {
             b.setMaterial(new PhongMaterial(color));
             b.cyl();
         }
+
+
+
         if (controller.notColorInContentColors(color)) controller.contentColorAddColor(color);
         for (Cylinder c : cylinders) c.setMaterial(new PhongMaterial(color));
     }

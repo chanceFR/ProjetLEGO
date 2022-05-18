@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -49,8 +50,10 @@ public class Model {
      */
     public ImageStorage dropSelectionData;
 
+    public HashMap<Color,Integer> numberOfBrickWithColor;
 
     public Model() {
+        numberOfBrickWithColor = new HashMap<>();
         mouseX = 0;
         mouseY = 0;
         rightClickActive = false;
@@ -114,24 +117,6 @@ public class Model {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Retourne la liste des briques qui ont la même couleur
-     * <p>
-     * avec la couleur.
-     *
-     * @param c la couleur
-     * @return une liste
-     */
-    public ArrayList<Brick> getBrickWithColor(Color c) {
-        ArrayList<Brick> bs = new ArrayList<>();
-        for (Brick b : this.bricks) {
-            if (b.getColor().equals(c)) {
-                bs.add(b);
-            }
-        }
-        return bs;
     }
 
     public File selectOpenProject() {
