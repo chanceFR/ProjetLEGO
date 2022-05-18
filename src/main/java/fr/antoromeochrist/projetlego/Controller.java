@@ -735,7 +735,6 @@ public class Controller implements Initializable {
                                 model.dropInProgress = false;
                             }
                             if (model.brickClicked != null && !model.brickClicked.isPiece()) {
-                                boolean reverse = model.brickClicked.getDim().isReverse;
                                 P3D first = new P3D(model.brickClicked.getVolume().get(0));
                                 Color oldColor = model.brickClicked.getColor();
                                 boolean plate = model.brickClicked.isPlate();
@@ -748,7 +747,6 @@ public class Controller implements Initializable {
                                 model.brickClicked.setSmooth(smooth, 4567);
                                 model.brickClicked.setPlate(plate, 78564);
                                 model.brickClicked.setState(State.SHOW_IS_SELECT);
-                                if (reverse) model.brickClicked.rotate();
                             }
                         }
                     });

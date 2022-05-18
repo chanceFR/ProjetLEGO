@@ -56,7 +56,6 @@ public class Dim {
         this.width = width;
         this.depth = depth;
         this.height = height;
-        this.isReverse = false;
     }
 
     /**
@@ -99,16 +98,10 @@ public class Dim {
         return depth;
     }
 
-    /**
-     * Permet de reverse l'affichage de la dimension
-     */
-    public boolean isReverse;
-
     public void rotate() {
         int oldDepth = this.depth;
         this.depth = this.width;
         this.width = oldDepth;
-        this.isReverse = !this.isReverse;
     }
 
     /**
@@ -116,13 +109,8 @@ public class Dim {
      */
     public String toString() {
         String s;
-        if (isReverse) {
-            s = "" + depth;
-            s += "x" + width;
-        } else {
-            s = "" + width;
-            s += "x" + depth;
-        }
+        s = "" + width;
+        s += "x" + depth;
         if (height != 1) {
             s += "x" + height;
         }
