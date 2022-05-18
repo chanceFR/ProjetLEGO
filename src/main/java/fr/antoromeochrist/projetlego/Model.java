@@ -8,14 +8,9 @@ import fr.antoromeochrist.projetlego.utils.bricks.Step;
 import fr.antoromeochrist.projetlego.utils.images.ImagePath;
 import fr.antoromeochrist.projetlego.utils.images.ImageStorage;
 import fr.antoromeochrist.projetlego.utils.print.Fast;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -161,14 +156,15 @@ public class Model {
     }
 
 
-    public void loadData() {
+
+    public void loadData(boolean forTemplate) {
         if (project == null) {
             project = selectOpenProject();
             if (project == null) {
                 controller.sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
                 return;
             }
-        } else {
+        } else if(!forTemplate){
             File temp = selectOpenProject();
             if (temp == null) {
                 controller.sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");

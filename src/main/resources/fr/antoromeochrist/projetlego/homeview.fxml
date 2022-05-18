@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
@@ -31,11 +32,14 @@
             <Font size="17.0" />
          </font>
       </Button>
-      <ImageView fx:id="template1" fitHeight="116.0" fitWidth="122.0" layoutX="313.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
-      <Label layoutX="396.0" layoutY="92.0" prefWidth="122.0" text="Select a template" textFill="WHITE" />
+      <ImageView fx:id="template1" fitHeight="165.0" fitWidth="210.0" layoutX="344.0" layoutY="135.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../templates/house.png" />
+         </image></ImageView>
+      <Label layoutX="396.0" layoutY="92.0" prefWidth="122.0" text="Select a template" textFill="WHITE">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#212328" height="354.0" layoutX="283.0" layoutY="66.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="11.0" />
-      <ImageView fx:id="template3" fitHeight="116.0" fitWidth="122.0" layoutX="307.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="template2" fitHeight="116.0" fitWidth="122.0" layoutX="449.0" layoutY="134.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="template4" fitHeight="116.0" fitWidth="122.0" layoutX="449.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

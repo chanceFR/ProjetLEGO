@@ -1310,7 +1310,7 @@ public class Controller implements Initializable {
             reset();
             model.project =null;
         });
-        openProject.setOnAction(e -> model.loadData());
+        openProject.setOnAction(e -> model.loadData(false));
 
         saveAs.setOnAction(e -> {
             try {
