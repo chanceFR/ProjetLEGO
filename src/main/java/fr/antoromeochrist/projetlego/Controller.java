@@ -12,9 +12,12 @@ import fr.antoromeochrist.projetlego.utils.print.Fast;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -27,18 +30,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static fr.antoromeochrist.projetlego.Main.notifWindow;
 import static fr.antoromeochrist.projetlego.utils.CameraUtils.x_axis;
 import static fr.antoromeochrist.projetlego.utils.CameraUtils.y_axis;
 
@@ -178,6 +181,9 @@ public class Controller implements Initializable {
      * Permet de savoir si on est dans la subscene
      */
     public boolean inSubsceneAndListViewAndSteps = false;
+
+    @FXML
+    private MenuItem newProject;
 
     @FXML
     private MenuItem openProject;
@@ -1292,6 +1298,18 @@ public class Controller implements Initializable {
                 listView.getItems().addAll(searchList(sb + "", model.imageStorages));
             }
         });
+        newProject.setOnAction(e -> {
+            if(model.project != null) {
+                try {
+                    model.saveAllData();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                sendNotif("L'ancien projet a été sauvegardé.");
+            }
+            reset();
+            model.project =null;
+        });
         openProject.setOnAction(e -> model.loadData());
 
         saveAs.setOnAction(e -> {
@@ -1422,4 +1440,34 @@ public class Controller implements Initializable {
         model.instruction.get(0).setName("step 0", 45);
     }
 
+    private double xOffsetNW = 0;
+    private double yOffsetNW = 0;
+
+    public void sendNotif(String message) {
+        model.lastMessageNotif = message;
+        notifWindow = new Stage();
+        Parent pNotifWindow = null;
+        try {
+            pNotifWindow = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dsview.fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        notifWindow.setScene(new Scene(pNotifWindow));
+        pNotifWindow.setOnMousePressed(event -> {
+            xOffsetNW = event.getSceneX();
+            yOffsetNW = event.getSceneY();
+        });
+        pNotifWindow.setOnMouseDragged(event -> {
+            notifWindow.setX(event.getScreenX() - xOffsetNW);
+            notifWindow.setY(event.getScreenY() - yOffsetNW);
+        });
+        notifWindow.setTitle("Enregistrement échoué");
+        notifWindow.setMinWidth(387);
+        notifWindow.setMinHeight(127);
+        notifWindow.setMaxWidth(387);
+        notifWindow.setMaxHeight(127);
+        notifWindow.initStyle(StageStyle.UNDECORATED);
+        notifWindow.show();
+    }
+    
 }

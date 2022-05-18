@@ -2,33 +2,40 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorpane" prefHeight="254.0" prefWidth="387.0" stylesheets="@../../../homestyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.antoromeochrist.projetlego.notifWindows.ControllerNotif">
+<AnchorPane fx:id="anchorpane" prefHeight="417.0" prefWidth="588.0" stylesheets="@../../../homestyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.antoromeochrist.projetlego.notifWindows.ControllerNotif">
     <children>
-        <Rectangle fill="#212328" height="75.0" layoutY="-2.0" smooth="false" stroke="BLACK" strokeMiterLimit="0.0" strokeType="INSIDE" strokeWidth="0.0" width="387.0" />
+        <Rectangle fill="#212328" height="75.0" layoutY="-2.0" smooth="false" stroke="BLACK" strokeMiterLimit="0.0" strokeType="INSIDE" strokeWidth="0.0" width="588.0" />
       <Text fill="#dededf" layoutX="14.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Brick Designer">
          <font>
             <Font size="16.0" />
          </font>
       </Text>
-      <Button fx:id="openB" layoutX="43.0" layoutY="92.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="304.0" text="open project" textFill="#dededf">
+      <Button fx:id="openB" layoutX="43.0" layoutY="92.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="200.0" text="open project" textFill="#dededf">
          <font>
             <Font size="17.0" />
          </font>
       </Button>
-      <Label fx:id="close" layoutX="371.0" layoutY="1.0" prefHeight="28.0" prefWidth="11.0" text="X" textFill="#d7d7d9">
+      <Label fx:id="close" layoutX="571.0" prefHeight="28.0" prefWidth="11.0" text="X" textFill="#d7d7d9">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="newB" layoutX="44.0" layoutY="166.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="304.0" text="new project" textFill="#dededf">
+      <Button fx:id="newB" layoutX="44.0" layoutY="166.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="200.0" text="new project" textFill="#dededf">
          <font>
             <Font size="17.0" />
          </font>
       </Button>
+      <ImageView fx:id="template1" fitHeight="116.0" fitWidth="122.0" layoutX="313.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="396.0" layoutY="92.0" prefWidth="122.0" text="Select a template" textFill="WHITE" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#212328" height="354.0" layoutX="283.0" layoutY="66.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="11.0" />
+      <ImageView fx:id="template3" fitHeight="116.0" fitWidth="122.0" layoutX="307.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="template2" fitHeight="116.0" fitWidth="122.0" layoutX="449.0" layoutY="134.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="template4" fitHeight="116.0" fitWidth="122.0" layoutX="449.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

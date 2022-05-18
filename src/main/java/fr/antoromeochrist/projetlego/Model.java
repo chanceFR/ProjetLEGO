@@ -165,13 +165,13 @@ public class Model {
         if (project == null) {
             project = selectOpenProject();
             if (project == null) {
-                sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
+                controller.sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
                 return;
             }
         } else {
             File temp = selectOpenProject();
             if (temp == null) {
-                sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
+                controller.sendNotif("Vous n'avez pas sélectionné un projet à ouvrir !");
                 return;
             } else {
                 try {
@@ -181,7 +181,7 @@ public class Model {
                 }
                 controller.reset();
                 project = temp;
-                sendNotif("L'ancien projet a été sauvegardé avec succès.");
+                controller.sendNotif("L'ancien projet a été sauvegardé avec succès.");
             }
         }
         Scanner obj = null;
@@ -355,37 +355,7 @@ public class Model {
         for (String line : lines) sb.append(line + "\n");
         return sb.toString();
     }
-
-
-    private double xOffsetNW = 0;
-    private double yOffsetNW = 0;
-
-    public void sendNotif(String message) {
-        lastMessageNotif = message;
-        notifWindow = new Stage();
-        Parent pNotifWindow = null;
-        try {
-            pNotifWindow = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("dsview.fxml")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        notifWindow.setScene(new Scene(pNotifWindow));
-        pNotifWindow.setOnMousePressed(event -> {
-            xOffsetNW = event.getSceneX();
-            yOffsetNW = event.getSceneY();
-        });
-        pNotifWindow.setOnMouseDragged(event -> {
-            notifWindow.setX(event.getScreenX() - xOffsetNW);
-            notifWindow.setY(event.getScreenY() - yOffsetNW);
-        });
-        notifWindow.setTitle("Enregistrement échoué");
-        notifWindow.setMinWidth(387);
-        notifWindow.setMinHeight(127);
-        notifWindow.setMaxWidth(387);
-        notifWindow.setMaxHeight(127);
-        notifWindow.initStyle(StageStyle.UNDECORATED);
-        notifWindow.show();
-    }
+    
 
     public void saveAllData() throws IOException {
         String data = getData();
@@ -393,7 +363,7 @@ public class Model {
             Fast.log("En attente de sélection de fichier");
             project = selectSaveProject();
             if (project == null) {
-                sendNotif("Vous n'avez pas sélectionné de fichier\n pour sauvegarder votre projet.");
+                controller.sendNotif("Vous n'avez pas sélectionné de fichier\n pour sauvegarder votre projet.");
                 return;
             }
         }
